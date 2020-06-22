@@ -1,0 +1,9 @@
+.dockerignore
+.eslintignore
+.git/
+.gitignore
+.circleci/
+
+Dockerfile
+
+node_modules/
