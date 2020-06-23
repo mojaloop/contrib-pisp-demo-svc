@@ -7,14 +7,17 @@ RUN apk add --no-cache -t build-dependencies git make gcc g++ python libtool aut
   && npm config set unsafe-perm true \
   && npm install -g node-gyp 
 
-# check in .dockerignore what is skipped during copy
-COPY . .
+# Cache npm dependencies
+COPY package*.json ./
 RUN npm ci
+
+# Check in .dockerignore what is skipped during copy
+COPY . .
 
 # Create empty log file & 
 RUN mkdir ./logs && touch ./logs/combined.log
 
-# link stdout to the application log file
+# Link stdout to the application log file
 RUN ln -sf /dev/stdout ./logs/combined.log
 
 # USER node 
