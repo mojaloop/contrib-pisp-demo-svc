@@ -30,8 +30,8 @@ export default {
   plugin: HapiSwagger,
   options: {
     info: {
-      title: 'Event Sidecar Swagger Documentation',
-      version: Config.get('package.version')
-    }
-  }
+      title: 'PISP Demo Server Documentation',
+      version: Config.get('package.version'),
+    },
+  },
 }

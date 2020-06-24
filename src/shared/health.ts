@@ -46,7 +46,7 @@ export interface ServiceHealth {
 export type ServiceChecker = () => Promise<ServiceHealth>
 
 export interface HealthCheckResult {
-  version: string
+  versionNumber: string
   status: ServiceStatus
   uptime: number
   startTime: string
@@ -71,7 +71,7 @@ export class HealthCheck {
     const uptime = process.uptime()
     const startTimeDate = new Date(Date.now() - uptime)
     const startTime = startTimeDate.toISOString()
-    const version = this.packageInfo.version
+    const versionNumber = this.packageInfo.version
 
     let isHealthy: boolean
     try {
@@ -84,7 +84,7 @@ export class HealthCheck {
     }
 
     return {
-      version,
+      versionNumber,
       status: isHealthy ? ServiceStatus.Ok : ServiceStatus.Down,
       uptime,
       startTime,

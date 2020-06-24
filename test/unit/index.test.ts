@@ -36,10 +36,12 @@ describe('index', (): void => {
   describe('api routes', (): void => {
     let server: Server
 
-    beforeAll(async (): Promise<Server> => {
-      server = await index.server.run(Config)
-      return server
-    })
+    beforeAll(
+      async (): Promise<Server> => {
+        server = await index.server.run(Config)
+        return server
+      }
+    )
 
     afterAll((done): void => {
       server.events.on('stop', done)
@@ -48,15 +50,15 @@ describe('index', (): void => {
 
     it('/health', async (): Promise<void> => {
       interface HealthResponse {
-        status: string;
-        uptime: number;
-        startTime: string;
-        versionNumber: string;
+        status: string
+        uptime: number
+        startTime: string
+        versionNumber: string
       }
 
       const request = {
         method: 'GET',
-        url: '/health'
+        url: '/health',
       }
 
       const response = await server.inject(request)
@@ -66,24 +68,6 @@ describe('index', (): void => {
       const result = response.result as HealthResponse
       expect(result.status).toEqual('OK')
       expect(result.uptime).toBeGreaterThan(1.0)
-    })
-
-    it('/hello', async (): Promise<void> => {
-      interface HelloResponse {
-        hello: string;
-      }
-
-      const request = {
-        method: 'GET',
-        url: '/hello'
-      }
-
-      const response = await server.inject(request)
-      expect(response.statusCode).toBe(200)
-      expect(response.result).toBeDefined()
-
-      const result = response.result as HelloResponse
-      expect(result.hello).toEqual('world')
     })
   })
 })

@@ -25,18 +25,19 @@
 
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
-import { Server } from '@hapi/hapi'
+import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 import Blipp from 'blipp'
 
 import Swagger from './swagger'
 import OpenAPI from './openAPI'
 
-const plugins: any[] = [
-  Swagger,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const plugins: Array<ServerRegisterPluginObject<any>> = [
+  { plugin: Blipp },
+  { plugin: Inert },
+  { plugin: Vision },
   OpenAPI,
-  Inert,
-  Vision,
-  Blipp
+  Swagger,
 ]
 
 async function register(server: Server): Promise<Server> {
@@ -46,5 +47,5 @@ async function register(server: Server): Promise<Server> {
 
 export default {
   register,
-  plugins
+  plugins,
 }

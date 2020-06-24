@@ -27,12 +27,12 @@ import Path from 'path'
 import HapiOpenAPI from 'hapi-openapi'
 
 const openAPIOptions = {
-  api: Path.resolve(__dirname, '../../interface/swagger.json'),
+  api: Path.resolve(__dirname, '../../interface/swagger.yml'),
   handlers: Path.resolve(__dirname, '../handlers'),
-  extensions: ['ts']
+  extensions: ['ts'],
 }
 
 export default {
   plugin: HapiOpenAPI,
-  options: openAPIOptions
+  options: openAPIOptions,
 }
