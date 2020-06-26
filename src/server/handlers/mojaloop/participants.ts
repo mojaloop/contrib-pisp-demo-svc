@@ -23,10 +23,9 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
-import { findHello } from '../../model/hello'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
 
-export async function get(_: Request, h: ResponseToolkit): Promise<ResponseObject> {
-  const hello = await findHello()
-  return h.response(hello).code(200)
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  return h.response().code(200)
 }

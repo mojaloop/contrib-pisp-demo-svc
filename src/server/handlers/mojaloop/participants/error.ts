@@ -26,32 +26,6 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { HealthCheck, HealthResponseCode, HealthCheckResult, ServiceStatus } from '../../shared/health'
-import Config from '../../shared/config'
-import { Logger } from '../../shared/logger'
-
-const pakcageInfo = {
-  name: Config.get('package.name'),
-  version: Config.get('package.version')
-}
-
-const healthCheck = new HealthCheck(pakcageInfo, [])
-
-/**
- * Operations on /health
- */
-
-export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  let healthCheckResult: HealthCheckResult | null = null;
-  try {
-    healthCheckResult = await healthCheck.getHealth()
-  } catch (err) {
-    Logger.error(err.message)
-  }
-
-  if (healthCheckResult == null || healthCheckResult.status == ServiceStatus.Down) {
-    return h.response({}).code(HealthResponseCode.GatewayTimeout)
-  } else {
-    return h.response(healthCheckResult).code(HealthResponseCode.Success)
-  }
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  return h.response().code(200)
 }
