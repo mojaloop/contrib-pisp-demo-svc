@@ -13,6 +13,8 @@ paths:
   /health:
     get:
       tags:
+        - app
+        - mojaloop
         - health
       summary: Get server health
       description: The HTTP request GET /health is used to return the current status of the API.
@@ -36,15 +38,16 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /participants:
+  /app/participants:
     parameters:
     - $ref: '#/components/parameters/Content-Type'
     get:
       tags:
+        - app
         - participants
-      summary: Participants
+      summary: 'Lookup the registered DFSPs in Mojaloop'
       description: The HTTP request GET /participants is used to find the list of registered DFSPs in Mojaloop
-      operationId: getParticipants
+      operationId: getAppParticipants
       responses:
         202:
           $ref: '#/components/responses/Response202'
@@ -64,10 +67,14 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
+  /participants:
+    parameters:
+    - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - participants
-      summary: '[Mojaloop Callback] Participants'
+      summary: '[Mojaloop Callback] Result of the registered DFSPs lookup'
       description: The callback PUT /participants is used to inform the client
         of the result of the query of the registered DFSPs in Mojaloop.
       operationId: putParticipants
@@ -97,8 +104,9 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - participants
-      summary: '[Mojaloop Callback] ParticipantsAndError'
+      summary: '[Mojaloop Callback] Error in retrieving the list of DFSPs in Mojaloop'
       description: If there is an error during FSP information creation in the server,
         the error callback PUT /participants/error is used.
       operationId: putParticipantsError
@@ -129,20 +137,21 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /parties/{Type}/{ID}:
+  /app/parties/{Type}/{ID}:
     parameters:
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/Content-Type'
     get:
       tags:
+        - app
         - parties
-      summary: PartiesByTypeAndID
+      summary: Lookup the information about the requested Party
       description: The HTTP request GET /parties/<Type>/<ID> (or GET /parties/<Type>/<ID>/<SubId>)
         is used to lookup information regarding the requested Party, defined by <Type>,
         <ID> and optionally <SubId> (for example, GET /parties/MSISDN/123456789, or
         GET /parties/BUSINESS/shoecompany/employee1).
-      operationId: getPartiesByTypeAndID
+      operationId: getAppPartiesByTypeAndId
       responses:
         202:
           $ref: '#/components/responses/Response202'
@@ -162,14 +171,20 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
+  /parties/{Type}/{ID}:
+    parameters:
+      - $ref: '#/components/parameters/Type'
+      - $ref: '#/components/parameters/ID'
+      - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - parties
-      summary: '[Mojaloop Callback] PartiesByTypeAndID'
+      summary: '[Mojaloop Callback] Result of the Party information lookup'
       description: The callback PUT /parties/<Type>/<ID> (or PUT /parties/<Type>/<ID>/<SubId>)
         is used to inform the client of a successful result of the Party information
         lookup.
-      operationId: putPartiesByTypeAndID
+      operationId: putPartiesByTypeAndId
       parameters:
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
@@ -204,12 +219,13 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - parties
-      summary: '[Mojaloop Callback] PartiesErrorByTypeAndID'
+      summary: '[Mojaloop Callback] Error of the Party information lookup'
       description: If the server is unable to find Party information of the provided
         identity, or another processing error occurred, the error callback PUT /parties/<Type>/<ID>/error
         (or PUT /parties/<Type>/<ID>/<SubId>/error) is used.
-      operationId: putPartiesByTypeAndIDError
+      operationId: putPartiesByTypeAndIdError
       parameters:
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
@@ -237,15 +253,16 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /consentRequests:
+  /app/consentRequests:
     parameters:
       - $ref: '#/components/parameters/Content-Type'
     post:
       tags:
+        - app
         - consentRequests
-      summary: ConsentRequests
+      summary: Request consent from DFSP for PISP
       description: Request consent from DFSP for PISP to act on behalf of their user
-      operationId: postConsentRequests
+      operationId: postAppConsentRequests
       responses:
         202:
           $ref: '#/components/responses/Response202'
@@ -271,10 +288,11 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - consentRequests
-      summary: '[Mojaloop Callback] ConsentRequests'
+      summary: '[Mojaloop Callback] Ask PISP to prove the user identity'
       description: Callback from Mojaloop asking user to prove their identify
-      operationId: putConsentRequestsByID
+      operationId: putConsentRequestsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -294,16 +312,17 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /clientConsentRequests/{ID}:
+  /app/consentRequests/{ID}:
     parameters:
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - app
         - consentRequests
-      summary: 'ConsentRequests'
-      description: Client proves the identity by sending the authToken
-      operationId: putClientConsentRequestsByID
+      summary: 'Prove the user identity for consent request'
+      description: App proves the identity by sending the authToken
+      operationId: putAppConsentRequestsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -328,8 +347,9 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     post:
       tags:
+        - mojaloop
         - consents
-      summary: '[Mojaloop Callback] Consents'
+      summary: '[Mojaloop Callback] Result of consent request'
       description: Grant consent
       operationId: postConsents
       responses:
@@ -351,16 +371,17 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /consents/{ID}/generateChallenge:
+  /app/consents/{ID}/generateChallenge:
     parameters:
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/Content-Type'
     post:
       tags:
+        - app
         - consents
-      summary: 'Consents'
+      summary: 'Request to generate challenge for consent'
       description: Generate challenge for consent
-      operationId: postConsentsByIDGenerateChallenge
+      operationId: postAppConsentsByIdGenerateChallenge
       responses:
         202:
           $ref: '#/components/responses/Response202'
@@ -386,10 +407,11 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - consents
-      summary: '[Mojaloop Callback] Consents'
+      summary: '[Mojaloop Callback] Result of generating challenge for consent'
       description: Generate challenge for consent
-      operationId: putConsentsByID
+      operationId: putConsentsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -411,10 +433,11 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
     delete:
       tags:
+        - mojaloop
         - consents
-      summary: '[Mojaloop Callback] Consents'
-      description: Delete consent
-      operationId: deleteConsentsByID
+      summary: '[Mojaloop Callback] Result of deleting the specified consent'
+      description: Result of deleting the specified consent
+      operationId: deleteConsentsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -434,16 +457,17 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /clientConsents/{ID}:
+  /app/consents/{ID}:
     parameters:
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - app
         - consents
-      summary: 'Consents'
-      description: Generate challenge for consent
-      operationId: putClientConsentsByID
+      summary: 'Put the requested information of the specified consent'
+      description: Put information for the specified consent
+      operationId: putAppConsentsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -465,10 +489,11 @@ paths:
           $ref: '#/components/responses/ErrorResponse503'
     delete:
       tags:
+        - app
         - consents
-      summary: 'Consents'
-      description: Delete consent
-      operationId: deleteClientConsentsByID
+      summary: 'Request to delete the specified consent'
+      description: Request to delete the specified consent
+      operationId: deleteAppConsentsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -488,15 +513,16 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /thirdpartyRequests/transactions:
+  /app/thirdpartyRequests/transactions:
     parameters:
       - $ref: '#/components/parameters/Content-Type'
     post:
       tags:
+        - app
         - thirdpartyRequests
-      summary: 'ThirdPartyRequests'
-      description: Initiate a transaction
-      operationId: postThirdpartyRequestsTransactions
+      summary: 'Request to perform a transaction'
+      description: Request to perform a transaction
+      operationId: postAppThirdpartyRequestsTransactions
       responses:
         202:
           $ref: '#/components/responses/Response202'
@@ -522,10 +548,11 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - mojaloop
         - thirdpartyRequests
-      summary: '[Mojaloop Callback] ThirdPartyRequests'
+      summary: '[Mojaloop Callback] Result of transaction request'
       description: Mojaloop callback for third party that initiated a transaction.
-      operationId: putThirdpartyRequestsTransactionsByID
+      operationId: putThirdpartyRequestsTransactionsById
       responses:
         200:
           $ref: '#/components/responses/Response200'
@@ -550,8 +577,9 @@ paths:
       - $ref: '#/components/parameters/Content-Type'
     post:
       tags:
+        - mojaloop
         - authorizations
-      summary: '[Mojaloop Callback] Authorizations'
+      summary: '[Mojaloop Callback] Ask user to provide authorization'
       description: Handle callback from Mojaloop to give authorization
       operationId: postAuthorizations
       responses:
@@ -573,16 +601,17 @@ paths:
           $ref: '#/components/responses/ErrorResponse501'
         503:
           $ref: '#/components/responses/ErrorResponse503'
-  /authorizations/{ID}:
+  /app/authorizations/{ID}:
     parameters:
       - $ref: '#/components/parameters/ID'
       - $ref: '#/components/parameters/Content-Type'
     put:
       tags:
+        - app
         - authorizations
-      summary: 'Authorizations'
-      description: Handle callback from Mojaloop to give authorization
-      operationId: putAuthorizationsByID
+      summary: 'Put user authorization'
+      description: Put user authorization
+      operationId: putAuthorizationsById
       responses:
         202:
           $ref: '#/components/responses/Response202'
