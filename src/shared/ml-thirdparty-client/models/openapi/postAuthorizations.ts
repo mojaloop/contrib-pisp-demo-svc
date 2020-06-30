@@ -23,27 +23,14 @@
  --------------
  ******/
 
-export interface PostConsentRequestsSchema {
-  id: string
-  initiationId: string
-  authChannels: Array<string>
-  scopes: Array<string>
-  callbackUri: string
-}
+import { AuthenticationType } from '../authorizations'
+import { Amount, Quote } from '../transactions'
 
-export interface PutConsentRequestsByIdSchema {
-  initiatorId: string
-  scopes: Array<string>
-  authChannels: Array<string>
-  callbackUri: string
-  authUri?: string
-}
-
-export interface PutClientConsentRequestsByIdSchema {
-  initiatorId: string
-  scopes: Array<string>
-  authChannels: Array<string>
-  callbackUri: string
-  authUri?: string
-  authToken?: string
+export interface RequestBody {
+  amount: Amount
+  authenticationType: AuthenticationType
+  quote: Quote
+  retriesLeft: number
+  transactionRequestId: string
+  transactionId: string
 }

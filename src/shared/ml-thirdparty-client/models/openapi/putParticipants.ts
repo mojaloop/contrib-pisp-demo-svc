@@ -23,13 +23,8 @@
  --------------
  ******/
 
-import { Amount } from './shared'
+import { Participant } from '../participants'
 
-export interface Quote {
-  transferAmount: Amount
-  payeeReceiveAmount: Amount
-  payeeFspFee: Amount
-  expiration: string
-  ilpPacker: string
-  condition: string
+export interface RequestBody {
+  participants: Participant[]
 }

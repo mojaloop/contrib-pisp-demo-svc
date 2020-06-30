@@ -27,7 +27,3 @@ export interface Participant {
   fspId: string
   name: string
 }
-
-export interface PutParticipantsSchema {
-  participants: Array<Participant>
-}

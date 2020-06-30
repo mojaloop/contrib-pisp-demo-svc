@@ -23,14 +23,10 @@
  --------------
  ******/
 
-export enum AuthenticationType {
-  U2F = 'U2F',
-}
-
-export interface AuthenticationInfo {
-  authentication: AuthenticationType
-  authenticationValue: {
-    pinValue: string
-    counter: number
-  }
+export interface RequestBody {
+  id: string
+  initiatorId: string
+  authChannels: string[]
+  scopes: string[]
+  callbackUri: string
 }

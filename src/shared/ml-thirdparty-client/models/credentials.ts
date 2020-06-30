@@ -24,11 +24,13 @@
  ******/
 
 export enum CredentialType {
-  Fido,
+  FIDO,
+  OTP,
 }
 
 export enum CredentialStatus {
-  Pending,
+  VERIFIED,
+  PENDING,
 }
 
 export interface CredentialChallenge {
@@ -42,29 +44,4 @@ export interface Credential {
   status: CredentialStatus
   challenge: CredentialChallenge
   payload: string
-}
-
-export interface PostConsentsSchema {
-  id: string
-  requestId: string
-  initiatorId: string
-  participantId: string
-  scopes: Map<string, string>
-  credential?: Credential
-}
-
-export interface PutConsentsByIdSchema {
-  requestId: string
-  initiatorId: string
-  participantId: string
-  scopes: Map<string, string>
-  credential: Credential
-}
-
-export interface PutClientConsentsByIdSchema {
-  requestId: string
-  initiatorId: string
-  participantId: string
-  scopes: Map<string, string>
-  credential: Credential
 }

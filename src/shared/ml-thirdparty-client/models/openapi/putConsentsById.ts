@@ -23,14 +23,12 @@
  --------------
  ******/
 
-export enum AuthenticationType {
-  U2F = 'U2F',
-}
+import { Credential } from '../credentials'
 
-export interface AuthenticationInfo {
-  authentication: AuthenticationType
-  authenticationValue: {
-    pinValue: string
-    counter: number
-  }
+export interface RequestBody {
+  requestId: string
+  initiatorId: string
+  participantId: string
+  scopes: Map<string, string>
+  credential: Credential
 }

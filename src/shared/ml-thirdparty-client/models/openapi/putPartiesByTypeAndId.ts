@@ -23,14 +23,15 @@
  --------------
  ******/
 
-export enum AuthenticationType {
-  U2F = 'U2F',
-}
+import { Party, Account } from '../parties'
 
-export interface AuthenticationInfo {
-  authentication: AuthenticationType
-  authenticationValue: {
-    pinValue: string
-    counter: number
-  }
+export interface RequestBody {
+  party: Party
+
+  /**
+   * List of accounts that are associated with a particular user.
+   *
+   * [TBC] optional?
+   */
+  accounts?: Account[]
 }

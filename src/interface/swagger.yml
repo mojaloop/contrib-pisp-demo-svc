@@ -63,6 +63,11 @@ paths:
       operationId: putParticipants
       parameters:
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutParticipantsRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
   /participants/error:
@@ -123,7 +128,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/PartiesTypeIDPutResponse.yaml'
+              $ref: '#/components/schemas/PutPartiesByTypeAndIdRequest'
         required: true
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
@@ -161,6 +166,11 @@ paths:
       summary: Request consent from DFSP for PISP
       description: Request consent from DFSP for PISP to act on behalf of their user
       operationId: postAppConsentRequests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostConsentRequestsRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
   /consentRequests/{ID}:
@@ -174,6 +184,11 @@ paths:
       summary: '[Mojaloop Callback] Ask PISP to prove the user identity'
       description: Callback from Mojaloop asking user to prove their identify
       operationId: putConsentRequestsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutConsentRequestsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
   /app/consentRequests/{ID}:
@@ -187,6 +202,11 @@ paths:
       summary: 'Prove the user identity for consent request'
       description: App proves the identity by sending the authToken
       operationId: putAppConsentRequestsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutConsentRequestsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
   /consents:
@@ -199,6 +219,11 @@ paths:
       summary: '[Mojaloop Callback] Result of consent request'
       description: Grant consent
       operationId: postConsents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostConsentsRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
   /app/consents/{ID}/generateChallenge:
@@ -225,6 +250,11 @@ paths:
       summary: '[Mojaloop Callback] Result of generating challenge for consent'
       description: Generate challenge for consent
       operationId: putConsentsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutConsentsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
     delete:
@@ -247,6 +277,11 @@ paths:
       summary: 'Put the requested information of the specified consent'
       description: Put information for the specified consent
       operationId: putAppConsentsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutConsentsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
     delete:
@@ -268,6 +303,11 @@ paths:
       summary: 'Request to perform a transaction'
       description: Request to perform a transaction
       operationId: postAppThirdpartyRequestsTransactions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostThirdpartyRequestsTransactionsRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
   /thirdpartyRequests/transactions/{ID}:
@@ -281,6 +321,11 @@ paths:
       summary: '[Mojaloop Callback] Result of transaction request'
       description: Mojaloop callback for third party that initiated a transaction.
       operationId: putThirdpartyRequestsTransactionsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutThirdpartyRequestsTransactionsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetOk.yaml'
   /authorizations:
@@ -293,6 +338,11 @@ paths:
       summary: '[Mojaloop Callback] Ask user to provide authorization'
       description: Handle callback from Mojaloop to give authorization
       operationId: postAuthorizations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAuthorizationsRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
   /app/authorizations/{ID}:
@@ -306,10 +356,59 @@ paths:
       summary: 'Put user authorization'
       description: Put user authorization
       operationId: putAuthorizationsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutAuthorizationsByIdRequest'
       responses:
         $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
 components:
   schemas:
+    Account:
+      title: Account
+      type: object
+      properties:
+        address: 
+          type: string
+        currency:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Currency.yaml'
+    CredentialChallenge:
+      title: CredentialChallenge
+      type: string
+      properties:
+        payload:
+          type: string
+        signature:
+          type: string
+    CredentialType:
+      title: CredentialType
+      type: string
+      enum:
+        - FIDO
+        - U2F
+      description: 'Allowed types for credential'
+    CredentialStatus:
+      title: CredentialStatus
+      type: string
+      enum:
+        - VERIFIED
+        - PENDING
+    Credential:
+      title: Credential
+      type: object
+      properties:
+        id:
+          type: string
+        credentialType:
+          $ref: '#/components/schemas/CredentialType'
+        status:
+          $ref: '#/components/schemas/CredentialStatus'
+        challenge:
+          $ref: '#/components/schemas/CredentialChallenge'
+        payload:
+          type: string
+      description: Data model for the complex type Credential.
     HealthStatusType:
       title: HealthStatusType
       type: string
@@ -328,6 +427,167 @@ components:
           $ref: '#/components/schemas/HealthStatusType'
       description: Data model for the complex type HealthServicesType. Contains health
         services information.
+    Participant:
+      title: Participant
+      type: object
+      properties:
+        fspId:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/FspId.yaml'
+        name: 
+          type: string
+      description: Data model for the complex type Participant.
+    PostAuthorizationsRequest:
+      title: PostAuthorizationsRequest
+      type: object
+      properties:
+        amount:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+        authenticationType:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AuthenticationType.yaml'
+        quote:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AuthenticationType.yaml'  
+        retriesLeft:
+          type: integer
+        transactionRequestId:
+          type: string
+        transactionId:
+          type: string
+      description: Data model for the complex type PostAuthorizationsRequest.
+    PostConsentRequestsRequest:
+      title: PostConsentRequestsRequest
+      type: object
+      properties:
+        id:
+          type: string
+        initiatorId:
+          type: string
+        authChannels:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        callbackUri:
+          type: string
+      description: Data model for the complex type PostConsentRequestsRequest.
+    PostConsentsRequest:
+      title: PostConsentsRequest
+      type: object
+      properties:
+        id:
+          type: string
+        initiatorId:
+          type: string
+        authChannels:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: object
+          additionalProperties: true
+        credential:
+          $ref: '#/components/schemas/Credential'
+      description: Data model for the complex type PostConsentsRequest.
+    PostThirdpartyRequestsTransactionsRequest:
+      title: PostThirdpartyRequestsTransactionsRequest
+      type: object
+      properties:
+        transactionRequestId:
+          type: string
+        sourceAccountId:
+          type: string
+        consentId:
+          type: string
+        payee: 
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
+        payer:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
+        amountType:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AmountType.yaml'
+        amount:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+        transactionType:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/TransactionType.yaml'
+        expiration:
+          type: string
+      description: Data model for the complex type PostThirdpartyRequestsTransactionsRequest.
+    PutAuthorizationsByIdRequest:
+      title: PutAuthorizationsByIdRequest
+      type: object
+      properties:
+        authenticationInfo:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AuthenticationInfo.yaml'
+        responseType:
+          type: string
+      description: Data model for the complex type PutAuthorizationsByIdRequest.
+    PutConsentRequestsByIdRequest:
+      title: PutConsentRequestsByIdRequest
+      type: object
+      properties:
+        initiatorId:
+          type: string
+        authChannels:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        callbackUri:
+          type: string
+        authUri:
+          type: string
+        authToken:
+          type: string
+      description: Data model for the complex type PutConsentRequestsByIdRequest.
+    PutConsentsByIdRequest:
+      title: PutConsentsByIdRequest
+      type: object
+      properties:
+        requestId:
+          type: string
+        initiatorId:
+          type: string
+        participantId:
+          type: string
+        scopes:
+          type: object
+          additionalProperties: true  
+        credential:
+          $ref: '#/components/schemas/Credential'
+      description: Data model for the complex type PutConsentsByIdRequest.
+    PutParticipantsRequest:
+      title: PutParticipantsRequest
+      type: object
+      properties:
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+      description: Data model for the complex type PutParticipantsRequest.
+    PutPartiesByTypeAndIdRequest:
+      title: PutPartiesByTypeAndIdRequest
+      type: object
+      properties:
+        party:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+      description: Data model for the complex type PutPartiesByTypeAndIdRequest.
+    PutThirdpartyRequestsTransactionsByIdRequest:
+      title: PutThirdpartyRequestsTransactionsByIdRequest
+      type: object
+      properties:
+        transactionId:
+          type: string
+        transactionRequestState:
+          type: string
+      description: Data model for the complex type PutThirdpartyRequestsTransactionsByIdRequest.
     Status:
       title: Status
       type: object

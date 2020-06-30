@@ -23,14 +23,22 @@
  --------------
  ******/
 
-export enum AuthenticationType {
-  U2F = 'U2F',
-}
+import {
+  Payee,
+  Payer,
+  AmountType,
+  Amount,
+  TransactionType,
+} from '../transactions'
 
-export interface AuthenticationInfo {
-  authentication: AuthenticationType
-  authenticationValue: {
-    pinValue: string
-    counter: number
-  }
+export interface RequestBody {
+  transactionRequestId: string
+  sourceAccountId: string
+  consentId: string
+  payee: Payee
+  payer: Payer
+  amountType: AmountType
+  amount: Amount
+  transactionType: TransactionType
+  expiration: string
 }

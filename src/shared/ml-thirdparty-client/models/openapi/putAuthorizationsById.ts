@@ -23,27 +23,9 @@
  --------------
  ******/
 
-import { Payee, Payer, AmountType, Amount } from './shared'
+import { AuthenticationInfo } from '../authorizations'
 
-export interface TransactionType {
-  scenario: string
-  initiator: string
-  intiiatorType: string
-}
-
-export interface PostTransactionsSchema {
-  transactionRequestId: string
-  sourceAccountId: string
-  consentId: string
-  payee: Payee
-  payer: Payer
-  amountType: AmountType
-  amount: Amount
-  transactionType: TransactionType
-  expiration: string
-}
-
-export interface PutTransactionsByIdSchema {
-  transactionId: string
-  transactionRequestState: string
+export interface RequestBody {
+  authenticationInfo: AuthenticationInfo
+  responseType: string
 }

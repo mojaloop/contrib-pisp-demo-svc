@@ -23,30 +23,7 @@
  --------------
  ******/
 
-import { PartyIdInfo } from '../parties'
-
-export interface Payee {
-  partyIdInfo: PartyIdInfo
-}
-
-export interface PersonalInfo {
-  complexName: {
-    firstName: string
-    lastName: string
-  }
-}
-
-export interface Payer {
-  personalInfo: PersonalInfo
-  partyIdInfo: PartyIdInfo
-}
-
-export enum AmountType {
-  Send = "SEND",
-  Receive = "RECEIVE",
-}
-
-export interface Amount {
-  amount: number
-  currency: string
+export interface RequestBody {
+  transactionId: string
+  transactionRequestState: string
 }
