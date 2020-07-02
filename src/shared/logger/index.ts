@@ -24,7 +24,6 @@
  ******/
 
 import util from 'util'
-import * as winston from 'winston'
 
 import { Request, ResponseObject, ResponseToolkit } from '@hapi/hapi'
 import { Context } from 'openapi-backend'

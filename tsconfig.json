@@ -1,7 +1,10 @@
 {
   "include": [
     "src",
-    "ambient.d.ts"
+    "ambient.d.ts",
+    "commitlint.config.js",
+    "jest.bdd.config.js",
+    "jest.config.js"
   ],
   "exclude": [
     "node_modules",
