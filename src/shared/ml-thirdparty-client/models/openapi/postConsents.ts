@@ -30,6 +30,6 @@ export interface RequestBody {
   requestId: string
   initiatorId: string
   participantId: string
-  scopes: Map<string, string>
+  scopes: Record<string, string>
   credential?: Credential
 }

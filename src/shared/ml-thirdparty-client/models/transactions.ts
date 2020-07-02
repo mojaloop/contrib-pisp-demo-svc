@@ -37,6 +37,6 @@ export interface Quote {
   payeeReceiveAmount: Amount
   payeeFspFee: Amount
   expiration: string
-  ilpPacker: string
+  ilpPacket: string
   condition: string
 }
