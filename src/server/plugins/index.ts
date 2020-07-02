@@ -23,6 +23,7 @@
  --------------
  ******/
 
+import Path from 'path'
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
@@ -35,8 +36,8 @@ import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
 const openApiOpts: OpenApiOpts = {
   baseHost: 'pisp-demo-server.local',
   definition: {
-    app: './dist/openapi/app.yaml',
-    mojaloop: './dist/openapi/mojaloop.yaml',
+    app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
+    mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
   },
   quick: false,
   strict: true,
