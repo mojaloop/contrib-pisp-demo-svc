@@ -93,7 +93,7 @@ jobs:
           - dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Bundle Open API files before executing tests
-          command: npm run build:openapi:app && npm run build:openapi:mojaloop
+          command: npm run build:openapi
       - run:
           name: Execute unit tests
           command: npm run test:unit
@@ -120,7 +120,7 @@ jobs:
           - dependency-cache-{{ checksum "package-lock.json" }}
       - run:
           name: Bundle Open API files before executing tests
-          command: npm run build:openapi:app && npm run build:openapi:mojaloop
+          command: npm run build:openapi
       - run:
           name: Execute unit tests
           command: npm run test:bdd
