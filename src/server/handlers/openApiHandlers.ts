@@ -23,8 +23,6 @@
  --------------
  ******/
 
-import { Handler } from 'openapi-backend'
-
 import * as Health from './health'
 
 import * as AppAuthorizationsById from './app/authorizations/{ID}'
@@ -46,32 +44,12 @@ import * as MojaloopPartiesByTypeAndId from './mojaloop/parties/{Type}/{ID}'
 import * as MojaloopPartiesByTypeAndIdError from './mojaloop/parties/{Type}/{ID}/error'
 import * as MojaloopThirdpartyRequestsTransactionsById from './mojaloop/thirdpartyRequests/transactions/{ID}'
 
-export interface OpenApiHandlers {
-  getHealth: Handler
+import { OpenApiExtHandlers } from '../plugins/openAPI'
+import { Context } from 'openapi-backend'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { logger } from '~/shared/logger'
 
-  putAppAuthorizationsById: Handler
-  postAppConsentRequests: Handler
-  putAppConsentRequestsById: Handler
-  putAppConsentsById: Handler
-  deleteAppConsentsById: Handler
-  postAppConsentsByIdGenerateChallenge: Handler
-  getAppParticipants: Handler
-  getAppPartiesByTypeAndId: Handler
-  postAppThirdpartyRequestsTransactions: Handler
-
-  postMojaloopAuthorizations: Handler
-  postMojaloopConsents: Handler
-  putMojaloopConsentsById: Handler
-  deleteMojaloopConsentsById: Handler
-  putMojaloopConsentRequestsById: Handler
-  putMojaloopParticipants: Handler
-  putMojaloopParticipantsError: Handler
-  putMojaloopPartiesByTypeAndId: Handler
-  putMojaloopPartiesByTypeAndIdError: Handler
-  putMojaloopThirdpartyRequestsTransactionsById: Handler
-}
-
-export const openApiHandlers: OpenApiHandlers = {
+export const apiHandlers = {
   getHealth: Health.get,
 
   putAppAuthorizationsById: AppAuthorizationsById.put,
@@ -84,14 +62,36 @@ export const openApiHandlers: OpenApiHandlers = {
   getAppPartiesByTypeAndId: AppPartiesByTypeAndId.get,
   postAppThirdpartyRequestsTransactions: AppThirdpartyRequestsTransactions.post,
 
-  postMojaloopAuthorizations: MojaloopAuthorizations.post,
-  postMojaloopConsents: MojaloopConsents.post,
-  putMojaloopConsentsById: MojaloopConsentsById.put,
-  deleteMojaloopConsentsById: MojaloopConsentsById.remove,
-  putMojaloopConsentRequestsById: MojaloopConsentRequestsById.put,
-  putMojaloopParticipants: MojaloopParticipants.put,
-  putMojaloopParticipantsError: MojaloopParticipantsError.put,
-  putMojaloopPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
-  putMojaloopPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putMojaloopThirdpartyRequestsTransactionsById: MojaloopThirdpartyRequestsTransactionsById.put,
+  postAuthorizations: MojaloopAuthorizations.post,
+  postConsents: MojaloopConsents.post,
+  putConsentsById: MojaloopConsentsById.put,
+  deleteConsentsById: MojaloopConsentsById.remove,
+  putConsentRequestsById: MojaloopConsentRequestsById.put,
+  putParticipants: MojaloopParticipants.put,
+  putParticipantsError: MojaloopParticipantsError.put,
+  putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
+  putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
+  putThirdpartyRequestsTransactionsById: MojaloopThirdpartyRequestsTransactionsById.put,
+}
+
+export const extHandlers: OpenApiExtHandlers = {
+  notFound: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`notFound, context: ${context}, request: ${request}, h: ${h}`)
+    return h.response().code(404)
+  },
+
+  methodNotAllowed: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`methodNotAllowed, context: ${context}, request: ${request}, h: ${h}`)
+    return h.response().code(405)
+  },
+
+  validationFail: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`validationFail, context: ${context}, request: ${request}, h: ${h}`)
+    return h.response().code(406)
+  },
+
+  notImplemented: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`notImplemented, context: ${context}, request: ${request}, h: ${h}`)
+    return h.response().code(501)
+  },
 }

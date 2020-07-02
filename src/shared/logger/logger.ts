@@ -23,12 +23,12 @@
  --------------
  ******/
 
-import { createLogger, format, transports } from 'winston'
-import LoggerConfig from './config'
+import { createLogger, format, transports, LoggerOptions, Logger } from 'winston'
+import config from './config'
 
 const { combine, timestamp, colorize, printf } = format
 
-const customLevels = LoggerConfig.get('customLevels')
+const customLevels = config.get('customLevels')
 
 const allLevels = { error: 0, warn: 1, audit: 2, trace: 3, info: 4, perf: 5, verbose: 6, debug: 7, silly: 8 }
 const customLevelsArr = customLevels.split(/ *, */) // extra white space before/after the comma is ignored
@@ -39,14 +39,14 @@ const customFormat = printf(({ level, message, timestamp }) => {
 })
 
 let transport: transports.FileTransportInstance | transports.ConsoleTransportInstance;
-if (LoggerConfig.get('logTransport') === 'file') {
-  transport = new transports.File(LoggerConfig.get('transportFileOptions'))
+if (config.get('logTransport') === 'file') {
+  transport = new transports.File(config.get('transportFileOptions'))
 } else { // console
   transport = new transports.Console()
 }
 
-const Logger = createLogger({
-  level: LoggerConfig.get('level'),
+const defaultLoggerOpts: LoggerOptions = {
+  level: config.get('level'),
   levels: allLevels,
   format: combine(
     timestamp(),
@@ -66,14 +66,18 @@ const Logger = createLogger({
     transport
   ],
   exitOnError: false
-})
+}
 
-// Modify Logger before export
-ignoredLevels.map(level => {
-  Logger.configure({
-    level,
-    transports: []
+export const createDefaultLogger = (): Logger => {
+  const logger = createLogger(defaultLoggerOpts)
+
+  // Modify Logger before export
+  ignoredLevels.map(level => {
+    logger.configure({
+      level,
+      transports: []
+    })
   })
-})
 
-export default Logger
+  return logger
+}

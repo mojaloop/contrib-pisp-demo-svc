@@ -28,14 +28,28 @@ import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 import Blipp from 'blipp'
 
-import OpenAPI from './openAPI'
+import { OpenApi, OpenApiOpts } from './openAPI'
+import { apiHandlers, extHandlers } from '../handlers/openApiHandlers'
+
+const openApiOpts: OpenApiOpts = {
+  definition: './dist/openapi.yaml',
+  quick: false,
+  strict: true,
+  handlers: {
+    api: apiHandlers,
+    ext: extHandlers,
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const plugins: Array<ServerRegisterPluginObject<any>> = [
-  { plugin: Blipp },
   { plugin: Inert },
   { plugin: Vision },
-  OpenAPI,
+  { plugin: Blipp },
+  {
+    plugin: OpenApi,
+    options: openApiOpts
+  },
 ]
 
 async function register(server: Server): Promise<Server> {

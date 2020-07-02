@@ -23,16 +23,62 @@
  --------------
  ******/
 
-import Path from 'path'
-import HapiOpenAPI from 'hapi-openapi'
+import OpenApiBackend, { Handler } from 'openapi-backend'
 
-const openAPIOptions = {
-  api: Path.resolve(__dirname, '../../interface/swagger.yml'),
-  handlers: Path.resolve(__dirname, '../handlers'),
-  extensions: ['ts'],
+import { Plugin, Server, Request, ResponseToolkit } from '@hapi/hapi'
+
+export interface OpenApiExtHandlers {
+  notFound: Handler
+  methodNotAllowed: Handler
+  notImplemented: Handler
+  validationFail: Handler
 }
 
-export default {
-  plugin: HapiOpenAPI,
-  options: openAPIOptions,
+export interface OpenApiOpts {
+  definition: string
+  quick: boolean
+  strict: boolean
+  handlers: {
+    api: {
+      [operationId: string]: Handler
+    }
+    ext: OpenApiExtHandlers
+  }
+}
+
+export const OpenApi: Plugin<OpenApiOpts> = {
+  name: 'OpenApiBackend',
+  version: '3.5.1',
+  register: async (server: Server, opts: OpenApiOpts) => {
+
+    const api = new OpenApiBackend({
+      definition: opts.definition,
+      quick: opts.quick,
+      strict: opts.strict,
+    })
+
+    api.register({
+      ...opts.handlers.api,
+      ...opts.handlers.ext,
+    })
+
+    api.init()
+
+    server.route({
+      method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      path: '/{path*}',
+      handler: (request: Request, h: ResponseToolkit): Promise<any> =>
+        api.handleRequest(
+          {
+            method: request.method,
+            path: request.path,
+            query: request.query,
+            body: request.payload,
+            headers: request.headers,
+          },
+          request,
+          h,
+        )
+    })
+  }
 }
