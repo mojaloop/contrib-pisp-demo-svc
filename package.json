@@ -12,6 +12,8 @@
     "audit:check": "SHELL=sh check-audit",
     "build": "tsc",
     "build:openapi": "swagger-cli bundle -t yaml -o dist/openapi.yaml ./src/interface/swagger.yml && swagger-cli validate dist/openapi.yaml",
+    "build:openapi:app": "swagger-cli bundle -t yaml -o dist/openapi/app.yaml ./src/interface/app.yaml && swagger-cli validate dist/openapi/app.yaml",
+    "build:openapi:mojaloop": "swagger-cli bundle -t yaml -o dist/openapi/mojaloop.yaml ./src/interface/mojaloop.yaml && swagger-cli validate dist/openapi/mojaloop.yaml",
     "docker:build": "docker build -t pisp-demo-server:local -f ./Dockerfile ./",
     "docker:run": "docker run -p 8080:8080 pisp-demo-server:local",
     "lint": "eslint ./src/**/*.ts *.js",

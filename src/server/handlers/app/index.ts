@@ -23,50 +23,27 @@
  --------------
  ******/
 
-import Inert from '@hapi/inert'
-import Vision from '@hapi/vision'
-import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
-import Blipp from 'blipp'
+import * as Health from '../health'
 
-import { OpenApi, OpenApiOpts } from './openAPI'
-import { extHandlers } from '../handlers/openApiHandlers'
-import { apiHandlers as appApiHandlers } from '~/server/handlers/app'
-import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
+import * as AppAuthorizationsById from './authorizations/{ID}'
+import * as AppConsentRequests from './consentRequests'
+import * as AppConsentRequestsById from './consentRequests/{ID}'
+import * as AppConsentsById from './consents/{ID}'
+import * as AppConsentsByIdGenerateChallenge from './consents/{ID}/generateChallenge'
+import * as AppParticipants from './participants'
+import * as AppPartiesByTypeAndId from './parties/{Type}/{ID}'
+import * as AppThirdpartyRequestsTransactions from './thirdpartyRequests/transactions'
 
-const openApiOpts: OpenApiOpts = {
-  baseHost: 'pisp-demo-server.local',
-  definition: {
-    app: './dist/openapi/app.yaml',
-    mojaloop: './dist/openapi/mojaloop.yaml',
-  },
-  quick: false,
-  strict: true,
-  handlers: {
-    api: {
-      app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers
-    },
-    ext: extHandlers,
-  }
-}
+export const apiHandlers = {
+  getHealth: Health.get,
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const plugins: Array<ServerRegisterPluginObject<any>> = [
-  { plugin: Inert },
-  { plugin: Vision },
-  { plugin: Blipp },
-  {
-    plugin: OpenApi,
-    options: openApiOpts,
-  }
-]
-
-async function register(server: Server): Promise<Server> {
-  await server.register(plugins)
-  return server
-}
-
-export default {
-  register,
-  plugins,
+  putAppAuthorizationsById: AppAuthorizationsById.put,
+  postAppConsentRequests: AppConsentRequests.post,
+  putAppConsentRequestsById: AppConsentRequestsById.put,
+  putAppConsentsById: AppConsentsById.put,
+  deleteAppConsentsById: AppConsentsById.remove,
+  postAppConsentsByIdGenerateChallenge: AppConsentsByIdGenerateChallenge.post,
+  getAppParticipants: AppParticipants.get,
+  getAppPartiesByTypeAndId: AppPartiesByTypeAndId.get,
+  postAppThirdpartyRequestsTransactions: AppThirdpartyRequestsTransactions.post,
 }
