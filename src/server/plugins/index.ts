@@ -26,7 +26,6 @@
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
-import Blipp from 'blipp'
 
 import { OpenApi, OpenApiOpts } from './openAPI'
 import { extHandlers } from '../handlers/openApiHandlers'
@@ -54,7 +53,6 @@ const openApiOpts: OpenApiOpts = {
 const plugins: Array<ServerRegisterPluginObject<any>> = [
   { plugin: Inert },
   { plugin: Vision },
-  { plugin: Blipp },
   {
     plugin: OpenApi,
     options: openApiOpts,

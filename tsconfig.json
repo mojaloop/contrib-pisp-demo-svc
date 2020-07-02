@@ -1,7 +1,7 @@
 {
   "include": [
     "src",
-    "ambient.d.ts",
+    "ambient.d.ts"
   ],
   "exclude": [
     "node_modules",
@@ -14,6 +14,10 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
+    "rootDirs": [
+      "src",
+      "test"
+    ],
     "lib": [
       "esnext"
     ],
@@ -37,8 +41,8 @@
     "baseUrl": "./",
     "paths": {
       "~/*": [
-        "src/*",
-      ],
+        "src/*"
+      ]
     },
     "esModuleInterop": true,
     "resolveJsonModule": true

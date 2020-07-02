@@ -40,8 +40,13 @@ export interface ResponseLogged extends ResponseObject {
   statusCode: number;
 }
 
+export interface BaseLogger {
+  info: (message: string, ...meta: any[]) => any
+  error: (messsage: string, ...meta: any[]) => any
+}
+
 export class Logger {
-  _logger: winston.Logger
+  _logger: BaseLogger
 
   constructor() {
     this._logger = createDefaultLogger()

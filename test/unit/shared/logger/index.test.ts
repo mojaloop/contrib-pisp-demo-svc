@@ -24,35 +24,37 @@
  ******/
 
 import util from 'util'
-import { logResponse, RequestLogged } from '../../../../src/shared/logger'
-import Logger from '../../../../src/shared/logger/logger'
+import { logger, RequestLogged } from '../../../../src/shared/logger'
 
-jest.mock('../../../../src/shared/logger/logger', () => ({
-  info: jest.fn()
-}))
+const mockLogger = {
+  info: jest.fn(),
+  error: jest.fn()
+}
+
+logger._logger = mockLogger
 
 describe('shared/logger', (): void => {
   afterEach((): typeof jest => jest.clearAllMocks())
   it('should do nothing if no request', (): void => {
-    logResponse(null as unknown as RequestLogged)
-    expect(Logger.info).not.toBeCalled()
+    logger.logResponse(null as unknown as RequestLogged)
+    expect(mockLogger.info).not.toBeCalled()
   })
 
   it('should log response via JSON.stringify', (): void => {
     const spyStringify = jest.spyOn(JSON, 'stringify')
     const request = { response: { source: 'abc', statusCode: 200 } }
-    logResponse(request as RequestLogged)
+    logger.logResponse(request as RequestLogged)
     expect(spyStringify).toBeCalledWith('abc')
-    expect(Logger.info).toBeCalledWith(`AS-Trace - Response: ${JSON.stringify(request.response.source)} Status: ${request.response.statusCode}`)
+    expect(mockLogger.info).toBeCalledWith(`AS-Trace - Response: ${JSON.stringify(request.response.source)} Status: ${request.response.statusCode}`)
   })
 
   it('should log response via inspect', (): void => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const spyStringify = jest.spyOn(JSON, 'stringify').mockImplementationOnce(() => { throw new Error('parse-error') })
     const request = { response: { source: 'abc', statusCode: 200 } }
-    logResponse(request as RequestLogged)
+    logger.logResponse(request as RequestLogged)
     expect(spyStringify).toBeCalled()
-    expect(Logger.info).toBeCalledWith(
+    expect(mockLogger.info).toBeCalledWith(
       `AS-Trace - Response: ${util.inspect(request.response.source, { showHidden: true, depth: null })} Status: ${request.response.statusCode}`
     )
   })
@@ -61,8 +63,8 @@ describe('shared/logger', (): void => {
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     const spyStringify = jest.spyOn(JSON, 'stringify').mockImplementationOnce(() => null as unknown as string)
     const request = { response: { source: 'abc', statusCode: 200 } }
-    logResponse(request as RequestLogged)
+    logger.logResponse(request as RequestLogged)
     expect(spyStringify).toBeCalled()
-    expect(Logger.info).toBeCalledWith(`AS-Trace - Response: ${request.response.toString()}`)
+    expect(mockLogger.info).toBeCalledWith(`AS-Trace - Response: ${request.response.toString()}`)
   })
 })
