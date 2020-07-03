@@ -1,0 +1,27 @@
+@startuml Unlinking
+
+title: Unlinking
+
+hide footbox
+
+!include participants.puml
+
+'start flow
+Alice -> App++: I want to unlink this bank account
+
+App -> Server ++: ""**DELETE /consents/{ID}**""
+App <-- Server: ""**HTTP 202** (Accepted)""
+deactivate App
+
+Server -> Adapter ++: ""**DELETE /consents/{ID}**""
+Adapter <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Server
+
+Adapter -> Server++: ""**DELETE /consents/{ID}**""
+Adapter <-- Server: ""**HTTP 200** (OK)""
+deactivate Adapter
+
+Server -> App: The account has been unlinked.
+deactivate Server
+
+@enduml

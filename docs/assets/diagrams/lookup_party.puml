@@ -1,0 +1,81 @@
+@startuml Lookup Party
+
+title: Lookup Party
+
+hide footbox
+
+!include participants.puml
+
+' start flow
+Alice -> App ++: Perform an action that requires party info
+
+App -> Server ++: ""**GET /parties/{Type}/{ID}**""
+App <-- Server : ""**HTTP 202** (Accepted)""
+
+opt Data is not cached
+  Server -> Adapter: ""**GET /parties/{Type}/{ID}**""
+  activate Adapter
+  Server <-- Adapter: ""**HTTP 202** (Accepted)""
+
+  Adapter -> Adapter: Lookup data in Mojaloop
+
+  alt Successful
+    Adapter -> Server: ""**PUT /parties/{Type}/{ID}**""\n\
+""{ ""\n\
+""  "party": {""\n\
+""    "partyIdInfo": {""\n\
+""      "partyIdType": enum,""\n\
+""      "partyIdentifier": string,""\n\
+""      "partySubIdOrType": string,""\n\
+""      "fspId": number""\n\
+""    },""\n\
+""    "merchantClassificationCode": string,""\n\
+""    "name": string,""\n\
+""    "personalInfo": {""\n\
+""      "complexName": {""\n\
+""        "firstName": string,""\n\
+""        "middleName": string,""\n\
+""        "lastName": string""\n\
+""      },""\n\
+""      "dateOfBirth": string""\n\
+""    }""\n\
+""  },""\n\
+"" "accounts": [""\n\
+""    {""\n\
+""      "id": string,""\n\
+""      "currency": enum""\n\
+""    }""\n\
+""  ]""\n\
+""} ""
+
+    Adapter <-- Server: ""**HTTP 200** (OK)""
+
+  else Error
+    Adapter -> Server : ""**PUT /parties/{Type}/{ID}/error**""\n\
+""{ ""\n\
+""  "errorInformation": {""\n\
+""    "errorCode": string,""\n\
+""    "errorDescription": string,""\n\
+""    "extensionList": {""\n\
+""      "extension": [""\n\
+""        {""\n\
+""          "key": string,""\n\
+""          "value": string""\n\
+""        }""\n\
+""      ]""\n\
+""    }""\n\
+""  }""\n\
+""} ""
+
+    Adapter <-- Server: ""**HTTP 200** (OK)""
+  end
+end
+
+deactivate Adapter
+
+Server -> App: Send party information
+deactivate Server
+
+App -> Alice: Display party information to the user
+
+@enduml

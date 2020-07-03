@@ -1,0 +1,63 @@
+@startuml Disovery
+
+title: Discovery 
+
+hide footbox
+
+!include participants.puml
+
+' start flow
+Alice -> App ++: Open account linking screen
+
+App -> Server ++: ""**GET /participants**""
+App <-- Server : ""**HTTP 202** (Accepted)""
+
+opt Data is not cached
+  Server -> Adapter: ""**GET /participants**""
+  activate Adapter
+  Server <-- Adapter: ""**HTTP 202** (Accepted)""
+
+  Adapter -> Adapter: Lookup data in Mojaloop
+
+  alt Successful
+    Adapter -> Server: ""**PUT /participants**""\n\
+""{ ""\n\
+""  participants: [""\n\
+""    {""\n\
+""      "fspId": string,""\n\
+""      "name": string""\n\
+""    }""\n\
+""  ] ""\n\
+""} ""
+
+    Adapter <-- Server: ""**HTTP 200** (OK)""
+
+  else Error
+    Adapter -> Server : ""**PUT /participants/error**""\n\
+""{ ""\n\
+""  "errorInformation": {""\n\
+""    "errorCode": string,""\n\
+""    "errorDescription": string,""\n\
+""    "extensionList": {""\n\
+""      "extension": [""\n\
+""        {""\n\
+""          "key": string,""\n\
+""          "value": string""\n\
+""        }""\n\
+""      ]""\n\
+""    }""\n\
+""  }""\n\
+""} ""
+
+    Adapter <-- Server: ""**HTTP 200** (OK)""
+  end
+end
+
+deactivate Adapter
+
+Server -> App: Send list of participants
+deactivate Server
+
+App -> Alice: Display list of available FSPs
+
+@enduml

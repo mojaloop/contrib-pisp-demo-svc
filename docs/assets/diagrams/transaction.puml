@@ -1,0 +1,204 @@
+@startuml Lookup Party
+
+title: Lookup Party
+
+hide footbox
+
+!include participants.puml
+
+' start flow
+Alice -> App ++: I want to transfer X USD to +123456789
+
+note over Alice, Adapter
+  Perform lookup party. More details are in the lookup party diagram.
+end note
+
+App -> Alice: Display the party information.\nIs this the correct party?
+deactivate App
+
+Alice -> App ++: Yes, please initiate the transaction
+
+rnote right of App #Light 
+  ""**POST /thirdpartyRequests/transactions**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionRequestId": string,""
+  ""  "sourceAccountId": string,""
+  ""  "consentId": string,""
+  ""  "payee": ...,  // Party schema from lookup party""
+  ""  "payer": ...,  // Party schema from lookup party""
+  ""  "amountType": enum,""
+  ""  "amount": string,""
+  ""  "transactionType": {""
+  ""    "scenario": enum,""
+  ""    "subScenario": string,""
+  ""    "initiator": enum,""
+  ""    "initiatorType": enum,""
+  ""    "refundInfo": {""
+  ""      "originalTransactionId": string,""
+  ""      "refundReason": string,""
+  ""    },""
+  ""    "balanceOfPayments": string""
+  ""  },""
+  ""  expiration: string""
+  ""}""
+end rnote
+
+App -> Server ++: ""**POST /thirdpartyRequests/transactions**""
+App <-- Server: ""**HTTP 202** (Accepted)""
+deactivate App
+
+rnote right of Server #Light 
+  ""**POST /thirdpartyRequests/transactions**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionRequestId": string,""
+  ""  "sourceAccountId": string,""
+  ""  "consentId": string,""
+  ""  "payee": ...,  // Party schema from lookup party""
+  ""  "payer": ...,  // Party schema from lookup party""
+  ""  "amountType": enum,""
+  ""  "amount": string,""
+  ""  "transactionType": {""
+  ""    "scenario": enum,""
+  ""    "subScenario": string,""
+  ""    "initiator": enum,""
+  ""    "initiatorType": enum,""
+  ""    "refundInfo": {""
+  ""      "originalTransactionId": string,""
+  ""      "refundReason": string,""
+  ""    },""
+  ""    "balanceOfPayments": string""
+  ""  },""
+  ""  expiration: string""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**POST /thirdpartyRequests/transactions**""
+Server <-- Adapter: ""**HTTP 202** (Accepted)""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction processes happen in Mojaloop (validation and quoting).
+end note
+
+...
+
+rnote left of Adapter #Light
+  ""**POST /authorizations**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "amount": string,""
+  ""  "authenticationType": enum""
+  ""  "quote": {""
+  ""    "transferAmount": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "payeeReceiveAmount": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "payeeFspFee": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "expiration": string,""
+  ""    "ilpPacket": string,    // base64""
+  ""    "condition": string     // base64""
+  ""  },""
+  ""  "retriesLeft": integer,""
+  ""  "transactionRequestId": string,""
+  ""  "transactionId": string""
+  ""} // where is the challenge?""
+end rnote
+
+Adapter -> Server ++: ""**POST /authorizations**""
+Adapter <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Adapter
+
+Server -> App ++: Send the authorization request to the app
+Server <-- App
+deactivate Server
+
+App -> Alice: Would you like to authorize this transaction?
+
+...
+
+note over Alice, Adapter
+  User checks the transaction info as described in the quote.
+  PISP app can prompt the user for authorization. For example, ask user for their fingerprint.
+end note
+
+...
+
+Alice -> App: I would like to authorize the transaction
+
+rnote right of App #Light
+  ""**PUT /authorizations/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "authenticationInfo": {""
+  ""    "authentication": enum,""
+  ""    "authenticationValue": string   // diff pisp docs""
+  ""  },""
+  ""  "responseType": string""
+  ""}""
+end rnote
+
+App -> Server ++: ""**PUT /authorizations/{ID}**""
+App <-- Server: ""**HTTP 200** (OK)""
+deactivate App
+
+rnote right of Server #Light
+  ""**PUT /authorizations/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "authenticationInfo": {""
+  ""    "authentication": enum,""
+  ""    "authenticationValue": string   // diff pisp docs""
+  ""  },""
+  ""  "responseType": string""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**PUT /authorizations/{ID}**""
+Server <-- Adapter: ""**HTTP 200** (OK)""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction is processed if the user provides a valid authorization.
+end note
+
+...
+
+rnote left of Adapter #Light
+  ""**PUT /thirdpartyRequests/transactions/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionId": string,""
+  ""  "transactionRequestState": enum""
+  ""}""
+end rnote
+
+Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/{ID}**""
+Adapter <-- Server: ""**HTTP 200** (OK)""
+deactivate Adapter
+
+Server -> App++: Transaction success
+Server <-- App
+deactivate Server
+
+App -> Alice: Notify successful transaction
+deactivate App
+@enduml
