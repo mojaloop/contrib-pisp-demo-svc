@@ -4,7 +4,16 @@ title: Lookup Party
 
 hide footbox
 
-!include participants.puml
+box "Mobile Device"
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP"
+  participant "PISP Server" as Server
+end box
+box "Mojaloop"
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
 
 ' start flow
 Alice -> App ++: Perform an action that requires party info
