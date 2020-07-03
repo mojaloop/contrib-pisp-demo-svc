@@ -9,4 +9,6 @@
 
 ## 2. Transaction
 
-![Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transaction.puml)
+![Transaction (Part 1)](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transaction_01.puml)
+
+![Transaction (Part 2)](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transaction_02.puml)

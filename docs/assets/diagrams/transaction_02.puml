@@ -1,0 +1,83 @@
+@startuml Transaction
+
+title: Transaction (Part 2)
+
+hide footbox
+
+box "Mobile Device"
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP"
+  participant "PISP Server" as Server
+end box
+box "Mojaloop"
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+' start flow
+Alice -> App ++: I would like to authorize the transaction
+
+rnote right of App #Light
+  ""**PUT /authorizations/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "authenticationInfo": {""
+  ""    "authentication": enum,""
+  ""    "authenticationValue": string   // diff pisp docs""
+  ""  },""
+  ""  "responseType": string""
+  ""}""
+end rnote
+
+App -> Server ++: ""**PUT /authorizations/{ID}**""
+App <-- Server: ""**HTTP 200** (OK)""
+deactivate App
+
+rnote right of Server #Light
+  ""**PUT /authorizations/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "authenticationInfo": {""
+  ""    "authentication": enum,""
+  ""    "authenticationValue": string   // diff pisp docs""
+  ""  },""
+  ""  "responseType": string""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**PUT /authorizations/{ID}**""
+Server <-- Adapter: ""**HTTP 200** (OK)""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction is processed if the user provides a valid authorization.
+end note
+
+...
+
+rnote left of Adapter #Light
+  ""**PUT /thirdpartyRequests/transactions/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionId": string,""
+  ""  "transactionRequestState": enum""
+  ""}""
+end rnote
+
+Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/{ID}**""
+Adapter <-- Server: ""**HTTP 200** (OK)""
+deactivate Adapter
+
+Server -> App++: Transaction success
+Server <-- App
+deactivate Server
+
+App -> Alice: Notify successful transaction
+deactivate App
+@enduml

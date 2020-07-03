@@ -1,6 +1,6 @@
 @startuml Account Linking
 
-title: Account Linking
+title: Account Linking (Part 2)
 
 hide footbox
 
@@ -16,82 +16,9 @@ box "Mojaloop"
 end box
 
 ' start flow
-Alice -> App ++: I want to link my bank account
-
-...
-
-note over Alice, Adapter
-  The user will be prompted in the PISP App to choose one of the available FSPs. 
-  More details are in the sequence diagram for discovery.
-end note
-
-...
-
-Alice -> App : Choose one of the available FSPs \nand provide identifier
-
-App -> Server ++: ""**POST /consentRequests**""\n\
-""{""\n\
-""  "id": string,               // app should not decide this?""\n\
-""  "initiatorId": string,      // app does not know this?""\n\
-""  "authChannels": [string],""\n\
-""  "scopes": [""\n\
-""    {""\n\
-""      "accountId": string,""\n\
-""      "actions": [string]""\n\
-""    }""\n\
-""  ],""\n\
-""  "callbackUri": string       // app does not know this?""\n\
-""}""
-
-App <-- Server : ""**HTTP 202** (Accepted)""
-
-Server -> Adapter ++: ""**POST /consentRequests**""\n\
-""{""\n\
-""  "id": string,""\n\
-""  "initiatorId": string,""\n\
-""  "authChannels": [string],""\n\
-""  "scopes": [""\n\
-""    {""\n\
-""      "accountId": string,""\n\
-""      "actions": [string]""\n\
-""    }""\n\
-""  ],""\n\
-""  "callbackUri": string""\n\
-""}""
-
-Server <-- Adapter : ""**HTTP 202** (Accepted)""
-
-Adapter -> Server:  ""**PUT /consentRequests/{ID}**""\n\
-""{""\n\
-""  "initiatorId": string,""\n\
-""  "authChannels": [string],   // length always 1?""\n\
-""  "scopes": [""\n\
-""    {""\n\
-""      "accountId": string,""\n\
-""      "actions": [string]""\n\
-""    }""\n\
-""  ],""\n\
-""  "callbackUri": string,""\n\
-""  "authUri": string | null    // null if OTP""\n\
-""}""
-
-Adapter <-- Server: ""**HTTP 200** (OK)""
-deactivate Adapter
-
-Server -> App: Send information to the mobile app
-
-...
-
-note over Alice, Adapter
-  If the authentication method is OTP, the user will receive an OTP from the FSP.
-  If the authentication method is Web, the PISP app will redirect user to the ""authUri"" provided by the FSP. 
-end note
-
-...
-
 alt OTP
 
-Alice -> App: Here is the OTP code
+Alice -> App ++: Here is the OTP code
 
 App -> Server: ""**PUT /consentRequests/{ID}**""\n\
 ""{""\n\
@@ -109,6 +36,7 @@ App -> Server: ""**PUT /consentRequests/{ID}**""\n\
 ""}""
 
 App <-- Server : ""**HTTP 200** (OK)""
+deactivate App
 
 else Web 
 
@@ -134,10 +62,11 @@ Server -> Adapter ++: ""**PUT /consentRequests/{ID}**""\n\
 ""}""
 
 Server <-- Adapter: ""**HTTP 200** (OK)""
+deactivate Server
 
 Adapter -> Adapter: Validate ""authToken""
 
-Adapter -> Server: ""**POST /consents**""\n\
+Adapter -> Server ++: ""**POST /consents**""\n\
 ""{""\n\
 ""  "id": string,""\n\
 ""  "requestId": string,""\n\
@@ -156,6 +85,7 @@ Adapter <-- Server: ""**HTTP 202** (Accepted)""
 deactivate Adapter
 
 Server -> App: Consent has been granted. Send information.
+deactivate Server
 
 App -> Alice: Consent has been granted.\nLet me know if you want to remember this device.
 

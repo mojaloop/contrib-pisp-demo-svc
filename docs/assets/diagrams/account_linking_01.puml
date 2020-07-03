@@ -1,0 +1,95 @@
+@startuml Account Linking
+
+title: Account Linking (Part 1)
+
+hide footbox
+
+box "Mobile Device"
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP"
+  participant "PISP Server" as Server
+end box
+box "Mojaloop"
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+' start flow
+Alice -> App: I want to link my bank account
+
+...
+
+note over Alice, Adapter
+  The user will be prompted in the PISP App to choose one of the available FSPs. 
+  More details are in the sequence diagram for discovery.
+end note
+
+...
+
+Alice -> App ++: Choose one of the available FSPs \nand provide identifier
+
+App -> Server ++: ""**POST /consentRequests**""\n\
+""{""\n\
+""  "id": string,               // app should not decide this?""\n\
+""  "initiatorId": string,      // app does not know this?""\n\
+""  "authChannels": [string],""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "callbackUri": string       // app does not know this?""\n\
+""}""
+
+App <-- Server : ""**HTTP 202** (Accepted)""
+deactivate App
+
+Server -> Adapter ++: ""**POST /consentRequests**""\n\
+""{""\n\
+""  "id": string,""\n\
+""  "initiatorId": string,""\n\
+""  "authChannels": [string],""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "callbackUri": string""\n\
+""}""
+
+Server <-- Adapter : ""**HTTP 202** (Accepted)""
+deactivate Server
+
+Adapter -> Server++:  ""**PUT /consentRequests/{ID}**""\n\
+""{""\n\
+""  "initiatorId": string,""\n\
+""  "authChannels": [string],   // length always 1?""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "callbackUri": string,""\n\
+""  "authUri": string | null    // null if OTP""\n\
+""}""
+
+Adapter <-- Server: ""**HTTP 200** (OK)""
+deactivate Adapter
+
+Server -> App: Send information to the mobile app
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  If the authentication method is OTP, the user will receive an OTP from the FSP.
+  If the authentication method is Web, the PISP app will redirect user to the ""authUri"" provided by the FSP. 
+end note
+
+...
+
+@enduml
