@@ -42,13 +42,13 @@ components:
       title: Account
       type: object
       properties:
-        address: 
+        id:
           type: string
         currency:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Currency.yaml'
     CredentialChallenge:
       title: CredentialChallenge
-      type: string
+      type: object
       properties:
         payload:
           type: string
@@ -140,7 +140,7 @@ components:
         scopes:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Scope'
         callbackUri:
           type: string
       description: Data model for the complex type PostConsentRequestsRequest.
@@ -150,15 +150,16 @@ components:
       properties:
         id:
           type: string
+        requestId:
+          type: string
         initiatorId:
           type: string
-        authChannels:
+        participantId:
+          type: string
+        scopes:
           type: array
           items:
-            type: string
-        scopes:
-          type: object
-          additionalProperties: true
+            $ref: '#/components/schemas/Scope'
         credential:
           $ref: '#/components/schemas/Credential'
       description: Data model for the complex type PostConsentsRequest.
@@ -194,6 +195,27 @@ components:
         responseType:
           type: string
       description: Data model for the complex type PutAuthorizationsByIdRequest.
+    PutAppConsentRequestsByIdRequest:
+      title: PutConsentRequestsByIdRequest
+      type: object
+      properties:
+        initiatorId:
+          type: string
+        authChannels:
+          type: array
+          items:
+            type: string
+        scopes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Scope'
+        callbackUri:
+          type: string
+        authUri:
+          type: string
+        authToken:
+          type: string
+      description: Data model for the complex type PutConsentRequestsByIdRequest.
     PutConsentRequestsByIdRequest:
       title: PutConsentRequestsByIdRequest
       type: object
@@ -207,12 +229,10 @@ components:
         scopes:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Scope'
         callbackUri:
           type: string
         authUri:
-          type: string
-        authToken:
           type: string
       description: Data model for the complex type PutConsentRequestsByIdRequest.
     PutConsentsByIdRequest:
@@ -226,8 +246,9 @@ components:
         participantId:
           type: string
         scopes:
-          type: object
-          additionalProperties: true  
+          type: array
+          items:
+            $ref: '#/components/schemas/Scope'  
         credential:
           $ref: '#/components/schemas/Credential'
       description: Data model for the complex type PutConsentsByIdRequest.
@@ -236,7 +257,9 @@ components:
       type: object
       properties:
         participants:
-          $ref: '#/components/schemas/Participant'
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
       description: Data model for the complex type PutParticipantsRequest.
     PutPartiesByTypeAndIdRequest:
       title: PutPartiesByTypeAndIdRequest
@@ -245,7 +268,9 @@ components:
         party:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
         accounts:
-          $ref: '#/components/schemas/Account'
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
       description: Data model for the complex type PutPartiesByTypeAndIdRequest.
     PutThirdpartyRequestsTransactionsByIdRequest:
       title: PutThirdpartyRequestsTransactionsByIdRequest
@@ -261,17 +286,27 @@ components:
       type: object
       properties:
         transferAmount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         payeeReceiveAmount: 
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         payeeFspFee:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         expiration:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/DateTime.yaml'
         ilpPacket:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/IlpPacket.yaml'
         condition:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/IlpCondition.yaml'
+    Scope:
+      title: Scope
+      type: object
+      properties:
+        accountId:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'
+        actions:
+          type: array
+          items:
+            type: string
     Status:
       title: Status
       type: object

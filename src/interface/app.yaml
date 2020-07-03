@@ -121,7 +121,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/PutConsentRequestsByIdRequest'
+              $ref: 'shared.yaml#/components/schemas/PutAppConsentRequestsByIdRequest'
       responses:
         200:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
