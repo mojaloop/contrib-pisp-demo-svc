@@ -1,17 +1,18 @@
-@startuml Credential Registration
+@startuml
 
-title: Credential Registration (Part 2)
+title: Sign Challenge
 
 hide footbox
 
-box "Mobile Device"
+box "Mobile Device" #Light
   actor Alice
   participant "PISP App" as App
 end box
-box "PISP"
+box "PISP" #Light
+  participant "Firebase" as Firebase
   participant "PISP Server" as Server
 end box
-box "Mojaloop"
+box "Mojaloop" #Light
   participant "Third-party\nAPI Adapter" as Adapter
 end box
 
@@ -95,5 +96,30 @@ Adapter -> Server ++: ""**PUT /consents/{ID}**""\n\
 ""}""
 
 Adapter <-- Server: ""**HTTP 200** (OK)""
+
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CREDENTIAL_REGISTERED"""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Update consent status
+return ""200 (OK)""
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CREDENTIAL_REGISTERED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+return ""200 (OK)""
 
 @enduml

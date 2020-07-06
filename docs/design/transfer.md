@@ -1,14 +1,22 @@
 # Transfer
 
-1. [Lookup Party](#1-lookup-party)
-2. [Transaction](#2-transaction)
+1. [Create Listener](#1-lookup-party)
+2. [Create Transaction](#2-create-transaction)
+3. [Confirm Payee](#3-confirm-payee)
+4. [Authorize Transaction](#4-authorize-transaction)
 
-## 1. Lookup Party
+## 1. Create Listener
 
-![Lookup Party](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/lookup_party.puml)
+![Create Listener](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transfer/01-create-listener.puml)
 
-## 2. Transaction
+## 2. Create Transaction
 
-![Transaction (Part 1)](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transaction_01.puml)
+![Create Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transfer/02-create-transaction.puml)
 
-![Transaction (Part 2)](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transaction_02.puml)
+## 3. Confirm Payee
+
+![Confirm Payee](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transfer/03-confirm-payee.puml)
+
+## 4. Authorize Transaction
+
+![Authorize Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/sequence-diagrams/docs/assets/diagrams/transfer/04-authorize-transaction.puml)

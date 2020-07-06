@@ -1,0 +1,15 @@
+@startuml
+title Create Listener
+
+autonumber
+participant App
+database Firebase
+participant "PISP Server" as PISP
+
+PISP -> Firebase: ""createListener(collection='transactions/')""
+return ""200 OK""
+
+App -> Firebase: ""createListener(collection='transactions/users/1234')""
+return ""200 OK""
+
+@enduml

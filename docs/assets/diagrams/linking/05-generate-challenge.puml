@@ -1,22 +1,23 @@
-@startuml Credential Registration
+@startuml
 
-title: Credential Registration (Part 1)
+title: Generate Challenge
 
 hide footbox
 
-box "Mobile Device"
+box "Mobile Device" #Light
   actor Alice
   participant "PISP App" as App
 end box
-box "PISP"
+box "PISP" #Light
+  participant "Firebase" as Firebase
   participant "PISP Server" as Server
 end box
-box "Mojaloop"
+box "Mojaloop" #Light
   participant "Third-party\nAPI Adapter" as Adapter
 end box
 
 'start flow
-Alice -> App ++: I want to remember this device
+Alice -> App: I want to remember this device
 
 App -> Server ++: ""**POST /consents/{ID}/generateChallenge**""\n\
 ""{""\n\
@@ -61,10 +62,33 @@ Adapter <-- Server: ""**HTTP 200** (OK)""
 
 deactivate Adapter
 
-Server -> App ++: Challenge has been generated.
-Server <-- App
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    challenge: ...,""
+  ""    status: "CHALLENGE_GENERATED"""
+  ""  }""
+  "")""
+end rnote
 
+Server -> Firebase: Challenge has been generated.
+return ""200 (OK)""
 deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    challenge: ...,""
+  ""    status: "CHALLENGE_GENERATED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+return ""200 (OK)""
 
 ...
 

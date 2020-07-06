@@ -1,62 +1,47 @@
-@startuml Transaction
+@startuml
 
-title: Transaction (Part 1)
+title Confirm Payee
 
-hide footbox
+autonumber
 
-box "Mobile Device"
+box "Mobile Device" #Light
   actor Alice
   participant "PISP App" as App
 end box
-box "PISP"
+box "PISP" #Light
+  database Firebase
   participant "PISP Server" as Server
 end box
-box "Mojaloop"
+box "Mojaloop" #Light
   participant "Third-party\nAPI Adapter" as Adapter
 end box
 
-' start flow
-Alice -> App ++: I want to transfer X USD to +123456789
+Alice -> App: The payee info is correct
 
-note over Alice, Adapter
-  Perform lookup party. More details are in the lookup party diagram.
-end note
-
-App -> Alice: Display the party information.\nIs this the correct party?
-deactivate App
-
-Alice -> App ++: Yes, please initiate the transaction
-
-rnote right of App #Light 
-  ""**POST /thirdpartyRequests/transactions**""
-  ""FSPIOP-Source: ...""
-  ""FSPIOP-Destination: ...""
-  ""{""
-  ""  "transactionRequestId": string,""
-  ""  "sourceAccountId": string,""
-  ""  "consentId": string,""
-  ""  "payee": ...,  // Party schema from lookup party""
-  ""  "payer": ...,  // Party schema from lookup party""
-  ""  "amountType": enum,""
-  ""  "amount": string,""
-  ""  "transactionType": {""
-  ""    "scenario": enum,""
-  ""    "subScenario": string,""
-  ""    "initiator": enum,""
-  ""    "initiatorType": enum,""
-  ""    "refundInfo": {""
-  ""      "originalTransactionId": string,""
-  ""      "refundReason": string,""
-  ""    },""
-  ""    "balanceOfPayments": string""
-  ""  },""
-  ""  expiration: string""
-  ""}""
+rnote right of App #Light
+  ""updateDoc(""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
 end rnote
 
-App -> Server ++: ""**POST /thirdpartyRequests/transactions**""
-App <-- Server: ""**HTTP 202** (Accepted)""
-deactivate App
+App -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> Server: Notify update on transaction status
+return ""200 OK""
 
 rnote right of Server #Light 
   ""**POST /thirdpartyRequests/transactions**""
@@ -66,8 +51,8 @@ rnote right of Server #Light
   ""  "transactionRequestId": string,""
   ""  "sourceAccountId": string,""
   ""  "consentId": string,""
-  ""  "payee": ...,  // Party schema from lookup party""
-  ""  "payer": ...,  // Party schema from lookup party""
+  ""  "payee": ...,  // Party schema""
+  ""  "payer": ...,  // Party schema""
   ""  "amountType": enum,""
   ""  "amount": string,""
   ""  "transactionType": {""
@@ -131,12 +116,36 @@ Adapter -> Server ++: ""**POST /authorizations**""
 Adapter <-- Server: ""**HTTP 202** (Accepted)""
 deactivate Adapter
 
-Server -> App ++: Send the authorization request to the app
-Server <-- App
-deactivate Server
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authenticationType: enum,""
+  ""    quote: ...,""
+  ""    status: "AUTHORIZATION_REQUIRED"""
+  ""  }""
+  "")""
+end rnote
 
-App -> Alice: Would you like to authorize this transaction?
-deactivate App
+Server -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "/transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authenticationType: enum,""
+  ""    quote: ...,""
+  ""    status: "AUTHORIZATION_REQUIRED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction status
+return ""200 OK""
+
+App -> Alice: Would you like to\nauthorize this transaction?
 
 ...
 

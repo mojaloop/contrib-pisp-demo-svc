@@ -1,17 +1,18 @@
-@startuml Account Linking
+@startuml
 
-title: Account Linking (Part 2)
+title: Authentication
 
 hide footbox
 
-box "Mobile Device"
+box "Mobile Device" #Light
   actor Alice
   participant "PISP App" as App
 end box
-box "PISP"
+box "PISP" #Light
+  participant "Firebase" as Firebase
   participant "PISP Server" as Server
 end box
-box "Mojaloop"
+box "Mojaloop" #Light
   participant "Third-party\nAPI Adapter" as Adapter
 end box
 
@@ -31,7 +32,7 @@ App -> Server: ""**PUT /consentRequests/{ID}**""\n\
 ""    }""\n\
 ""  ],""\n\
 ""  "callbackUri": string,      // app does not know this?""\n\
-""  "authUri": null,            // null if OTP, pisp diagram wrong?""\n\
+""  "authUri": null,""\n\
 ""  "authToken": string         // <OTP>""\n\
 ""}""
 
@@ -84,8 +85,31 @@ Adapter -> Server ++: ""**POST /consents**""\n\
 Adapter <-- Server: ""**HTTP 202** (Accepted)""
 deactivate Adapter
 
-Server -> App: Consent has been granted. Send information.
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CONSENT_GRANTED"""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Update consent status
+return ""200 (OK)""
 deactivate Server
+
+rnote left of Firebase #Light 
+  ""event(""
+  ""  "document.update",""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CONSENT_GRANTED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+
 
 App -> Alice: Consent has been granted.\nLet me know if you want to remember this device.
 

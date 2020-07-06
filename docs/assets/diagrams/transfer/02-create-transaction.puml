@@ -1,0 +1,161 @@
+@startuml
+
+title Create Transaction
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+Alice -> App: I want to make this transaction
+
+rnote right of App #Light 
+  ""createDoc(""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    payee: {""
+  ""      phoneNumber: "+1-222-222-2222"""
+  ""    },""
+  ""    amount: {""
+  ""      value: 20.00,""
+  ""      currency: "USD"""
+  ""    },""
+  ""    status: "PENDING"""
+  ""  }""
+  "")""
+end rnote
+
+App -> Firebase: Create a new document in the database
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    payee: {""
+  ""      phoneNumber: "+1-222-222-2222"""
+  ""    },""
+  ""    amount: {""
+  ""      value: 20.00,""
+  ""      currency: "USD"""
+  ""    },""
+  ""    status: "PENDING"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> Server: Notify event for new document
+return ""200 OK""
+
+opt Data is not cached
+  Server -> Adapter: ""**GET /parties/{Type}/{ID}**""
+  return ""**HTTP 202** (Accepted)""
+
+  Adapter -> Adapter: Lookup data
+
+  alt Successful
+    Adapter -> Server: ""**PUT /parties/{Type}/{ID}**""\n\
+""{ ""\n\
+""  "party": {""\n\
+""    "partyIdInfo": {""\n\
+""      "partyIdType": enum,""\n\
+""      "partyIdentifier": string,""\n\
+""      "partySubIdOrType": string,""\n\
+""      "fspId": number""\n\
+""    },""\n\
+""    "merchantClassificationCode": string,""\n\
+""    "name": string,""\n\
+""    "personalInfo": {""\n\
+""      "complexName": {""\n\
+""        "firstName": string,""\n\
+""        "middleName": string,""\n\
+""        "lastName": string""\n\
+""      },""\n\
+""      "dateOfBirth": string""\n\
+""    }""\n\
+""  },""\n\
+"" "accounts": [""\n\
+""    {""\n\
+""      "id": string,""\n\
+""      "currency": enum""\n\
+""    }""\n\
+""  ]""\n\
+""} ""
+
+    return ""**HTTP 200** (OK)""
+
+  else Error
+    Adapter -> Server : ""**PUT /parties/{Type}/{ID}/error**""\n\
+""{ ""\n\
+""  "errorInformation": {""\n\
+""    "errorCode": string,""\n\
+""    "errorDescription": string,""\n\
+""    "extensionList": {""\n\
+""      "extension": [""\n\
+""        {""\n\
+""          "key": string,""\n\
+""          "value": string""\n\
+""        }""\n\
+""      ]""\n\
+""    }""\n\
+""  }""\n\
+""} ""
+
+    return ""**HTTP 200** (OK)""
+  end
+end
+
+deactivate Adapter
+
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    payee: {""
+  ""      name: "Jimmy Neutron",""
+  ""      phoneNumber: "+1-222-222-2222"""
+  ""    },""
+  ""    accounts: [""
+  ""      ...""
+  ""    ],""
+  ""    status: "PAYEE_UNCONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Update transaction data
+return ""200 OK""
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    payee: {""
+  ""      name: "Jimmy Neutron",""
+  ""      phoneNumber: "+1-222-222-2222"""
+  ""    },""
+  ""    accounts: [""
+  ""      ...""
+  ""    ],""
+  ""    status: "PAYEE_UNCONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction status
+return ""200 OK""
+
+App -> Alice: Display party information
+
+@enduml
