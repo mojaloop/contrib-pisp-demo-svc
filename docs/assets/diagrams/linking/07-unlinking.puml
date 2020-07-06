@@ -1,0 +1,56 @@
+@startuml Unlinking
+
+title: Unlinking
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+'start flow
+Alice -> App++: I want to unlink this bank account
+
+App -> Server ++: ""**DELETE /consents/{ID}**""
+App <-- Server: ""**HTTP 202** (Accepted)""
+deactivate App
+
+Server -> Adapter ++: ""**DELETE /consents/{ID}**""
+Adapter <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Server
+
+Adapter -> Server++: ""**DELETE /consents/{ID}**""
+Adapter <-- Server: ""**HTTP 200** (OK)""
+deactivate Adapter
+
+rnote left of Server #Light
+  ""deleteDoc(""
+  ""  "/consents/users/1234/<uuid>"""
+  "")""
+end rnote
+
+Server -> Firebase: The account has been unlinked.
+Server <-- Firebase: ""200 (OK)""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.delete",""
+  ""  "/consents/users/1234/<uuid>"""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+Firebase <-- App: ""200 (OK)""
+
+App -> Alice: The bank acc has been unlinked.
+
+@enduml

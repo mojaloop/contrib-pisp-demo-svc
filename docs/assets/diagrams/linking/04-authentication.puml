@@ -1,0 +1,128 @@
+@startuml
+
+title: Authentication
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+' start flow
+alt OTP
+
+Alice -> App ++: Here is the OTP code
+
+App -> Server: ""**PUT /consentRequests/{ID}**""\n\
+""{""\n\
+""  "initiatorId": string,      // app does not know this?""\n\
+""  "authChannels": [string],   // length always 1?""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "callbackUri": string,      // app does not know this?""\n\
+""  "authUri": null,""\n\
+""  "authToken": string         // <OTP>""\n\
+""}""
+
+App <-- Server : ""**HTTP 200** (OK)""
+deactivate App
+
+else Web 
+
+Server -> Server : Wait for callback from FSP\nthat contains the ""authToken""
+
+end
+
+activate Server
+
+Server -> Adapter ++: ""**PUT /consentRequests/{ID}**""\n\
+""{""\n\
+""  "initiatorId": string,""\n\
+""  "authChannels": [string],   // length always 1?""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "callbackUri": string,""\n\
+""  "authUri": string | null,   // null if OTP""\n\
+""  "authToken": string         // <OTP or SECRET>""\n\
+""}""
+
+Server <-- Adapter: ""**HTTP 200** (OK)""
+deactivate Server
+
+Adapter -> Adapter: Validate ""authToken""
+
+Adapter -> Server ++: ""**POST /consents**""\n\
+""{""\n\
+""  "id": string,""\n\
+""  "requestId": string,""\n\
+""  "initiatorId": string,""\n\
+""  "participantId": string,""\n\
+""  "scopes": [""\n\
+""    {""\n\
+""      "accountId": string,""\n\
+""      "actions": [string]""\n\
+""    }""\n\
+""  ],""\n\
+""  "credential": null""\n\
+""}""
+
+Adapter <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Adapter
+
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CONSENT_GRANTED"""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Update consent status
+return ""200 (OK)""
+deactivate Server
+
+rnote left of Firebase #Light 
+  ""event(""
+  ""  "document.update",""
+  ""  "/consents/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "CONSENT_GRANTED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+
+
+App -> Alice: Consent has been granted.\nLet me know if you want to remember this device.
+
+opt User wants to remember the device
+
+...
+
+note over Alice, Adapter
+  Register credential with FIDO protocol. For more details, see the sequence diagram for credential registration.
+end note
+
+...
+
+end 
+
+@enduml

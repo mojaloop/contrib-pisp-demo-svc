@@ -2,6 +2,11 @@
 
 Documentation for the PISP demo server
 
+## Design
+
+There are two main scenarios that are handled by the PISP demo server:
+- [Linking](./design/linking.md)
+
 ## BDD
 
 [jest-cucumber](https://github.com/bencompton/jest-cucumber) allows to use `jest` to execute Gherkin scenarios. Thanks to `jest` we are getting also code coverage for BDD Scenarios.
