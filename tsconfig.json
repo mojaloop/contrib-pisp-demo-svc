@@ -2,6 +2,9 @@
   "include": [
     "src",
     "ambient.d.ts",
+    "commitlint.config.js",
+    "jest.bdd.config.js",
+    "jest.config.js"
   ],
   "exclude": [
     "node_modules",
@@ -14,6 +17,10 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
+    "rootDirs": [
+      "src",
+      "test"
+    ],
     "lib": [
       "esnext"
     ],
@@ -36,9 +43,8 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "*": [
-        "src/*",
-        "node_modules/*"
+      "~/*": [
+        "src/*"
       ]
     },
     "esModuleInterop": true,

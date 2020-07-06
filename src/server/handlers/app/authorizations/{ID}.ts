@@ -23,15 +23,11 @@
  --------------
  ******/
 
-import HapiSwagger from 'hapi-swagger'
-import Config from '../../shared/config'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
+import { logger } from '~/shared/logger'
 
-export default {
-  plugin: HapiSwagger,
-  options: {
-    info: {
-      title: 'Event Sidecar Swagger Documentation',
-      version: Config.get('package.version')
-    }
-  }
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  logger.logRequest(context, request, h)
+  return h.response().code(200)
 }

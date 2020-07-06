@@ -23,49 +23,11 @@
  --------------
  ******/
 
-import Path from 'path'
-import Inert from '@hapi/inert'
-import Vision from '@hapi/vision'
-import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
+import { logger } from '~/shared/logger'
 
-import { OpenApi, OpenApiOpts } from './openAPI'
-import { extHandlers } from '../handlers/openApiHandlers'
-import { apiHandlers as appApiHandlers } from '~/server/handlers/app'
-import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
-
-const openApiOpts: OpenApiOpts = {
-  baseHost: 'pisp-demo-server.local',
-  definition: {
-    app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
-  },
-  quick: false,
-  strict: true,
-  handlers: {
-    api: {
-      app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers
-    },
-    ext: extHandlers,
-  }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const plugins: Array<ServerRegisterPluginObject<any>> = [
-  { plugin: Inert },
-  { plugin: Vision },
-  {
-    plugin: OpenApi,
-    options: openApiOpts,
-  }
-]
-
-async function register(server: Server): Promise<Server> {
-  await server.register(plugins)
-  return server
-}
-
-export default {
-  register,
-  plugins,
+export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  logger.logRequest(context, request, h)
+  return h.response().code(202)
 }

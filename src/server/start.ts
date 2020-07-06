@@ -24,10 +24,10 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import Logger from '../shared/logger/logger'
+import { logger } from '~/shared/logger'
 
 export default async function start(server: Server): Promise<Server> {
   await server.start()
-  Logger.info(`pisp-demo-server is running @ ${server.info.uri}`)
+  logger.info(`pisp-demo-server is running @ ${server.info.uri}`)
   return server
 }

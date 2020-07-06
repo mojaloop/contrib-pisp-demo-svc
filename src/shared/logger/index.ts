@@ -23,39 +23,61 @@
  --------------
  ******/
 
-import Logger from './logger'
 import util from 'util'
 
-import { Request, ResponseObject } from '@hapi/hapi'
+import { Request, ResponseObject, ResponseToolkit } from '@hapi/hapi'
+import { Context } from 'openapi-backend'
 
-interface RequestLogged extends Request {
+import { createDefaultLogger } from './logger'
+
+export interface RequestLogged extends Request {
   response: ResponseLogged;
 }
 
-interface ResponseLogged extends ResponseObject {
+export interface ResponseLogged extends ResponseObject {
   source: string;
   statusCode: number;
 }
 
-function logResponse(request: RequestLogged): void {
-  if (request && request.response) {
-    let response
-    try {
-      response = JSON.stringify(request.response.source)
-    } catch (e) {
-      response = util.inspect(request.response.source, { showHidden: true, depth: null })
+export interface BaseLogger {
+  info: (message: string, ...meta: any[]) => any
+  error: (messsage: string, ...meta: any[]) => any
+}
+
+export class Logger {
+  _logger: BaseLogger
+
+  constructor() {
+    this._logger = createDefaultLogger()
+  }
+
+  logRequest(context: Context, request: Request, h: ResponseToolkit): void {
+    this._logger.info(`New request - context: ${context}, request: ${request}, h: ${h}`)
+  }
+
+  logResponse(request: RequestLogged) {
+    if (request && request.response) {
+      let response
+      try {
+        response = JSON.stringify(request.response.source)
+      } catch (e) {
+        response = util.inspect(request.response.source, { showHidden: true, depth: null })
+      }
+      if (!response) {
+        this._logger.info(`AS-Trace - Response: ${request.response}`)
+      } else {
+        this._logger.info(`AS-Trace - Response: ${response} Status: ${request.response.statusCode}`)
+      }
     }
-    if (!response) {
-      Logger.info(`AS-Trace - Response: ${request.response}`)
-    } else {
-      Logger.info(`AS-Trace - Response: ${response} Status: ${request.response.statusCode}`)
-    }
+  }
+
+  info(message: string, ...meta: any[]) {
+    this._logger.info(message, ...meta)
+  }
+
+  error(message: string, ...meta: any[]) {
+    this._logger.error(message, ...meta)
   }
 }
 
-export {
-  logResponse,
-  Logger,
-  RequestLogged,
-  ResponseLogged,
-}
+export const logger = new Logger()

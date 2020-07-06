@@ -23,16 +23,108 @@
  --------------
  ******/
 
-import Path from 'path'
-import HapiOpenAPI from 'hapi-openapi'
+import OpenApiBackend, { Handler } from 'openapi-backend'
+import { Plugin, Server, Request, ResponseToolkit } from '@hapi/hapi'
 
-const openAPIOptions = {
-  api: Path.resolve(__dirname, '../../interface/swagger.json'),
-  handlers: Path.resolve(__dirname, '../handlers'),
-  extensions: ['ts']
+export interface OpenApiExtHandlers {
+  notFound: Handler
+  methodNotAllowed: Handler
+  notImplemented: Handler
+  validationFail: Handler
 }
 
-export default {
-  plugin: HapiOpenAPI,
-  options: openAPIOptions
+export interface OpenApiOpts {
+  baseHost: string
+  definition: {
+    app: string
+    mojaloop: string
+  }
+  quick: boolean
+  strict: boolean
+  handlers: {
+    api: {
+      app: {
+        [operationId: string]: Handler
+      }
+      mojaloop: {
+        [operationId: string]: Handler
+      }
+    }
+    ext: OpenApiExtHandlers
+  }
+}
+
+const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
+  const api = new OpenApiBackend({
+    definition: opts.definition.app,
+    quick: opts.quick,
+    strict: opts.strict,
+  })
+
+  api.register({
+    ...opts.handlers.api.app,
+    ...opts.handlers.ext,
+  })
+
+  api.init()
+
+  server.route({
+    method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    path: '/{path*}',
+    vhost: 'app.' + opts.baseHost,
+    handler: (request: Request, h: ResponseToolkit): Promise<any> =>
+      api.handleRequest(
+        {
+          method: request.method,
+          path: request.path,
+          query: request.query,
+          body: request.payload,
+          headers: request.headers,
+        },
+        request,
+        h,
+      )
+  })
+}
+
+const registerMojaloopBackend = (server: Server, opts: OpenApiOpts) => {
+  const api = new OpenApiBackend({
+    definition: opts.definition.mojaloop,
+    quick: opts.quick,
+    strict: opts.strict,
+  })
+
+  api.register({
+    ...opts.handlers.api.mojaloop,
+    ...opts.handlers.ext,
+  })
+
+  api.init()
+
+  server.route({
+    method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    path: '/{path*}',
+    vhost: 'mojaloop.' + opts.baseHost,
+    handler: (request: Request, h: ResponseToolkit): Promise<any> =>
+      api.handleRequest(
+        {
+          method: request.method,
+          path: request.path,
+          query: request.query,
+          body: request.payload,
+          headers: request.headers,
+        },
+        request,
+        h,
+      )
+  })
+}
+
+export const OpenApi: Plugin<OpenApiOpts> = {
+  name: 'PispDemoOpenApi',
+  version: '1.0.0',
+  register: async (server: Server, opts: OpenApiOpts) => {
+    registerAppBackend(server, opts)
+    registerMojaloopBackend(server, opts)
+  }
 }

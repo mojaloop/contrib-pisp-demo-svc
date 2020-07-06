@@ -1,0 +1,347 @@
+openapi: 3.0.1
+info:
+  title: PISP Demo Server Open API
+  description: This is part of the PISP demo server that handles communication with 
+    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size 
+    of 65536 bytes (64 Kilobytes) in the HTTP header.
+  license:
+    name: Apache 2.0
+  version: "1.1"
+servers:
+  - url: /
+paths:
+  /health:
+    get:
+      $ref: 'shared.yaml#/paths/~1health/get'
+  /participants:
+    put:
+      tags:
+        - participants
+      summary: '[Mojaloop Callback] Result of the registered DFSPs lookup'
+      description: The callback PUT /participants is used to inform the client
+        of the result of the query of the registered DFSPs in Mojaloop.
+      operationId: putParticipants
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutParticipantsRequest'
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /participants/error:
+    put:
+      tags:
+        - participants
+      summary: '[Mojaloop Callback] Error in retrieving the list of DFSPs in Mojaloop'
+      description: If there is an error during FSP information creation in the server,
+        the error callback PUT /participants/error is used.
+      operationId: putParticipantsError
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/ErrorInformationObject.yaml'
+        required: true
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /parties/{Type}/{ID}:
+    put:
+      tags:
+        - parties
+      summary: '[Mojaloop Callback] Result of the Party information lookup'
+      description: The callback PUT /parties/<Type>/<ID> (or PUT /parties/<Type>/<ID>/<SubId>)
+        is used to inform the client of a successful result of the Party information
+        lookup.
+      operationId: putPartiesByTypeAndId
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutPartiesByTypeAndIdRequest'
+        required: true
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /parties/{Type}/{ID}/error:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Type.yaml'
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - parties
+      summary: '[Mojaloop Callback] Error of the Party information lookup'
+      description: If the server is unable to find Party information of the provided
+        identity, or another processing error occurred, the error callback PUT /parties/<Type>/<ID>/error
+        (or PUT /parties/<Type>/<ID>/<SubId>/error) is used.
+      operationId: putPartiesByTypeAndIdError
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/ErrorInformationObject.yaml'
+        required: true
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /consentRequests/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - consentRequests
+      summary: '[Mojaloop Callback] Ask PISP to prove the user identity'
+      description: Callback from Mojaloop asking user to prove their identify
+      operationId: putConsentRequestsById
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutConsentRequestsByIdRequest'
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /consents:
+    post:
+      tags:
+        - consents
+      summary: '[Mojaloop Callback] Result of consent request'
+      description: Grant consent
+      operationId: postConsents
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PostConsentsRequest'
+      responses:
+        202:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /consents/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - consents
+      summary: '[Mojaloop Callback] Result of generating challenge for consent'
+      description: Generate challenge for consent
+      operationId: putConsentsById
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutConsentsByIdRequest'
+      responses:
+        $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/template/ResponseSetAccepted.yaml'
+    delete:
+      tags:
+        - consents
+      summary: '[Mojaloop Callback] Result of deleting the specified consent'
+      description: Result of deleting the specified consent
+      operationId: deleteConsentsById
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /thirdpartyRequests/transactions/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - thirdpartyRequests
+      summary: '[Mojaloop Callback] Result of transaction request'
+      description: Mojaloop callback for third party that initiated a transaction.
+      operationId: putThirdpartyRequestsTransactionsById
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutThirdpartyRequestsTransactionsByIdRequest'
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /authorizations:
+    post:
+      tags:
+        - authorizations
+      summary: '[Mojaloop Callback] Ask user to provide authorization'
+      description: Handle callback from Mojaloop to give authorization
+      operationId: postAuthorizations
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PostAuthorizationsRequest'
+      responses:
+        202:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'

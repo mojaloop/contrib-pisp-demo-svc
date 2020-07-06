@@ -23,6 +23,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
     sourceType: 'module', // Allows for the use of imports
+    project: "./tsconfig.json",
+    tsConfigRootDir: "./"
   },
   rules: {
     indent: 'off',
@@ -39,6 +41,11 @@ module.exports = {
     'cucumber/no-arrow-functions': 2,
     'prettier/prettier': 'error',
   },
+  settings: {
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
   overrides: [
     {
       // Disable some rules that we abuse in unit tests.
@@ -49,5 +56,11 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
       },
     },
+    {
+      files: ["*.js"],
+      rules: {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
   ],
 };

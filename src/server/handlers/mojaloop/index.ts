@@ -23,49 +23,29 @@
  --------------
  ******/
 
-import Path from 'path'
-import Inert from '@hapi/inert'
-import Vision from '@hapi/vision'
-import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
+import * as Health from '../health'
 
-import { OpenApi, OpenApiOpts } from './openAPI'
-import { extHandlers } from '../handlers/openApiHandlers'
-import { apiHandlers as appApiHandlers } from '~/server/handlers/app'
-import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
+import * as MojaloopAuthorizations from './authorizations'
+import * as MojaloopConsents from './consents'
+import * as MojaloopConsentsById from './consents/{ID}'
+import * as MojaloopConsentRequestsById from './consentRequests/{ID}'
+import * as MojaloopParticipants from './participants'
+import * as MojaloopParticipantsError from './participants/error'
+import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
+import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
+import * as MojaloopThirdpartyRequestsTransactionsById from './thirdpartyRequests/transactions/{ID}'
 
-const openApiOpts: OpenApiOpts = {
-  baseHost: 'pisp-demo-server.local',
-  definition: {
-    app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
-  },
-  quick: false,
-  strict: true,
-  handlers: {
-    api: {
-      app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers
-    },
-    ext: extHandlers,
-  }
-}
+export const apiHandlers = {
+  getHealth: Health.get,
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const plugins: Array<ServerRegisterPluginObject<any>> = [
-  { plugin: Inert },
-  { plugin: Vision },
-  {
-    plugin: OpenApi,
-    options: openApiOpts,
-  }
-]
-
-async function register(server: Server): Promise<Server> {
-  await server.register(plugins)
-  return server
-}
-
-export default {
-  register,
-  plugins,
+  postAuthorizations: MojaloopAuthorizations.post,
+  postConsents: MojaloopConsents.post,
+  putConsentsById: MojaloopConsentsById.put,
+  deleteConsentsById: MojaloopConsentsById.remove,
+  putConsentRequestsById: MojaloopConsentRequestsById.put,
+  putParticipants: MojaloopParticipants.put,
+  putParticipantsError: MojaloopParticipantsError.put,
+  putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
+  putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
+  putThirdpartyRequestsTransactionsById: MojaloopThirdpartyRequestsTransactionsById.put,
 }
