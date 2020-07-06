@@ -1,0 +1,159 @@
+@startuml
+
+title Confirm Payee
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+Alice -> App: The payee info is correct
+
+rnote right of App #Light
+  ""updateDoc(""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+App -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> Server: Notify update on transaction status
+return ""200 OK""
+
+rnote right of Server #Light 
+  ""**POST /thirdpartyRequests/transactions**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionRequestId": string,""
+  ""  "sourceAccountId": string,""
+  ""  "consentId": string,""
+  ""  "payee": ...,  // Party schema""
+  ""  "payer": ...,  // Party schema""
+  ""  "amountType": enum,""
+  ""  "amount": string,""
+  ""  "transactionType": {""
+  ""    "scenario": enum,""
+  ""    "subScenario": string,""
+  ""    "initiator": enum,""
+  ""    "initiatorType": enum,""
+  ""    "refundInfo": {""
+  ""      "originalTransactionId": string,""
+  ""      "refundReason": string,""
+  ""    },""
+  ""    "balanceOfPayments": string""
+  ""  },""
+  ""  expiration: string""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**POST /thirdpartyRequests/transactions**""
+Server <-- Adapter: ""**HTTP 202** (Accepted)""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction processes happen in Mojaloop (validation and quoting).
+end note
+
+...
+
+rnote left of Adapter #Light
+  ""**POST /authorizations**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "amount": string,""
+  ""  "authenticationType": enum""
+  ""  "quote": {""
+  ""    "transferAmount": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "payeeReceiveAmount": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "payeeFspFee": {""
+  ""      "currency": enum,""
+  ""      "amount": string""
+  ""    },""
+  ""    "expiration": string,""
+  ""    "ilpPacket": string,    // base64""
+  ""    "condition": string     // base64""
+  ""  },""
+  ""  "retriesLeft": integer,""
+  ""  "transactionRequestId": string,""
+  ""  "transactionId": string""
+  ""} // where is the challenge?""
+end rnote
+
+Adapter -> Server ++: ""**POST /authorizations**""
+Adapter <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Adapter
+
+rnote left of Server #Light
+  ""updateDoc(""
+  ""  "/transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authenticationType: enum,""
+  ""    quote: ...,""
+  ""    status: "AUTHORIZATION_REQUIRED"""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "/transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authenticationType: enum,""
+  ""    quote: ...,""
+  ""    status: "AUTHORIZATION_REQUIRED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction status
+return ""200 OK""
+
+App -> Alice: Would you like to\nauthorize this transaction?
+
+...
+
+note over Alice, Adapter
+  User checks the transaction info as described in the quote.
+  PISP app can prompt the user for authorization. For example, ask user for their fingerprint.
+end note
+
+...
+
+@enduml
