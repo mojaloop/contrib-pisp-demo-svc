@@ -1,0 +1,127 @@
+@startuml
+
+title Confirm Payee
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+Alice -> App: The payee info is correct
+
+rnote right of App #Light
+  ""updateDoc(""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    sourceAccountId: "bob.fspa",""
+  ""    consentId: 123,""
+  ""    amount: {""
+  ""      amount: 20.00""
+  ""      currency: "USD"""
+  ""    },""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+App -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    sourceAccountId: "bob.fspa",""
+  ""    consentId: 123,""
+  ""    amount: {""
+  ""      amount: 20.00""
+  ""      currency: "USD"""
+  ""    },""
+  ""    status: "PAYEE_CONFIRMED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify update on transaction status
+Firebase <-- Server: ""200 OK""
+
+rnote right of Server #Light 
+  ""**POST /thirdpartyRequests/transactions**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  "transactionRequestId": string,""
+  ""  "sourceAccountId": string,""
+  ""  "consentId": string,""
+  ""  "payee": {""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": enum,""
+  ""      "partyIdentifier": string,""
+  ""      "fspId": string""
+  ""    }""
+  ""  },""
+  ""  "payer": {""
+  ""    "personalInfo": {""
+  ""      "complexName": {""
+  ""        "firstName": string,""
+  ""        "lastName": string""
+  ""      }""
+  ""    },""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": string,""
+  ""      "partyIdentifier": string,""
+  ""      "fspId": string""
+  ""    }""
+  ""  },""
+  ""  "amountType": enum,""
+  ""  "amount": {,""
+  ""    "amount": string,""
+  ""    "currency": enum""
+  ""  },""
+  ""  "transactionType": {""
+  ""    "scenario": enum,""
+  ""    "initiator": enum,""
+  ""    "initiatorType": enum""
+  ""  },""
+  ""  expiration: string""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**POST /thirdpartyRequests/transactions**""
+Server <-- Adapter: ""**HTTP 202** (Accepted)""
+
+rnote left of Server #Light
+  ""createDoc(""
+  ""  "transactionRequests/<id>",""
+  ""  {""
+  ""    userId: 1234,""
+  ""    key: <uuid>""
+  ""  }""
+  "")""
+end rnote
+
+Server -> Firebase: Create mapping between\nuser info and transactionRequestId
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction processes happen in Mojaloop (validation and quoting).
+end note
+
+...
+
+@enduml

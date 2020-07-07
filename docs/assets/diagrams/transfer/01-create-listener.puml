@@ -1,7 +1,10 @@
 @startuml
 title Create Listener
 
+hide footbox
+
 autonumber
+
 participant App
 database Firebase
 participant "PISP Server" as PISP

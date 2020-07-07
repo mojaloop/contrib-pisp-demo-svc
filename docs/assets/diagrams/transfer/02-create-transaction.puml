@@ -2,6 +2,8 @@
 
 title Create Transaction
 
+hide footbox
+
 autonumber
 
 box "Mobile Device" #Light
@@ -25,10 +27,6 @@ rnote right of App #Light
   ""    payee: {""
   ""      phoneNumber: "+1-222-222-2222"""
   ""    },""
-  ""    amount: {""
-  ""      value: 20.00,""
-  ""      currency: "USD"""
-  ""    },""
   ""    status: "PENDING"""
   ""  }""
   "")""
@@ -45,10 +43,6 @@ rnote right of Firebase #Light
   ""    payee: {""
   ""      phoneNumber: "+1-222-222-2222"""
   ""    },""
-  ""    amount: {""
-  ""      value: 20.00,""
-  ""      currency: "USD"""
-  ""    },""
   ""    status: "PENDING"""
   ""  }""
   "")""
@@ -57,77 +51,56 @@ end rnote
 Firebase -> Server: Notify event for new document
 return ""200 OK""
 
-opt Data is not cached
-  Server -> Adapter: ""**GET /parties/{Type}/{ID}**""
-  return ""**HTTP 202** (Accepted)""
+Server -> Adapter: ""**GET /parties/{Type}/{ID}**""
+return ""**HTTP 202** (Accepted)""
 
-  Adapter -> Adapter: Lookup data
+Adapter -> Adapter: Lookup data
 
-  alt Successful
-    Adapter -> Server: ""**PUT /parties/{Type}/{ID}**""\n\
-""{ ""\n\
-""  "party": {""\n\
-""    "partyIdInfo": {""\n\
-""      "partyIdType": enum,""\n\
-""      "partyIdentifier": string,""\n\
-""      "partySubIdOrType": string,""\n\
-""      "fspId": number""\n\
-""    },""\n\
-""    "merchantClassificationCode": string,""\n\
-""    "name": string,""\n\
-""    "personalInfo": {""\n\
-""      "complexName": {""\n\
-""        "firstName": string,""\n\
-""        "middleName": string,""\n\
-""        "lastName": string""\n\
-""      },""\n\
-""      "dateOfBirth": string""\n\
-""    }""\n\
-""  },""\n\
-"" "accounts": [""\n\
-""    {""\n\
-""      "id": string,""\n\
-""      "currency": enum""\n\
-""    }""\n\
-""  ]""\n\
-""} ""
+rnote left of Adapter #Light
+  ""**PUT /parties/{Type}/{ID}**""
+  ""{ ""
+  ""  "party": {""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": enum,""
+  ""      "partyIdentifier": string,""
+  ""      "partySubIdOrType": string,""
+  ""      "fspId": number""
+  ""    },""
+  ""    "merchantClassificationCode": string,""
+  ""    "name": string,""
+  ""    "personalInfo": {""
+  ""      "complexName": {""
+  ""        "firstName": string,""
+  ""        "middleName": string,""
+  ""        "lastName": string""
+  ""      },""
+  ""      "dateOfBirth": string""
+  ""    }""
+  ""  },""
+  "" "accounts": [""
+  ""    {""
+  ""      "id": string,""
+  ""      "currency": enum""
+  ""    }""
+  ""  ]""
+  ""} ""
+end rnote
 
-    return ""**HTTP 200** (OK)""
+Adapter -> Server: ""**PUT /parties/{Type}/{ID}**""
 
-  else Error
-    Adapter -> Server : ""**PUT /parties/{Type}/{ID}/error**""\n\
-""{ ""\n\
-""  "errorInformation": {""\n\
-""    "errorCode": string,""\n\
-""    "errorDescription": string,""\n\
-""    "extensionList": {""\n\
-""      "extension": [""\n\
-""        {""\n\
-""          "key": string,""\n\
-""          "value": string""\n\
-""        }""\n\
-""      ]""\n\
-""    }""\n\
-""  }""\n\
-""} ""
-
-    return ""**HTTP 200** (OK)""
-  end
-end
+return ""**HTTP 200** (OK)""
 
 deactivate Adapter
 
 rnote left of Server #Light
   ""updateDoc(""
-  ""  "/transactions/users/1234/<uuid>",""
+  ""  "transactions/users/1234/<uuid>",""
   ""  {""
   ""    payee: {""
-  ""      name: "Jimmy Neutron",""
+  ""      name: "Alice Alpaca",""
+  ""      fspId: "fspa",""
   ""      phoneNumber: "+1-222-222-2222"""
   ""    },""
-  ""    accounts: [""
-  ""      ...""
-  ""    ],""
   ""    status: "PAYEE_UNCONFIRMED"""
   ""  }""
   "")""
@@ -142,12 +115,10 @@ rnote left of Firebase #Light
   ""  "transactions/users/1234/<uuid>",""
   ""  {""
   ""    payee: {""
-  ""      name: "Jimmy Neutron",""
+  ""      name: "Alice Alpaca",""
+  ""      fspId: "fspa",""
   ""      phoneNumber: "+1-222-222-2222"""
   ""    },""
-  ""    accounts: [""
-  ""      ...""
-  ""    ],""
   ""    status: "PAYEE_UNCONFIRMED"""
   ""  }""
   "")""

@@ -1,0 +1,83 @@
+@startuml
+
+title Authorize Transaction
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+Alice -> App: Authorize the transaction
+
+rnote right of App #Light
+  ""updateDoc(""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authentication: "U2F",""
+  ""    authenticationValue: {""
+  ""      pinValue: "base64(xxx)",""
+  ""      counter: "1"""
+  ""    },""
+  ""    status: "AUTHORIZED"""
+  ""  }""
+  "")""
+end rnote
+
+App -> Firebase: Update transaction status
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/users/1234/<uuid>",""
+  ""  {""
+  ""    authentication: "U2F",""
+  ""    authenticationValue: {""
+  ""      pinValue: "base64(xxx)",""
+  ""      counter: "1"""
+  ""    },""
+  ""    status: "AUTHORIZED"""
+  ""  }""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify update on transaction status
+Firebase <-- Server: ""200 OK""
+
+rnote right of Server #Light
+  ""**PUT /authorizations/{ID}**""
+  ""FSPIOP-Source: ...""
+  ""FSPIOP-Destination: ...""
+  ""{""
+  ""  authentication: enum,""
+  ""  authenticationValue: {""
+  ""    pinValue: string,""
+  ""    counter: string""
+  ""  },""
+  ""}""
+end rnote
+
+Server -> Adapter ++: ""**PUT /authorizations/{ID}**""
+Server <-- Adapter: ""**HTTP 200** (OK)""
+deactivate Server
+
+...
+
+note over Alice, Adapter
+  Transaction is processed if the user provides a valid authorization.
+end note
+
+...
+
+@enduml
