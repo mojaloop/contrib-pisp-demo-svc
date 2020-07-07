@@ -25,8 +25,8 @@ rnote left of Adapter #Light
   ""FSPIOP-Source: ...""
   ""FSPIOP-Destination: ...""
   ""{""
-  ""  "transactionId": string,""
-  ""  "transactionRequestState": enum""
+  ""  "transactionId": "901",""
+  ""  "transactionRequestState": "ACCEPTED"""
   ""}""
 end rnote
 

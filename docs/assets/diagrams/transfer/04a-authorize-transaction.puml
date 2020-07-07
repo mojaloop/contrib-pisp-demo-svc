@@ -58,10 +58,10 @@ rnote right of Server #Light
   ""FSPIOP-Source: ...""
   ""FSPIOP-Destination: ...""
   ""{""
-  ""  authentication: enum,""
+  ""  authentication: "U2F",""
   ""  authenticationValue: {""
-  ""    pinValue: string,""
-  ""    counter: string""
+  ""    pinValue: "base64(xxx)",""
+  ""    counter: "1"""
   ""  },""
   ""}""
 end rnote

@@ -4,7 +4,7 @@ Documentation for the PISP demo server
 
 ## Design
 
-There are two main scenarios that are handled by the PISP demo server:
+Below are the scenarios that are supported by the PISP Demo server:
 - [Transfer](./design/transfer.md)
 
 ## BDD
