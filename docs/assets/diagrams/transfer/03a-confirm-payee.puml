@@ -105,7 +105,7 @@ rnote right of Server #Light
 end rnote
 
 Server -> Adapter ++: ""**POST /thirdpartyRequests/transactions**""
-Server <-- Adapter: ""**HTTP 202** (Accepted)""
+Server <-- Adapter: ""202 Accepted""
 
 rnote left of Server #Light
   ""createDoc(""

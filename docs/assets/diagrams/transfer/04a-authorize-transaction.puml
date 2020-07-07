@@ -67,7 +67,7 @@ rnote right of Server #Light
 end rnote
 
 Server -> Adapter ++: ""**PUT /authorizations/{ID}**""
-Server <-- Adapter: ""**HTTP 200** (OK)""
+Server <-- Adapter: ""200 OK""
 deactivate Server
 
 ...

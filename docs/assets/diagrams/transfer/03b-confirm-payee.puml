@@ -58,7 +58,7 @@ rnote left of Adapter #Light
 end rnote
 
 Adapter -> Server ++: ""**POST /authorizations**""
-Adapter <-- Server: ""**HTTP 202** (Accepted)""
+Adapter <-- Server: ""202 Accepted""
 deactivate Adapter
 
 rnote left of Server #Light

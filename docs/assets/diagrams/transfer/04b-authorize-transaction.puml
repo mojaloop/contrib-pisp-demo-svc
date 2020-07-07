@@ -31,7 +31,7 @@ rnote left of Adapter #Light
 end rnote
 
 Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/{ID}**""
-Adapter <-- Server: ""**HTTP 200** (OK)""
+Adapter <-- Server: ""200 OK""
 deactivate Adapter
 
 
