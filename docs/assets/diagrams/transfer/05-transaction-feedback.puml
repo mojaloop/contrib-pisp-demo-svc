@@ -15,12 +15,12 @@ box "PISP" #Light
   participant "PISP Server" as Server
 end box
 box "Mojaloop" #Light
-  participant "Third-party\nAPI Adapter" as Adapter
+  participant "Switch" as Mojaloop
 end box
 
-activate Adapter
+activate Mojaloop
 
-rnote left of Adapter #Light
+rnote left of Mojaloop #Light
   ""**PUT /thirdpartyRequests/transactions/456**""
   ""FSPIOP-Source: fspb""
   ""FSPIOP-Destination: pisp""
@@ -30,9 +30,9 @@ rnote left of Adapter #Light
   ""}""
 end rnote
 
-Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/456**""
-Adapter <-- Server: ""200 OK""
-deactivate Adapter
+Mojaloop -> Server ++: ""**PUT /thirdpartyRequests/transactions/456**""
+Mojaloop <-- Server: ""200 OK""
+deactivate Mojaloop
 
 
 rnote left of Server #Light

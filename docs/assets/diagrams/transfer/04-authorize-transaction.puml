@@ -15,7 +15,7 @@ box "PISP" #Light
   participant "PISP Server" as Server
 end box
 box "Mojaloop" #Light
-  participant "Third-party\nAPI Adapter" as Adapter
+  participant "Switch" as Mojaloop
 end box
 
 Alice -> App: Authorize the transaction
@@ -60,13 +60,13 @@ rnote right of Server #Light
   ""}""
 end rnote
 
-Server -> Adapter ++: ""**PUT /authorizations/456**""
-Server <-- Adapter: ""200 OK""
+Server -> Mojaloop ++: ""**PUT /authorizations/456**""
+Server <-- Mojaloop: ""200 OK""
 deactivate Server
 
 ...
 
-note over Alice, Adapter
+note over Alice, Mojaloop
   Transaction is processed if the user provides a valid authorization.
 end note
 
