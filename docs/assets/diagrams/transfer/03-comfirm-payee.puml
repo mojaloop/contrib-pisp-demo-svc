@@ -1,6 +1,6 @@
 @startuml
 
-title Initiate Transaction
+title Confirm Payee
 
 hide footbox
 
@@ -25,20 +25,11 @@ rnote right of App #Light
   ""  .collection("transactions")""
   ""  .doc("456")""
   ""  .set({""
-  ""    uid: "bob1234",""
   ""    sourceAccountId: "bob.fspb",""
   ""    consentId: 123,""
   ""    amount: {""
   ""      amount: 20.00""
   ""      currency: "USD"""
-  ""    },""
-  ""    payee: {""
-  ""      name: "Alice Alpaca",""
-  ""      partyIdInfo: {""
-  ""        partyIdType: "MSISDN",""
-  ""        partyIdentifier: "+1-222-222-2222",""
-  ""        fspId: "fspa"""
-  ""      }""
   ""    },""
   ""    payer: {""
   ""      personalInfo: {""
@@ -53,8 +44,7 @@ rnote right of App #Light
   ""        fspId: "fspb",""
   ""      }""
   ""    },""
-  ""    status: "PENDING"""
-  ""  })""
+  ""  }, { merge: true })""
 end rnote
 
 App -> Firebase ++: Create a new transaction document

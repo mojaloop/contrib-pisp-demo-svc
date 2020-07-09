@@ -53,9 +53,7 @@ rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
   ""  "/transactions/456",""
-  ""  {""
-  ""    status: "SUCCESS"""
-  ""  }""
+  ""  <snapshot object>""
   "")""
 end rnote
 

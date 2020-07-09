@@ -1,0 +1,126 @@
+@startuml
+
+title Create Transaction
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App: I want to transfer money\nto this party
+
+rnote right of App #Light 
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("456")""
+  ""  .set({""
+  ""    userId: "bob101",""
+  ""    payee: {""
+  ""      partyIdInfo: {""
+  ""        partyIdType: "MSISDN",""
+  ""        partyIdentifier: "+1-222-222-2222"""
+  ""      }""
+  ""    }""
+  ""  })""
+end rnote
+
+App -> Firebase ++: Create a new document for the lookup
+App <-- Firebase: ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "transactions/456",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify event for new document
+Firebase <-- Server: ""200 OK""
+deactivate Firebase 
+
+Server -> Mojaloop ++: ""**GET /parties/MSISDN/+1-222-222-2222**""
+Server <-- Mojaloop: ""202 Accepted""
+deactivate Server
+
+Mojaloop -> Mojaloop: Lookup data
+
+rnote left of Mojaloop #Light
+  ""{ ""
+  ""  "party": {""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": "MSISDN",""
+  ""      "partyIdentifier": "+1-222-222-2222",""
+  ""      "fspId": "fspa"""
+  ""    },""
+  ""    "name": "Alice Alpaca",""
+  ""    "personalInfo": {""
+  ""      "complexName": {""
+  ""        "firstName": "Alice",""
+  ""        "middleName": "K",""
+  ""        "lastName": "Alpaca"""
+  ""      },""
+  ""      "dateOfBirth": "1971-12-25"""
+  ""    }""
+  ""  },""
+  "" "accounts": [""
+  ""    {""
+  ""      "id": "alice.fspa",""
+  ""      "currency": "USD"""
+  ""    }""
+  ""  ]""
+  ""} ""
+end rnote
+
+Mojaloop -> Server ++: ""**PUT /parties/MSISDN/+1-222-222-2222**""
+Mojaloop <-- Server: ""200 OK""
+
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .document("456")""
+  ""  set({""
+  ""    payee: {""
+  ""      name: "Alice Alpaca",""
+  ""      partyIdInfo: {""
+  ""        partyIdType: "MSISDN",""
+  ""        partyIdentifier: "+1-222-222-2222",""
+  ""        fspId: "fspa"""
+  ""      }""
+  ""    },""
+  ""    status: "PENDING_PAYEE_CONFIRMATION",""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase ++: Update transaction status
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/456",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction status
+Firebase <-- App: ""200 OK""
+deactivate Firebase
+
+App -> Alice: Display party information
+
+@enduml

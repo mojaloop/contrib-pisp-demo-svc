@@ -28,8 +28,7 @@ rnote right of App #Light
   ""    authenticationValue: {""
   ""      pinValue: "base64(xxx)",""
   ""      counter: "1"""
-  ""    },""
-  ""    status: "AUTHORIZED"""
+  ""    }""
   ""  }, { merge: true })""
 end rnote
 
