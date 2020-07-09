@@ -4,6 +4,8 @@ Documentation for the PISP demo server
 
 ## Design
 
+> **_NOTE:_** PISP demo server uses [Firebase](https://firebase.google.com/) to assist in performing various tasks. For more details about the required services, you can take a look [here](./design/firebase.md).
+
 Below are the scenarios that are supported by the PISP Demo server:
 - [Lookup](./design/lookup.md)
 - [Transfer](./design/transfer.md)
