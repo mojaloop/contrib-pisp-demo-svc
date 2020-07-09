@@ -5,6 +5,7 @@ Documentation for the PISP demo server
 ## Design
 
 Below are the scenarios that are supported by the PISP Demo server:
+- [Lookup](./design/lookup.md)
 - [Transfer](./design/transfer.md)
 
 ## BDD

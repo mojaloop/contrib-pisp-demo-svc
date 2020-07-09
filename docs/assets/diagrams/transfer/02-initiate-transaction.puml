@@ -23,7 +23,7 @@ Alice -> App: Initiate this transaction
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .add("456")""
+  ""  .doc("456")""
   ""  .set({""
   ""    uid: "bob1234",""
   ""    sourceAccountId: "bob.fspb",""
