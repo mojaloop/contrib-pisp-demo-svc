@@ -1,6 +1,6 @@
 @startuml
 
-title Confirm Payee
+title Initiate Transaction
 
 hide footbox
 
@@ -15,20 +15,30 @@ box "PISP" #Light
   participant "PISP Server" as Server
 end box
 box "Mojaloop" #Light
-  participant "Third-party\nAPI Adapter" as Adapter
+  participant "Switch" as Mojaloop
 end box
 
-Alice -> App: The payee info is correct
+Alice -> App: Initiate this transaction
 
 rnote right of App #Light
-  ""updateDoc(""
-  ""  "transactions/users/1234/<uuid>",""
-  ""  {""
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .add("456")""
+  ""  .set({""
+  ""    uid: "bob1234",""
   ""    sourceAccountId: "bob.fspb",""
   ""    consentId: 123,""
   ""    amount: {""
   ""      amount: 20.00""
   ""      currency: "USD"""
+  ""    },""
+  ""    payee: {""
+  ""      name: "Alice Alpaca",""
+  ""      partyIdInfo: {""
+  ""        partyIdType: "MSISDN",""
+  ""        partyIdentifier: "+1-222-222-2222",""
+  ""        fspId: "fspa"""
+  ""      }""
   ""    },""
   ""    payer: {""
   ""      personalInfo: {""
@@ -43,29 +53,29 @@ rnote right of App #Light
   ""        fspId: "fspb",""
   ""      }""
   ""    },""
-  ""    status: "PAYEE_CONFIRMED"""
-  ""  }""
-  "")""
+  ""    status: "PENDING"""
+  ""  })""
 end rnote
 
-App -> Firebase: Update transaction status
-return ""200 OK""
+App -> Firebase ++: Create a new transaction document
+Firebase <-- App: ""200 OK""
 
 rnote right of Firebase #Light
   ""event(""
-  ""  "document.update",""
-  ""  "transactions/users/1234/<uuid>",""
+  ""  "document.create",""
+  ""  "transactions/456",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> Server ++: Notify update on transaction status
+Firebase -> Server ++: Notify creation of transaction document
 Firebase <-- Server: ""200 OK""
+deactivate Firebase
 
 rnote right of Server #Light 
   ""**POST /thirdpartyRequests/transactions**""
-  ""FSPIOP-Source: ...""
-  ""FSPIOP-Destination: ...""
+  ""FSPIOP-Source: pisp""
+  ""FSPIOP-Destination: fspb""
   ""{""
   ""  "transactionRequestId": "456",""
   ""  "sourceAccountId": "bob.fspb",""
@@ -104,26 +114,12 @@ rnote right of Server #Light
   ""}""
 end rnote
 
-Server -> Adapter ++: ""**POST /thirdpartyRequests/transactions**""
-Server <-- Adapter: ""202 Accepted""
-
-rnote left of Server #Light
-  ""createDoc(""
-  ""  "transactionRequests/<id>",""
-  ""  {""
-  ""    userId: 1234,""
-  ""    key: <uuid>""
-  ""  }""
-  "")""
-end rnote
-
-Server -> Firebase: Create mapping between\nuser info and transactionRequestId
-Server <-- Firebase: ""200 OK""
-deactivate Server
+Server -> Mojaloop ++: ""**POST /thirdpartyRequests/transactions**""
+Server <-- Mojaloop: ""202 Accepted""
 
 ...
 
-note over Alice, Adapter
+note over Alice, Mojaloop
   Transaction processes happen in Mojaloop (validation and quoting).
 end note
 

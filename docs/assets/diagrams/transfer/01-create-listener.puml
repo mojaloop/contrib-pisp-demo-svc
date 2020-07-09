@@ -1,4 +1,5 @@
 @startuml
+
 title Create Listener
 
 hide footbox
@@ -9,10 +10,15 @@ participant App
 database Firebase
 participant "PISP Server" as PISP
 
-PISP -> Firebase: ""createListener(collection='transactions/')""
+PISP -> Firebase: ""firebase.firestore()""\n\
+  "".collection("transactions")""\n\
+  "".onSnapshot( ... )""
 return ""200 OK""
 
-App -> Firebase: ""createListener(collection='transactions/users/1234')""
+App -> Firebase: ""firebase.firestore()""\n\
+  "".collection("transactions")""\n\
+  "".where("uid", "==", "{userId}")""\n\
+  "".onSnapshot( ... )""
 return ""200 OK""
 
 @enduml

@@ -21,16 +21,16 @@ end box
 Alice -> App: Authorize the transaction
 
 rnote right of App #Light
-  ""updateDoc(""
-  ""  "transactions/users/1234/<uuid>",""
-  ""  {""
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("456")""
+  ""  .set({""
   ""    authenticationValue: {""
   ""      pinValue: "base64(xxx)",""
   ""      counter: "1"""
   ""    },""
   ""    status: "AUTHORIZED"""
-  ""  }""
-  "")""
+  ""  }, { merge: true })""
 end rnote
 
 App -> Firebase: Update transaction status
@@ -39,14 +39,8 @@ return ""200 OK""
 rnote right of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/users/1234/<uuid>",""
-  ""  {""
-  ""    authenticationValue: {""
-  ""      pinValue: "base64(xxx)",""
-  ""      counter: "1"""
-  ""    },""
-  ""    status: "AUTHORIZED"""
-  ""  }""
+  ""  "transactions/456",""
+  ""  <snapshot object>""
   "")""
 end rnote
 
@@ -54,9 +48,9 @@ Firebase -> Server ++: Notify update on transaction status
 Firebase <-- Server: ""200 OK""
 
 rnote right of Server #Light
-  ""**PUT /authorizations/{ID}**""
-  ""FSPIOP-Source: ...""
-  ""FSPIOP-Destination: ...""
+  ""**PUT /authorizations/456**""
+  ""FSPIOP-Source: pisp""
+  ""FSPIOP-Destination: fspb""
   ""{""
   ""  authentication: "U2F",""
   ""  authenticationValue: {""
@@ -66,7 +60,7 @@ rnote right of Server #Light
   ""}""
 end rnote
 
-Server -> Adapter ++: ""**PUT /authorizations/{ID}**""
+Server -> Adapter ++: ""**PUT /authorizations/456**""
 Server <-- Adapter: ""200 OK""
 deactivate Server
 

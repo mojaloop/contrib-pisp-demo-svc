@@ -1,6 +1,6 @@
 @startuml
 
-title Authorize Transaction
+title Transaction Feedback
 
 hide footbox
 
@@ -21,44 +21,27 @@ end box
 activate Adapter
 
 rnote left of Adapter #Light
-  ""**PUT /thirdpartyRequests/transactions/{ID}**""
-  ""FSPIOP-Source: ...""
-  ""FSPIOP-Destination: ...""
+  ""**PUT /thirdpartyRequests/transactions/456**""
+  ""FSPIOP-Source: fspb""
+  ""FSPIOP-Destination: pisp""
   ""{""
   ""  "transactionId": "901",""
   ""  "transactionRequestState": "ACCEPTED"""
   ""}""
 end rnote
 
-Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/{ID}**""
+Adapter -> Server ++: ""**PUT /thirdpartyRequests/transactions/456**""
 Adapter <-- Server: ""200 OK""
 deactivate Adapter
 
 
 rnote left of Server #Light
-  ""getDoc(""
-  ""  "transactionRequests/<id>"""
-  "")""
-end rnote
-
-Server -> Firebase: Get mapping to user info
-
-rnote right of Firebase #Light
-  ""value({""
-  ""  userId: 1234,""
-  ""  key: <uuid>""
-  ""})""
-end rnote
-
-Server <-- Firebase: Return user info for\nthe transaction request
-
-rnote left of Server #Light
-  ""updateDoc(""
-  ""  "/transactions/users/1234/<uuid>",""
-  ""  {""
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("456")""
+  ""  .set({""
   ""    status: "SUCCESS"""
-  ""  }""
-  "")""
+  ""  }, { merge: true })""
 end rnote
 
 Server -> Firebase: Update transaction status
@@ -69,7 +52,7 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "/transactions/users/1234/<uuid>",""
+  ""  "/transactions/456",""
   ""  {""
   ""    status: "SUCCESS"""
   ""  }""
