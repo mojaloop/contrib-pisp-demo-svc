@@ -30,41 +30,34 @@ Below is the basic structure that will be used. More details for each path in th
 rules_version = "2";
 
 service cloud.firestore {
-    match /databases/{database}/documents {
-        // Add helper functions
-        function isAuthenticated() {
-            return request.auth.uid != null;
-        }
-
-        // Security rules for all paths in the database.
-        // By default, user does not have any read write
-        // permission in the production database.
+  match /databases/{database}/documents {
+    // Add helper functions
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
     }
+
+    // Security rules for all paths in the database.
+    // By default, user does not have any read write
+    // permission in the production database.
+  }
 }
 ```
 
 The combined security rules applied for Cloud Firestore is written in the [firestore.rules](../../firestore.rules) file in the root directory of this repository.
 
-#### Lookups
-
-```
-        match /lookups/{path=**} {
-            function isValidCreationSchema() {
-                return request.writeFields.hasOnly(['query']);
-            }
-
-            allow read: if isAuthenticated();
-            allow create: if isAuthenticated() && isValidCreationSchema();
-            allow update, delete: if false;
-        }
-```
-
 #### Transactions
 
 ```
-        match /transactions/{transactionId} {
-            allow read, update: if isAuthenticated() && request.auth.uid == resource.data.uid;
-            allow create: if isAuthenticated();
-            allow delete: if false;
-        }
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+
+      allow create: if isAuthenticated() && request.writeFields.hasAll(['userId'])
+                    && request.auth.uid == request.resource.data.userId 
+                    && !request.writeFields.hasAny(['status']);
+      
+      allow update: if isAuthenticated() && request.auth.uid == resource.data.userId
+                    && !request.writeFields.hasAny(['status', 'userId']);
+
+      allow delete: if false;
+    }
 ```
