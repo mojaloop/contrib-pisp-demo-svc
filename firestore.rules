@@ -11,7 +11,7 @@ service cloud.firestore {
         // By default, user does not have any read write
         // permission in the production database.
 
-        match /lookups/{lookupId} {
+        match /lookups/{path=**} {
             function isValidCreationSchema() {
                 return request.writeFields.hasOnly(['query']);
             }

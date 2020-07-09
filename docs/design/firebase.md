@@ -48,7 +48,7 @@ The combined security rules applied for Cloud Firestore is written in the [fires
 #### Lookups
 
 ```
-        match /lookups/{lookupId} {
+        match /lookups/{path=**} {
             function isValidCreationSchema() {
                 return request.writeFields.hasOnly(['query']);
             }

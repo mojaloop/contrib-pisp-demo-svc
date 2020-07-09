@@ -23,7 +23,7 @@ Alice -> App: I want to lookup info\nfor this party
 rnote right of App #Light 
   ""firebase.firestore()""
   ""  .collection("lookups")""
-  ""  .doc("{lookupId}")""
+  ""  .doc("MSISDN/+1-222-222-2222")""
   ""  .get()""
 end rnote
 
@@ -34,7 +34,7 @@ opt "Document does not exist"
   rnote right of App #Light 
     ""firebase.firestore()""
     ""  .collection("lookups")""
-    ""  .doc("{lookupId}")""
+    ""  .doc("MSISDN/+1-222-222-2222")""
     ""  .set({""
     ""    query: {""
     ""      partyIdInfo: {""
@@ -51,7 +51,7 @@ opt "Document does not exist"
   rnote right of Firebase #Light
     ""event(""
     ""  "document.create",""
-    ""  "lookups/{lookupId}",""
+    ""  "lookups/MSISDN/+1-222-222-2222",""
     ""  <snapshot object>""
     "")""
   end rnote
@@ -101,7 +101,7 @@ opt "Document does not exist"
   rnote left of Server #Light
     ""firebase.firestore()""
     ""  .collection("lookups")""
-    ""  .document({lookupId})""
+    ""  .document("MSISDN/+1-222-222-2222")""
     ""  set({""
     ""    result: {""
     ""      party: {""
@@ -127,7 +127,7 @@ opt "Document does not exist"
   rnote left of Firebase #Light
     ""event(""
     ""  "document.update",""
-    ""  "lookups/{lookupId}",""
+    ""  "lookups/MSISDN/+1-222-222-2222",""
     ""  <snapshot object>""
     "")""
   end rnote
