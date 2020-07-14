@@ -23,10 +23,10 @@ Alice -> App: Initiate this transaction
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("456")""
+  ""  .doc("777")""
   ""  .set({""
   ""    sourceAccountId: "bob.fspb",""
-  ""    consentId: "123",""
+  ""    consentId: "555",""
   ""    amount: {""
   ""      amount: "20",""
   ""      currency: "USD"""
@@ -47,18 +47,18 @@ rnote right of App #Light
   ""  }, { merge: true })""
 end rnote
 
-App -> Firebase ++: Create a new transaction document
+App -> Firebase ++: Update transaction document
 Firebase <-- App: ""200 OK""
 
 rnote right of Firebase #Light
   ""event(""
-  ""  "document.create",""
-  ""  "transactions/456",""
+  ""  "document.update",""
+  ""  "transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> Server ++: Notify creation of transaction document
+Firebase -> Server ++: Notify update on transaction document
 Firebase <-- Server: ""200 OK""
 deactivate Firebase
 
@@ -67,9 +67,9 @@ rnote right of Server #Light
   ""FSPIOP-Source: pisp""
   ""FSPIOP-Destination: fspb""
   ""{""
-  ""  "transactionRequestId": "456",""
+  ""  "transactionRequestId": "777",""
   ""  "sourceAccountId": "bob.fspb",""
-  ""  "consentId": "789",""
+  ""  "consentId": "555",""
   ""  "payee": {""
   ""    "partyIdInfo": {""
   ""      "partyIdType": "MSISDN",""

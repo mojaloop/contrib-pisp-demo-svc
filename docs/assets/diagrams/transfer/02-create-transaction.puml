@@ -23,7 +23,7 @@ Alice -> App: I want to transfer money\nto this party
 rnote right of App #Light 
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("456")""
+  ""  .doc("777")""
   ""  .set({""
   ""    userId: "bob101",""
   ""    partyQuery: "MSISDN/+1-222-222-2222",""
@@ -36,18 +36,18 @@ rnote right of App #Light
   ""  })""
 end rnote
 
-App -> Firebase ++: Create a new document for the lookup
+App -> Firebase ++: Create a new transaction document
 App <-- Firebase: ""200 OK""
 
 rnote right of Firebase #Light
   ""event(""
   ""  "document.create",""
-  ""  "transactions/456",""
+  ""  "transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> Server ++: Notify event for new document
+Firebase -> Server ++: Notify creation of transaction document
 Firebase <-- Server: ""200 OK""
 deactivate Firebase 
 
@@ -114,7 +114,7 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/456",""
+  ""  "transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote

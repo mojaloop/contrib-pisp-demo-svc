@@ -21,16 +21,16 @@ end box
 activate Mojaloop
 
 rnote left of Mojaloop #Light
-  ""**PUT /thirdpartyRequests/transactions/456**""
+  ""**PUT /transfers/999**""
   ""FSPIOP-Source: fspb""
   ""FSPIOP-Destination: pisp""
   ""{""
-  ""  "transactionId": "901",""
+  ""  "transactionId": "888",""
   ""  "transactionRequestState": "ACCEPTED"""
   ""}""
 end rnote
 
-Mojaloop -> Server ++: ""**PUT /thirdpartyRequests/transactions/456**""
+Mojaloop -> Server ++: ""**PUT /transfers/999**""
 Mojaloop <-- Server: ""200 OK""
 deactivate Mojaloop
 
@@ -38,13 +38,13 @@ deactivate Mojaloop
 rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("456")""
+  ""  .where("transactionId", "==", "888")""
   ""  .set({""
   ""    status: "SUCCESS"""
   ""  }, { merge: true })""
 end rnote
 
-Server -> Firebase: Update transaction status
+Server -> Firebase: Update transaction document
 Server <-- Firebase: ""200 OK""
 
 deactivate Server
@@ -52,12 +52,12 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "/transactions/456",""
+  ""  "/transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> App: Notify on transaction status update
+Firebase -> App: Notify update on transaction document
 return ""200 OK""
 
 App -> Alice: Transaction success

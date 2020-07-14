@@ -31,8 +31,8 @@ rnote left of Mojaloop #Light
   ""    "amount": "20",""
   ""    "currency": "USD"""
   ""  },""
-  ""  "transactionId": "987",""
-  ""  "transactionRequestId": "456",""
+  ""  "transactionId": "888",""
+  ""  "transactionRequestId": "777",""
   ""  "quote": {""
   ""    "transferAmount": {""
   ""      "amount": "20",""
@@ -64,28 +64,28 @@ deactivate Mojaloop
 rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("456")""
+  ""  .doc("777")""
   ""  .set({""
   ""    authenticationType: "U2F",""
-  ""    transactionId: "987",""
-  ""    quote: ..., // given by Mojaloop""
+  ""    transactionId: "888",""
+  ""    quote: ..., // as given by Mojaloop""
   ""    status: "AUTHORIZATION_REQUIRED"""
   ""  }, { merge: true })""
 end rnote
 
-Server -> Firebase: Update transaction status
+Server -> Firebase: Update transaction document
 return ""200 OK""
 deactivate Server
 
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/456",""
+  ""  "transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> App: Notify update on transaction status
+Firebase -> App: Notify update on transaction document
 return ""200 OK""
 
 App -> Alice: Would you like to\nauthorize this transaction?

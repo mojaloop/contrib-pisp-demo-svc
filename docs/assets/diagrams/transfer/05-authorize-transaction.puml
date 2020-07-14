@@ -23,7 +23,7 @@ Alice -> App: Authorize the transaction
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("456")""
+  ""  .doc("777")""
   ""  .set({""
   ""    authenticationValue: {""
   ""      pinValue: "base64(xxx)",""
@@ -32,22 +32,22 @@ rnote right of App #Light
   ""  }, { merge: true })""
 end rnote
 
-App -> Firebase: Update transaction status
+App -> Firebase: Update transaction document
 return ""200 OK""
 
 rnote right of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/456",""
+  ""  "transactions/777",""
   ""  <snapshot object>""
   "")""
 end rnote
 
-Firebase -> Server ++: Notify update on transaction status
+Firebase -> Server ++: Notify update on transaction document
 Firebase <-- Server: ""200 OK""
 
 rnote right of Server #Light
-  ""**PUT /authorizations/456**""
+  ""**PUT /authorizations/777**""
   ""FSPIOP-Source: pisp""
   ""FSPIOP-Destination: fspb""
   ""{""
@@ -59,7 +59,7 @@ rnote right of Server #Light
   ""}""
 end rnote
 
-Server -> Mojaloop ++: ""**PUT /authorizations/456**""
+Server -> Mojaloop ++: ""**PUT /authorizations/777**""
 Server <-- Mojaloop: ""200 OK""
 deactivate Server
 
