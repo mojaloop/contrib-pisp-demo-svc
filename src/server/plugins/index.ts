@@ -32,6 +32,10 @@ import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 import { OpenApi, OpenApiOpts } from './internal/openapi'
 import { extHandlers, appApiHandlers, mojaloopApiHandlers } from '~/server/handlers/openapi'
 
+// Import necessary files to setup firestore
+import { Firestore, FirestoreOpts } from './internal/firestore'
+import firestoreHandlers from '~/server/handlers/firestore'
+
 // Import necessary files to setup mojaloop client
 import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
 
@@ -56,6 +60,11 @@ const openApiOpts: OpenApiOpts = {
   }
 }
 
+// Config for firestore
+const firestoreOpts: FirestoreOpts = {
+  handlers: firestoreHandlers
+}
+
 // Config for mojaloop client
 const mojaloopClientOpts: MojaloopClientOpts = {
   baseUrl: 'https://mojaloop.local',
@@ -73,6 +82,10 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
   {
     plugin: OpenApi,
     options: openApiOpts,
+  },
+  {
+    plugin: Firestore,
+    options: firestoreOpts,
   },
   {
     plugin: MojaloopClient,
