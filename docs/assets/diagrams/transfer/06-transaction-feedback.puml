@@ -26,7 +26,9 @@ rnote left of Mojaloop #Light
   ""FSPIOP-Destination: pisp""
   ""{""
   ""  "transactionId": "888",""
-  ""  "transactionRequestState": "ACCEPTED"""
+  ""  "fulfilment": base64(xxx),""
+  ""  "completedTimestamp": "2020-07-15T22:15:28.985-01:00",""
+  ""  "transactionRequestState": "COMMITTED"""
   ""}""
 end rnote
 
@@ -40,6 +42,7 @@ rnote left of Server #Light
   ""  .collection("transactions")""
   ""  .where("transactionId", "==", "888")""
   ""  .set({""
+  ""    completedTimestamp: "2020-07-15T22:15:28.985-01:00",""
   ""    status: "SUCCESS"""
   ""  }, { merge: true })""
 end rnote
