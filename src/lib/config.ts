@@ -23,23 +23,59 @@
  --------------
  ******/
 
-// eslint-disable-next-line @typescript-eslint/triple-slash-reference
-/// <reference path="../../ambient.d.ts"/>
+import Path from 'path'
+import convict from 'convict'
+import Package from '../../package.json'
 
-import { Server } from '@hapi/hapi'
-import { ServiceConfig } from '../lib/config'
-import onValidateFail from './handlers/onValidateFail'
-
-export default async function create(config: ServiceConfig): Promise<Server> {
-  const server: Server = await new Server({
-    host: config.get('host'),
-    port: config.get('port'),
-    routes: {
-      validate: {
-        failAction: onValidateFail,
-      },
+const config = convict({
+  package: {
+    name: {
+      doc: 'The application version.',
+      default: 'pisp-demo-server',
     },
-  })
+    version: {
+      doc: 'The application version.',
+      default: '0.1.0',
+    },
+  },
+  env: {
+    doc: 'The application environment.',
+    format: ['production', 'development', 'test'],
+    default: 'development',
+    env: 'NODE_ENV',
+  },
+  host: {
+    doc: 'The IP address to bind.',
+    format: '*',
+    default: '0.0.0.0',
+    env: 'HOST',
+    arg: 'host',
+  },
+  port: {
+    doc: 'The port to bind.',
+    format: 'port',
+    default: 8080,
+    env: 'PORT',
+    arg: 'port',
+  },
+  db: {
+    firebase: {
+      keyPath: {
+        doc: 'Path to service account key for Firebase',
+        format: '*',
+        default: Path.resolve(__dirname, '../../secret/serviceAccountKey.json'),
+        env: 'FIREBASE_KEY_PATH'
+      }
+    }
+  }
+})
 
-  return server
-}
+config.load({
+  package: {
+    name: Package.name,
+    version: Package.version,
+  },
+})
+
+export type ServiceConfig = typeof config
+export default config

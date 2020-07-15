@@ -28,11 +28,17 @@ import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 
-import { OpenApi, OpenApiOpts } from './openAPI'
-import { extHandlers } from '../handlers/openApiHandlers'
-import { apiHandlers as appApiHandlers } from '~/server/handlers/app'
-import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
+// Import necessary files to setup openapi
+import { OpenApi, OpenApiOpts } from './internal/openapi'
+import { extHandlers, appApiHandlers, mojaloopApiHandlers } from '~/server/handlers/openapi'
 
+// Import necessary files to setup mojaloop client
+import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
+
+// Import necessary files to setup mojaloop simulator
+import { MojaloopSimulator, MojaloopSimulatorOpts } from './internal/mojaloopSimulator'
+
+// Config for openapi
 const openApiOpts: OpenApiOpts = {
   baseHost: 'pisp-demo-server.local',
   definition: {
@@ -50,6 +56,16 @@ const openApiOpts: OpenApiOpts = {
   }
 }
 
+// Config for mojaloop client
+const mojaloopClientOpts: MojaloopClientOpts = {
+  baseUrl: 'https://mojaloop.local',
+}
+
+// Config for mojaloop simulator
+const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
+  vhost: 'mojaloop.pisp-demo-server.local',
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const plugins: Array<ServerRegisterPluginObject<any>> = [
   { plugin: Inert },
@@ -57,6 +73,14 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
   {
     plugin: OpenApi,
     options: openApiOpts,
+  },
+  {
+    plugin: MojaloopClient,
+    options: mojaloopClientOpts,
+  },
+  {
+    plugin: MojaloopSimulator,
+    options: mojaloopSimulatorOpts,
   }
 ]
 

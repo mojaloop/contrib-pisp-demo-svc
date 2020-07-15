@@ -24,7 +24,7 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import { ServiceConfig } from '../shared/config'
+import { ServiceConfig } from '../lib/config'
 import create from './create'
 import start from './start'
 import extensions from './extensions'

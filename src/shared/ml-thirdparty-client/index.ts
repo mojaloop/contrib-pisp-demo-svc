@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,10 +23,25 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Simulator } from '~/shared/ml-thirdparty-simulator'
+import { PartyIdType } from './models/core'
+import { AuthorizationsPutIdRequest, ThirdPartyTransactionRequest } from './models/openapi'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
+namespace Client {
+  export interface Config {
+    baseUrl: string
+  }
+}
+
+const defaultConfig: Client.Config = {
+  baseUrl: '',
+}
+
+export class Client {
+  config: Client.Config
+  simulator?: Simulator
+
+  public constructor(config: Client.Config) {
+    this.config = { ...defaultConfig, ...config }
   }
 }

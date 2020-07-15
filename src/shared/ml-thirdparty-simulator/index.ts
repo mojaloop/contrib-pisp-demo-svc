@@ -23,11 +23,21 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
+import { Server } from '@hapi/hapi'
+import * as faker from 'faker'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  return h.response().code(200)
+namespace Simulator {
+  export interface Options {
+    vhost?: string
+  }
+}
+
+export class Simulator {
+  server: Server
+  opts: Simulator.Options
+
+  constructor(server: Server, opts: Simulator.Options) {
+    this.server = server
+    this.opts = opts
+  }
 }

@@ -23,10 +23,14 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
+import { logger } from '~/shared/logger'
+import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import firebase from '~/lib/firebase'
+import { Status } from '~/lib/firebase/models/transactions'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  logger.logRequest(context, request, h)
+  return h.response().code(200)
 }

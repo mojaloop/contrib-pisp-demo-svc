@@ -72,8 +72,9 @@ const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     path: '/{path*}',
     vhost: 'app.' + opts.baseHost,
-    handler: (request: Request, h: ResponseToolkit): Promise<any> =>
-      api.handleRequest(
+    handler: (request: Request, h: ResponseToolkit): Promise<any> => {
+      console.log('here come')
+      return api.handleRequest(
         {
           method: request.method,
           path: request.path,
@@ -84,6 +85,7 @@ const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
         request,
         h,
       )
+    }
   })
 }
 

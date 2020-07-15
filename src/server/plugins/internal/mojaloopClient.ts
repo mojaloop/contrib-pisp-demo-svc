@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,48 +23,17 @@
  --------------
  ******/
 
-import convict from 'convict'
-import Package from '../../package.json'
+import { Client } from '~/shared/ml-thirdparty-client'
+import { Plugin, Server } from '@hapi/hapi'
 
-const config = convict({
-  package: {
-    name: {
-      doc: 'The application version.',
-      default: 'pisp-demo-server',
-    },
-    version: {
-      doc: 'The application version.',
-      default: '0.1.0',
-    },
-  },
-  env: {
-    doc: 'The application environment.',
-    format: ['production', 'development', 'test'],
-    default: 'development',
-    env: 'NODE_ENV',
-  },
-  host: {
-    doc: 'The IP address to bind.',
-    format: '*',
-    default: '0.0.0.0',
-    env: 'HOST',
-    arg: 'host',
-  },
-  port: {
-    doc: 'The port to bind.',
-    format: 'port',
-    default: 8080,
-    env: 'PORT',
-    arg: 'port',
-  },
-})
+export interface MojaloopClientOpts {
+  baseUrl: string
+}
 
-config.load({
-  package: {
-    name: Package.name,
-    version: Package.version,
-  },
-})
-
-export type ServiceConfig = typeof config
-export default config
+export const MojaloopClient: Plugin<MojaloopClientOpts> = {
+  name: 'MojaloopClient',
+  version: '1.0.0',
+  register: (server: Server, opts: MojaloopClientOpts) => {
+    server.app.mojaloopClient = new Client({ ...opts })
+  }
+}

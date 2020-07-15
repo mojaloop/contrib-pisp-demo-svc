@@ -23,37 +23,48 @@
  --------------
  ******/
 
+import { OpenApiExtHandlers } from '../../plugins/internal/openapi'
+import { Context } from 'openapi-backend'
 import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-
-import { HealthCheck, HealthResponseCode, HealthCheckResult, ServiceStatus } from '../../shared/health'
-import Config from '~/shared/config'
 import { logger } from '~/shared/logger'
 
-const pakcageInfo = {
-  name: Config.get('package.name'),
-  version: Config.get('package.version')
+import { apiHandlers as appApiHandlers } from './app'
+import { apiHandlers as mojaloopApiHandlers } from './mojaloop'
+import util from 'util'
+
+export {
+  appApiHandlers,
+  mojaloopApiHandlers
 }
 
-const healthCheck = new HealthCheck(pakcageInfo, [])
+export const apiHandlers = {
+  ...appApiHandlers,
+  ...mojaloopApiHandlers
+}
 
-/**
- * Operations on /health
- */
-
-export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let healthCheckResult: HealthCheckResult | null = null;
-  try {
-    healthCheckResult = await healthCheck.getHealth()
-  } catch (err) {
-    logger.error(err.message)
-  }
-
-  if (healthCheckResult == null || healthCheckResult.status == ServiceStatus.Down) {
+export const extHandlers: OpenApiExtHandlers = {
+  notFound: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`notFound, context: ${context}, request: ${request}, h: ${h}`)
     logger.logRequest(context, request, h)
-    return h.response({}).code(HealthResponseCode.GatewayTimeout)
-  } else {
-    return h.response(healthCheckResult).code(HealthResponseCode.Success)
-  }
+    return h.response().code(404)
+  },
+
+  methodNotAllowed: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`methodNotAllowed, context: ${context}, request: ${request}, h: ${h}`)
+    logger.logRequest(context, request, h)
+    return h.response().code(405)
+  },
+
+  validationFail: (context: Context, request: Request, h: ResponseToolkit) => {
+    let errorStr = util.inspect(context.validation.errors, { showHidden: true, depth: null })
+    logger.error(`validationFail ${errorStr}`)
+    logger.logRequest(context, request, h)
+    return h.response().code(406)
+  },
+
+  notImplemented: (context: Context, request: Request, h: ResponseToolkit) => {
+    logger.error(`notImplemented, context: ${context}, request: ${request}, h: ${h}`)
+    logger.logRequest(context, request, h)
+    return h.response().code(501)
+  },
 }

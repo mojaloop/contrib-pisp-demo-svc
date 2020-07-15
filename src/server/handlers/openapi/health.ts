@@ -23,29 +23,37 @@
  --------------
  ******/
 
-import * as Health from '../health'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
 
-import * as MojaloopAuthorizations from './authorizations'
-import * as MojaloopConsents from './consents'
-import * as MojaloopConsentsById from './consents/{ID}'
-import * as MojaloopConsentRequestsById from './consentRequests/{ID}'
-import * as MojaloopParticipants from './participants'
-import * as MojaloopParticipantsError from './participants/error'
-import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
-import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
-import * as MojaloopThirdpartyRequestsTransactionsById from './thirdpartyRequests/transactions/{ID}'
+import { HealthCheck, HealthResponseCode, HealthCheckResult, ServiceStatus } from '~/shared/health'
+import Config from '~/lib/config'
+import { logger } from '~/shared/logger'
 
-export const apiHandlers = {
-  getHealth: Health.get,
+const pakcageInfo = {
+  name: Config.get('package.name'),
+  version: Config.get('package.version')
+}
 
-  postAuthorizations: MojaloopAuthorizations.post,
-  postConsents: MojaloopConsents.post,
-  putConsentsById: MojaloopConsentsById.put,
-  deleteConsentsById: MojaloopConsentsById.remove,
-  putConsentRequestsById: MojaloopConsentRequestsById.put,
-  putParticipants: MojaloopParticipants.put,
-  putParticipantsError: MojaloopParticipantsError.put,
-  putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
-  putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putThirdpartyRequestsTransactionsById: MojaloopThirdpartyRequestsTransactionsById.put,
+const healthCheck = new HealthCheck(pakcageInfo, [])
+
+/**
+ * Operations on /health
+ */
+
+export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  logger.logRequest(context, request, h)
+  let healthCheckResult: HealthCheckResult | null = null;
+  try {
+    healthCheckResult = await healthCheck.getHealth()
+  } catch (err) {
+    logger.error(err.message)
+  }
+
+  if (healthCheckResult == null || healthCheckResult.status == ServiceStatus.Down) {
+    logger.logRequest(context, request, h)
+    return h.response({}).code(HealthResponseCode.GatewayTimeout)
+  } else {
+    return h.response(healthCheckResult).code(HealthResponseCode.Success)
+  }
 }
