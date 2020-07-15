@@ -23,7 +23,40 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './parties'
-export * from './transactions'
-export * from './transfers'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
+
+import { logger } from '~/shared/logger'
+import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+
+import firebase from '~/lib/firebase'
+import { Status } from '~/lib/firebase/models/transactions'
+
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+  logger.logRequest(context, request, h)
+  let body = request.payload as TransferIDPutRequest
+
+  console.log('here man')
+  firebase.firestore()
+    .collection('transactions')
+    .where("transactionId", "==", body.transactionId)
+    .get()
+    .then((response) => {
+      let batch = firebase.firestore().batch()
+      response.docs.forEach((doc) => {
+        console.log('tetststs', doc.id)
+        const docRef = firebase.firestore().collection('transactions').doc(doc.id)
+        batch.set(
+          docRef,
+          {
+            completedTimestamp: body.completedTimestamp,
+            status: Status.SUCCESS,
+          },
+          { merge: true },
+        )
+      })
+      batch.commit()
+    })
+
+  return h.response().code(200)
+}

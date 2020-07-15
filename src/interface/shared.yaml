@@ -262,14 +262,20 @@ components:
           items:
             $ref: '#/components/schemas/Account'
       description: Data model for the complex type PutPartiesByTypeAndIdRequest.
-    PutThirdpartyRequestsTransactionsByIdRequest:
-      title: PutThirdpartyRequestsTransactionsByIdRequest
+    PutTransfersByIdRequest:
+      title: PutTransfersByIdRequest
       type: object
       properties:
         transactionId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'
-        transactionRequestState:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/TransactionRequestState.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'  
+        fulfilment:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/IlpFulfilment.yaml'
+        completedTimestamp:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/DateTime.yaml'
+        transferState:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/TransferState.yaml'
+        extensionList:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/ExtensionList.yaml'
       description: Data model for the complex type PutThirdpartyRequestsTransactionsByIdRequest.
     Quote:
       title: Quote

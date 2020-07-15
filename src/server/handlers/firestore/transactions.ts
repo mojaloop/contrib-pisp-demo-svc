@@ -51,6 +51,13 @@ function isValidPayeeConfirmation(transaction: Transaction): boolean {
   return false
 }
 
+function isValidAuthorization(transaction: Transaction): boolean {
+  if (transaction.authenticationInfo && transaction.responseType) {
+    return true
+  }
+  return false
+}
+
 function getTomorrowsDate(): Date {
   let currentDate = new Date()
   return new Date(currentDate.getDate() + 1)
@@ -110,6 +117,18 @@ export const onUpdate: TransactionHandler = async (server: Server, _: string, tr
         },
         expiration: getTomorrowsDate().toISOString()
       })
+    }
+
+  } else if (transaction.status === Status.AUTHORIZATION_REQUIRED.toString()) {
+    if (isValidAuthorization(transaction)) {
+      server.app.mojaloopClient.putAuthorizations(
+        id,
+        {
+          responseType: transaction.responseType!,
+          authenticationInfo: transaction.authenticationInfo!
+        },
+        transaction.transactionId,
+      )
     }
   }
 }

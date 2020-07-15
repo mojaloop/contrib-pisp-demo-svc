@@ -278,15 +278,15 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
-  /thirdpartyRequests/transactions/{ID}:
+  /transfers/{ID}:
     parameters:
       - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
     put:
       tags:
-        - thirdpartyRequests
-      summary: '[Mojaloop Callback] Result of transaction request'
+        - transfers
+      summary: '[Mojaloop Callback] Result of transfer'
       description: Mojaloop callback for third party that initiated a transaction.
-      operationId: putThirdpartyRequestsTransactionsById
+      operationId: putTransfersById
       parameters:
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
@@ -294,7 +294,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/PutThirdpartyRequestsTransactionsByIdRequest'
+              $ref: 'shared.yaml#/components/schemas/PutTransfersByIdRequest'
       responses:
         200:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'

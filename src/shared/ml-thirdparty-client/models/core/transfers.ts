@@ -23,7 +23,27 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './parties'
-export * from './transactions'
-export * from './transfers'
+/**
+ * Below are the allowed values for the enumeration.
+ */
+export enum TransferState {
+  /**
+   * Next ledger has received the transfer.
+   */
+  RECEIVED = "RECEIVED",
+
+  /**
+   * Next ledger has reserved the transfer.
+   */
+  RESERVED = "RESERVED",
+
+  /**
+   * Next ledger has successfully performed the transfer.
+   */
+  COMMITTED = "COMMITTED",
+
+  /**
+   * Next ledger has aborted the transfer due to a rejection or failure to perform the transfer.
+   */
+  ABORTED = "ABORTED",
+}

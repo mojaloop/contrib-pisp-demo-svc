@@ -23,28 +23,9 @@
  --------------
  ******/
 
-import { AuthenticationType, Money, Quote, AuthenticationInfo, AuthenticationResponseType } from '../core'
+import { ExtensionList, TransferState } from '../core';
 
-export interface AuthorizationsPostRequest {
-  /**
-   * This value is a valid authentication type from the enumeration 
-   * AuthenticationType (OTP or QR Code or U2F).
-   */
-  authenticationType: AuthenticationType
-
-  /**
-   * RetriesLeft is the number of retries left before the financial transaction 
-   * is rejected. It must be expressed in the form of the data type Integer. 
-   * retriesLeft=1 means that this is the last retry before the financial 
-   * transaction is rejected.
-   */
-  retriesLeft: string
-
-  /**
-   * This is the transaction amount that will be withdrawn from the Payer’s account.
-   */
-  amount: Money
-
+export interface TransferIDPutRequest {
   /**
    * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 
    * object. The actual transaction will be created as part of a successful transfer 
@@ -53,25 +34,23 @@ export interface AuthorizationsPostRequest {
   transactionId: string
 
   /**
-   * The transactionRequestID, received from the POST /transactionRequests service 
-   * earlier in the process.
+   * Fulfilment of the condition specified with the transaction. 
+   * Mandatory if transfer has completed successfully.
    */
-  transactionRequestId: string
+  fulfilment: string
 
   /**
-   * A quote object that contains more detailed information about the transaction.
+   * Time and date when the transaction was completed.
    */
-  quote: Quote
-}
-
-export interface AuthorizationsPutIdRequest {
-  /**
-   * Authentication value provided by payer if entered.
-   */
-  authenticationInfo?: AuthenticationInfo
+  completedTimestamp: string
 
   /**
-   * An enum containing response information.
+   * State of the transfer.
    */
-  responseType: AuthenticationResponseType
+  transferState: TransferState
+
+  /**
+   * Optional extension, specific to deployment.
+   */
+  extensionList?: ExtensionList
 }

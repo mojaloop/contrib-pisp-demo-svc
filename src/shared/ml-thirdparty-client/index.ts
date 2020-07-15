@@ -56,4 +56,14 @@ export class Client {
       return this.simulator.postTransactions(requestBody)
     }
   }
+
+  public async putAuthorizations(
+    id: string,
+    requestBody: AuthorizationsPutIdRequest,
+    transactionId?: string,
+  ) {
+    if (this.simulator && transactionId) {
+      return this.simulator.putAuthorizations(id, requestBody, transactionId)
+    }
+  }
 }

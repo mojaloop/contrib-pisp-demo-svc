@@ -23,7 +23,21 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './parties'
-export * from './transactions'
-export * from './transfers'
+import * as faker from 'faker'
+
+import {
+  AuthorizationsPutIdRequest,
+  TransferIDPutRequest
+} from '~/shared/ml-thirdparty-client/models/openapi';
+
+import { TransferState } from '~/shared/ml-thirdparty-client/models/core';
+
+export const mockTransferIdPutRequest = (
+  _: string, __: AuthorizationsPutIdRequest, transactionId: string): TransferIDPutRequest => {
+  return {
+    transactionId,
+    fulfilment: faker.random.alphaNumeric(43),
+    completedTimestamp: faker.date.recent().toISOString(),
+    transferState: TransferState.COMMITTED,
+  }
+}

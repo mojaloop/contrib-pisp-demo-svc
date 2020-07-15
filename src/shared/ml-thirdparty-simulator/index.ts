@@ -26,11 +26,12 @@
 import { Server } from '@hapi/hapi'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '../ml-thirdparty-client/models/openapi'
+import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '../ml-thirdparty-client/models/openapi'
 
 import {
   mockPutPartiesRequest,
   mockPostAuthorizationsRequest,
+  mockTransferIdPutRequest
 } from './mock'
 
 namespace Simulator {
@@ -74,6 +75,21 @@ export class Simulator {
         'Content-Type': 'application/json',
       },
       payload: mockPostAuthorizationsRequest(request),
+    })
+  }
+
+  async putAuthorizations(id: string,
+    request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
+
+    this.server.inject({
+      method: 'PUT',
+      url: '/transfers/' + faker.random.uuid(),
+      headers: {
+        host: this.opts.vhost ?? '',
+        'content-length': '1234',
+        'content-type': 'application/json',
+      },
+      payload: mockTransferIdPutRequest(id, request, transactionId),
     })
   }
 }
