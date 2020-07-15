@@ -51,8 +51,11 @@ export class Logger {
     this._logger = createDefaultLogger()
   }
 
-  logRequest(context: Context, request: Request, h: ResponseToolkit): void {
-    this._logger.info(`New request - context: ${context}, request: ${request}, h: ${h}`)
+  logRequest(context: Context, _: Request, __: ResponseToolkit): void {
+    const headersStr = util.inspect(context.request.headers, { showHidden: true, depth: null })
+    const paramstStr = util.inspect(context.request.params, { showHidden: true, depth: null })
+    const payloadStr = util.inspect(context.request.body, { showHidden: true, depth: null })
+    this._logger.info(`New request - headers: ${headersStr}, params: ${paramstStr}, payload: ${payloadStr}`)
   }
 
   logResponse(request: RequestLogged) {
