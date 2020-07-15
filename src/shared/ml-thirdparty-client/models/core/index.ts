@@ -23,6 +23,8 @@
  --------------
  ******/
 
+export * from './transactions'
 export * from './parties'
 export * from './participants'
-export * from './transactions'
+export * from './extension'
+export * from './authorizations'

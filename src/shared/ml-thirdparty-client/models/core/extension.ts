@@ -23,29 +23,28 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
-import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+/**
+ * Data model for the complex type ExtensionList. 
+ * An optional list of extensions, specific to deployment.
+ */
+export interface ExtensionList {
+  /**
+   * Extension elements.
+   */
+  extension: [Extension]
+}
 
-export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let body = request.payload as AuthorizationsPostRequest
+/**
+ * Data model for the complex type Extension.
+ */
+export interface Extension {
+  /**
+   * Extension key.
+   */
+  key: string
 
-  firebase.firestore()
-    .collection('transactions')
-    .doc(body.transactionRequestId)
-    .set(
-      {
-        authenticationType: body.authenticationType,
-        transactionId: body.transactionId,
-        quote: body.quote,
-        status: Status.AUTHORIZATION_REQUIRED,
-      },
-      { merge: true },
-    )
-
-  return h.response().code(202)
+  /**
+   * Extension value.
+   */
+  value: string
 }

@@ -26,8 +26,11 @@
 import { Server } from '@hapi/hapi'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { ThirdPartyTransactionRequest } from '../ml-thirdparty-client/models/openapi'
+
 import {
   mockPutPartiesRequest,
+  mockPostAuthorizationsRequest,
 } from './mock'
 
 namespace Simulator {
@@ -58,6 +61,19 @@ export class Simulator {
         'Content-Type': 'application/json',
       },
       payload: mockPutPartiesRequest(type, id),
+    })
+  }
+
+  async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+    this.server.inject({
+      method: 'POST',
+      url: '/authorizations',
+      headers: {
+        host: this.opts.vhost ?? '',
+        'Content-Length': '1234',
+        'Content-Type': 'application/json',
+      },
+      payload: mockPostAuthorizationsRequest(request),
     })
   }
 }

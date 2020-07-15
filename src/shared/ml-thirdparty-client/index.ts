@@ -49,4 +49,10 @@ export class Client {
       return this.simulator.getParties(type, id)
     }
   }
+
+  public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
+    if (this.simulator) {
+      return this.simulator.postTransactions(requestBody)
+    }
+  }
 }

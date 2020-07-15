@@ -27,17 +27,32 @@ import * as uuid from 'uuid'
 
 import { Server } from '@hapi/hapi'
 
+import firebase from '~/lib/firebase'
 import { Transaction, Status } from '~/lib/firebase/models/transactions'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
 import { logger } from '~/shared/logger'
-import firebase from '~/lib/firebase'
+import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
+
 
 function isValidPartyQuery(transaction: Transaction): boolean {
   if (transaction.payee) {
     return true
   }
   return false
+}
+
+function isValidPayeeConfirmation(transaction: Transaction): boolean {
+  if (transaction.consentId && transaction.sourceAccountId
+    && transaction.amount && transaction.payer && transaction.payee) {
+    return true
+  }
+  return false
+}
+
+function getTomorrowsDate(): Date {
+  let currentDate = new Date()
+  return new Date(currentDate.getDate() + 1)
 }
 
 async function setupNewTransaction(id: string) {
@@ -71,9 +86,30 @@ export const onCreate: TransactionHandler = async (server: Server, id: string, t
   }
 }
 
-export const onUpdate: TransactionHandler = async (_: Server, __: string, transaction: Transaction) => {
+export const onUpdate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
   if (!transaction.status) {
     logger.error('Invalid transaction update. No status provided.')
     return
   }
+
+  if (transaction.status === Status.PENDING_PAYEE_CONFIRMATION.toString()) {
+    if (isValidPayeeConfirmation(transaction)) {
+      server.app.mojaloopClient.postTransactions({
+        transactionRequestId: id,
+        sourceAccountId: transaction.sourceAccountId!,
+        consentId: transaction.consentId!,
+        payee: transaction.payee!,
+        payer: transaction.payer!,
+        amountType: AmountType.RECEIVE,
+        amount: transaction.amount!,
+        transactionType: {
+          scenario: "TRANSFER",
+          initiator: "PAYER",
+          intiiatorType: "CONSUMER",
+        },
+        expiration: getTomorrowsDate().toISOString()
+      })
+    }
+  }
 }
+

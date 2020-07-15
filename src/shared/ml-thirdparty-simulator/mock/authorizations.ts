@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,29 +23,28 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
-import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+import * as faker from 'faker'
 
-export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let body = request.payload as AuthorizationsPostRequest
+import {
+  AuthorizationsPostRequest,
+  ThirdPartyTransactionRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
 
-  firebase.firestore()
-    .collection('transactions')
-    .doc(body.transactionRequestId)
-    .set(
-      {
-        authenticationType: body.authenticationType,
-        transactionId: body.transactionId,
-        quote: body.quote,
-        status: Status.AUTHORIZATION_REQUIRED,
-      },
-      { merge: true },
-    )
+import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
 
-  return h.response().code(202)
-}
+export const mockPostAuthorizationsRequest =
+  (request: ThirdPartyTransactionRequest): AuthorizationsPostRequest => {
+    return {
+      authenticationType: AuthenticationType.U2F,
+      retriesLeft: "1",
+      amount: request.amount,
+      transactionId: faker.random.uuid(),
+      transactionRequestId: request.transactionRequestId,
+      quote: {
+        transferAmount: request.amount,
+        expiration: request.expiration,
+        ilpPacket: faker.random.alphaNumeric(70),
+        condition: faker.random.alphaNumeric(43),
+      }
+    }
+  }

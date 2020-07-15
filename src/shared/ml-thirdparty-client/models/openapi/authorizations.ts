@@ -23,29 +23,43 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
-import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+import { AuthenticationType, Money, Quote } from '../core'
 
-export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let body = request.payload as AuthorizationsPostRequest
+export interface AuthorizationsPostRequest {
+  /**
+   * This value is a valid authentication type from the enumeration 
+   * AuthenticationType (OTP or QR Code or U2F).
+   */
+  authenticationType: AuthenticationType
 
-  firebase.firestore()
-    .collection('transactions')
-    .doc(body.transactionRequestId)
-    .set(
-      {
-        authenticationType: body.authenticationType,
-        transactionId: body.transactionId,
-        quote: body.quote,
-        status: Status.AUTHORIZATION_REQUIRED,
-      },
-      { merge: true },
-    )
+  /**
+   * RetriesLeft is the number of retries left before the financial transaction 
+   * is rejected. It must be expressed in the form of the data type Integer. 
+   * retriesLeft=1 means that this is the last retry before the financial 
+   * transaction is rejected.
+   */
+  retriesLeft: string
 
-  return h.response().code(202)
+  /**
+   * This is the transaction amount that will be withdrawn from the Payer’s account.
+   */
+  amount: Money
+
+  /**
+   * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 
+   * object. The actual transaction will be created as part of a successful transfer 
+   * process.
+   */
+  transactionId: string
+
+  /**
+   * The transactionRequestID, received from the POST /transactionRequests service 
+   * earlier in the process.
+   */
+  transactionRequestId: string
+
+  /**
+   * A quote object that contains more detailed information about the transaction.
+   */
+  quote: Quote
 }
