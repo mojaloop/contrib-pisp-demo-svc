@@ -85,6 +85,9 @@ paths:
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
   /parties/{Type}/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Type.yaml'
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
     put:
       tags:
         - parties

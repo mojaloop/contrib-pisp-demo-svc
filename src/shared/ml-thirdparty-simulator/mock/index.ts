@@ -23,42 +23,5 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
-import * as faker from 'faker'
-
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  mockPutPartiesRequest,
-} from './mock'
-
-namespace Simulator {
-  export interface Options {
-    vhost?: string
-  }
-}
-
-export class Simulator {
-  server: Server
-  opts: Simulator.Options
-
-  constructor(server: Server, opts: Simulator.Options) {
-    this.server = server
-    this.opts = opts
-  }
-
-  async getParties(type: PartyIdType, id: string): Promise<void> {
-    const targetUrl = '/parties/' + type.toString() + '/' + id
-    console.log("tesstt", targetUrl)
-
-    this.server.inject({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: this.opts.vhost ?? '',
-        'Content-Length': '1234',
-        'Content-Type': 'application/json',
-      },
-      payload: mockPutPartiesRequest(type, id),
-    })
-  }
-}
+export * from './participants'
+export * from './parties'

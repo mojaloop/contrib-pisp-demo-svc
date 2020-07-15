@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,42 +23,5 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
-import * as faker from 'faker'
-
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  mockPutPartiesRequest,
-} from './mock'
-
-namespace Simulator {
-  export interface Options {
-    vhost?: string
-  }
-}
-
-export class Simulator {
-  server: Server
-  opts: Simulator.Options
-
-  constructor(server: Server, opts: Simulator.Options) {
-    this.server = server
-    this.opts = opts
-  }
-
-  async getParties(type: PartyIdType, id: string): Promise<void> {
-    const targetUrl = '/parties/' + type.toString() + '/' + id
-    console.log("tesstt", targetUrl)
-
-    this.server.inject({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: this.opts.vhost ?? '',
-        'Content-Length': '1234',
-        'Content-Type': 'application/json',
-      },
-      payload: mockPutPartiesRequest(type, id),
-    })
-  }
-}
+export * from './parties'
+export * from './participants'

@@ -29,6 +29,14 @@ import { Transaction, Status } from '~/lib/firebase/models/transactions'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
 import { logger } from '~/shared/logger'
+
+function isValidPartyQuery(transaction: Transaction): boolean {
+  if (transaction.payee && transaction.partyQuery) {
+    return true
+  }
+  return false
+}
+
 export const onCreate: TransactionHandler = async (server: Server, _: string, transaction: Transaction) => {
   if (transaction.status) {
     // Skip transaction that has been processed previously.
@@ -38,6 +46,15 @@ export const onCreate: TransactionHandler = async (server: Server, _: string, tr
     return
   }
 
+  if (isValidPartyQuery(transaction)) {
+    server.app.mojaloopClient.getParties(
+      transaction.payee!.partyIdInfo.partyIdType,
+      transaction.payee!.partyIdInfo.partyIdentifier,
+    )
+  } else {
+    logger.error('invalid party query')
+  }
+}
 
 export const onUpdate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
   if (!transaction.status) {

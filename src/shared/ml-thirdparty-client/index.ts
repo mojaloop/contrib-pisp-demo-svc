@@ -44,4 +44,10 @@ export class Client {
   public constructor(config: Client.Config) {
     this.config = { ...defaultConfig, ...config }
   }
+
+  public async getParties(type: PartyIdType, id: string): Promise<void> {
+    if (this.simulator) {
+      return this.simulator.getParties(type, id)
+    }
+  }
 }

@@ -23,40 +23,49 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
+import * as faker from 'faker'
+import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+import { participants } from './participants'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let body = context.request.body as PartiesTypeIDPutRequest
-  let partyQuery = context.request.params.Type + '/' + context.request.params.ID
-  logger.info(`here in handler ${partyQuery}`)
+const createParty = (type: PartyIdType, id: string): Party => {
+  const randomFsp = participants[Math.floor(Math.random() * participants.length)]
+  const randomFirstName = faker.name.firstName()
+  const randomLastName = faker.name.lastName()
+  return {
+    partyIdInfo: {
+      partyIdType: type,
+      partyIdentifier: id,
+      fspId: randomFsp.fspId
+    },
+    name: randomFirstName + randomLastName,
+    personalInfo: {
+      complexName: {
+        firstName: randomFirstName,
+        lastName: randomLastName,
+      }
+    }
+  }
+}
 
-  firebase.firestore()
-    .collection('transactions')
-    .where("partyQuery", "==", partyQuery)
-    .get()
-    .then((response) => {
-      let batch = firebase.firestore().batch()
-      response.docs.forEach((doc) => {
-        console.log('doc id', doc.id)
-        const docRef = firebase.firestore().collection('transactions').doc(doc.id)
-        batch.set(
-          docRef,
-          {
-            partyQuery: firebase.firestore.FieldValue.delete(),
-            payee: body.party,
-            status: Status.PENDING_PAYEE_CONFIRMATION,
-          },
-          { merge: true },
-        )
-      })
-      batch.commit()
-    })
+const createAccount = (party: Party, currency: Currency): Account => {
+  const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
+  const randomAlphanumeric = faker.random.alphaNumeric(5)
+  return {
+    id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
+    currency
+  }
+}
 
-  return h.response().code(200)
+export const mockPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
+  const party = createParty(type, id)
+  const accounts: Account[] = [ // hardcode two currencies
+    createAccount(party, Currency.USD),
+    createAccount(party, Currency.SGD),
+  ]
+
+  return {
+    party,
+    accounts
+  }
 }
