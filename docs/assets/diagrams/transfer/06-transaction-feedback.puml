@@ -55,7 +55,7 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "/transactions/777",""
+  ""  "/transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote

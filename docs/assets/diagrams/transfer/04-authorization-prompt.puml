@@ -64,7 +64,7 @@ deactivate Mojaloop
 rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("777")""
+  ""  .where("transactionRequestId", "==", "777")""
   ""  .set({""
   ""    authenticationType: "U2F",""
   ""    transactionId: "888",""
@@ -80,7 +80,7 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/777",""
+  ""  "transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote

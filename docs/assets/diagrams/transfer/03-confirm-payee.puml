@@ -23,7 +23,7 @@ Alice -> App: Initiate this transaction
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("777")""
+  ""  .doc("abc123")""
   ""  .set({""
   ""    sourceAccountId: "bob.fspb",""
   ""    consentId: "555",""
@@ -53,7 +53,7 @@ Firebase <-- App: ""200 OK""
 rnote right of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/777",""
+  ""  "transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote

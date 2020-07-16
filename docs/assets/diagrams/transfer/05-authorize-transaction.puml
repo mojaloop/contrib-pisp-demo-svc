@@ -23,7 +23,7 @@ Alice -> App: Authorize the transaction
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("777")""
+  ""  .doc("abc123")""
   ""  .set({""
   ""    authenticationInfo: {""
   ""      authentication: "U2F",""
@@ -42,7 +42,7 @@ return ""200 OK""
 rnote right of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/777",""
+  ""  "transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote

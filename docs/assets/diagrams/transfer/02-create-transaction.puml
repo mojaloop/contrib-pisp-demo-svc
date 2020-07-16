@@ -23,8 +23,7 @@ Alice -> App: I want to transfer money\nto this party
 rnote right of App #Light 
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .doc("777")""
-  ""  .set({""
+  ""  .add({""
   ""    userId: "bob101",""
   ""    partyQuery: "MSISDN/+1-222-222-2222",""
   ""    payee: {""
@@ -42,7 +41,7 @@ App <-- Firebase: ""200 OK""
 rnote right of Firebase #Light
   ""event(""
   ""  "document.create",""
-  ""  "transactions/777",""
+  ""  "transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote
@@ -50,6 +49,19 @@ end rnote
 Firebase -> Server ++: Notify creation of transaction document
 Firebase <-- Server: ""200 OK""
 deactivate Firebase 
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("abc123")""
+  ""  .set({""
+  ""    transactionRequestId: "777",""
+  ""    status: "PENDING_PARTY_LOOKUP",""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase++: Update transaction document
+return ""200 OK""
 
 Server -> Mojaloop ++: ""**GET /parties/MSISDN/+1-222-222-2222**""
 Server <-- Mojaloop: ""202 Accepted""
@@ -114,7 +126,7 @@ deactivate Server
 rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
-  ""  "transactions/777",""
+  ""  "transactions/abc123",""
   ""  <snapshot object>""
   "")""
 end rnote
