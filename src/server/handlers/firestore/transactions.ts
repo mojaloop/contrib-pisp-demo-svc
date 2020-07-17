@@ -52,7 +52,8 @@ function isValidPayeeConfirmation(transaction: Transaction): boolean {
 }
 
 function isValidAuthorization(transaction: Transaction): boolean {
-  if (transaction.authenticationInfo && transaction.responseType) {
+  if (transaction.transactionRequestId
+    && transaction.authenticationInfo && transaction.responseType) {
     return true
   }
   return false
@@ -122,7 +123,7 @@ export const onUpdate: TransactionHandler = async (server: Server, _: string, tr
   } else if (transaction.status === Status.AUTHORIZATION_REQUIRED.toString()) {
     if (isValidAuthorization(transaction)) {
       server.app.mojaloopClient.putAuthorizations(
-        id,
+        transaction.transactionRequestId!,
         {
           responseType: transaction.responseType!,
           authenticationInfo: transaction.authenticationInfo!

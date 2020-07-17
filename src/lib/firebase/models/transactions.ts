@@ -24,7 +24,7 @@
  ******/
 
 import {
-  AuthenticationType, Party, Money, Quote,
+  AuthenticationInfo, AuthenticationResponseType, AuthenticationType, Party, Money, Quote,
 } from '~/shared/ml-thirdparty-client/models/core';
 
 export enum Status {
@@ -83,6 +83,17 @@ export interface Transaction {
    * financial transaction.
    */
   authenticationType?: AuthenticationType
+
+  /**
+   * The authentication info that may be entered by the payer to authorize a
+   * proposed financial transaction.
+   */
+  authenticationInfo?: AuthenticationInfo
+
+  /**
+   * Payer's response after being prompted to authorize a proposed financial transaction.
+   */
+  responseType?: AuthenticationResponseType
 
   /**
    * Common ID (decided by the PISP) to identify a transaction request

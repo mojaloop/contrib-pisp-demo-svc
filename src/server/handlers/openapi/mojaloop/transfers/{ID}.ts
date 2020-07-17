@@ -36,7 +36,6 @@ export const put: Handler = async (context: Context, request: Request, h: Respon
   logger.logRequest(context, request, h)
   let body = request.payload as TransferIDPutRequest
 
-  console.log('here man')
   firebase.firestore()
     .collection('transactions')
     .where("transactionId", "==", body.transactionId)
@@ -44,7 +43,6 @@ export const put: Handler = async (context: Context, request: Request, h: Respon
     .then((response) => {
       let batch = firebase.firestore().batch()
       response.docs.forEach((doc) => {
-        console.log('tetststs', doc.id)
         const docRef = firebase.firestore().collection('transactions').doc(doc.id)
         batch.set(
           docRef,
