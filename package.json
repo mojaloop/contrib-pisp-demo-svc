@@ -102,10 +102,12 @@
     "@hapi/hapi": "^19.1.1",
     "@hapi/inert": "^6.0.1",
     "@hapi/vision": "^6.0.0",
+    "@types/uuid": "^8.0.0",
     "convict": "^6.0.0",
     "faker": "^4.1.0",
     "firebase-admin": "^8.13.0",
     "openapi-backend": "^3.5.1",
+    "uuid": "^8.2.0",
     "winston": "^3.3.3"
   }
 }

@@ -33,12 +33,14 @@ import { Status } from '~/lib/firebase/models/transactions'
 export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
   let body = context.request.body as PartiesTypeIDPutRequest
-  let partyQuery = context.request.params.Type + '/' + context.request.params.ID
-  logger.info(`here in handler ${partyQuery}`)
+  let partyIdType = context.request.params.Type
+  let partyIdentifier = context.request.params.ID
 
   firebase.firestore()
     .collection('transactions')
-    .where("partyQuery", "==", partyQuery)
+    .where("payee.partyIdInfo.partyIdType", "==", partyIdType)
+    .where("payee.partyIdInfo.partyIdentifier", "==", partyIdentifier)
+    .where("status", "==", Status.PENDING_PARTY_LOOKUP.toString())
     .get()
     .then((response) => {
       let batch = firebase.firestore().batch()

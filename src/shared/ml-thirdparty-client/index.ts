@@ -25,7 +25,6 @@
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
-import { AuthorizationsPutIdRequest, ThirdPartyTransactionRequest } from './models/openapi'
 
 namespace Client {
   export interface Config {

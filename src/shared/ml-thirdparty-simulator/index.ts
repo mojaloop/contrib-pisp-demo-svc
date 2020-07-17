@@ -24,7 +24,6 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import * as faker from 'faker'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {

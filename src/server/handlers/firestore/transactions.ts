@@ -23,21 +23,34 @@
  --------------
  ******/
 
+import * as uuid from 'uuid'
+
 import { Server } from '@hapi/hapi'
 
 import { Transaction, Status } from '~/lib/firebase/models/transactions'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
 import { logger } from '~/shared/logger'
+import firebase from '~/lib/firebase'
 
 function isValidPartyQuery(transaction: Transaction): boolean {
-  if (transaction.payee && transaction.partyQuery) {
+  if (transaction.payee) {
     return true
   }
   return false
 }
 
-export const onCreate: TransactionHandler = async (server: Server, _: string, transaction: Transaction) => {
+async function setupNewTransaction(id: string) {
+  await firebase.firestore()
+    .collection('transactions')
+    .doc(id)
+    .set({
+      transactionRequestId: uuid.v4(),
+      status: Status.PENDING_PARTY_LOOKUP
+    }, { merge: true })
+}
+
+export const onCreate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
   if (transaction.status) {
     // Skip transaction that has been processed previously.
     // We need this because when the server starts for the first time, 
@@ -45,6 +58,8 @@ export const onCreate: TransactionHandler = async (server: Server, _: string, tr
     // document.
     return
   }
+
+  await setupNewTransaction(id)
 
   if (isValidPartyQuery(transaction)) {
     server.app.mojaloopClient.getParties(
@@ -56,7 +71,7 @@ export const onCreate: TransactionHandler = async (server: Server, _: string, tr
   }
 }
 
-export const onUpdate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
+export const onUpdate: TransactionHandler = async (_: Server, __: string, transaction: Transaction) => {
   if (!transaction.status) {
     logger.error('Invalid transaction update. No status provided.')
     return
