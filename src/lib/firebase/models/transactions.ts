@@ -85,6 +85,11 @@ export interface Transaction {
   authenticationType?: AuthenticationType
 
   /**
+   * Common ID (decided by the PISP) to identify a transaction request
+   */
+  transactionRequestId?: string
+
+  /**
    * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 
    * object. The actual transaction will be created as part of a successful transfer 
    * process.

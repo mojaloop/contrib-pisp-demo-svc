@@ -43,7 +43,8 @@ function isValidPartyQuery(transaction: Transaction): boolean {
 }
 
 function isValidPayeeConfirmation(transaction: Transaction): boolean {
-  if (transaction.consentId && transaction.sourceAccountId
+  if (transaction.transactionRequestId
+    && transaction.consentId && transaction.sourceAccountId
     && transaction.amount && transaction.payer && transaction.payee) {
     return true
   }
@@ -86,7 +87,7 @@ export const onCreate: TransactionHandler = async (server: Server, id: string, t
   }
 }
 
-export const onUpdate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
+export const onUpdate: TransactionHandler = async (server: Server, _: string, transaction: Transaction) => {
   if (!transaction.status) {
     logger.error('Invalid transaction update. No status provided.')
     return
@@ -95,7 +96,7 @@ export const onUpdate: TransactionHandler = async (server: Server, id: string, t
   if (transaction.status === Status.PENDING_PAYEE_CONFIRMATION.toString()) {
     if (isValidPayeeConfirmation(transaction)) {
       server.app.mojaloopClient.postTransactions({
-        transactionRequestId: id,
+        transactionRequestId: transaction.transactionRequestId!,
         sourceAccountId: transaction.sourceAccountId!,
         consentId: transaction.consentId!,
         payee: transaction.payee!,
