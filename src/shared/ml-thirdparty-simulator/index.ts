@@ -52,8 +52,6 @@ export class Simulator {
 
   async getParties(type: PartyIdType, id: string): Promise<void> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
-    console.log("tesstt", targetUrl)
-
     this.server.inject({
       method: 'PUT',
       url: targetUrl,
