@@ -17,7 +17,7 @@ return ""200 OK""
 
 App -> Firebase: ""firebase.firestore()""\n\
   "".collection("transactions")""\n\
-  "".where("uid", "==", "bob101")""\n\
+  "".where("userId", "==", "bob101")""\n\
   "".onSnapshot( ... )""
 return ""200 OK""
 
