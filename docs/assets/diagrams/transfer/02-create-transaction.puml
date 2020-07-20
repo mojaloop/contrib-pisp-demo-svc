@@ -103,8 +103,8 @@ deactivate Mojaloop
 rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
-  ""  .where("party.partyIdInfo.partyIdType", "==", "MSISDN")""
-  ""  .where("party.partyIdInfo.partyIdentifier", "==", "+1-222-222-2222")""
+  ""  .where("payee.partyIdInfo.partyIdType", "==", "MSISDN")""
+  ""  .where("payee.partyIdInfo.partyIdentifier", "==", "+1-222-222-2222")""
   ""  .where("status", "==", "PENDING_PARTY_LOOKUP")""
   ""  .set({""
   ""    payee: {""
