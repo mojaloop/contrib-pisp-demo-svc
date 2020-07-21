@@ -84,14 +84,14 @@ rnote left of Mojaloop #Light
   ""      },""
   ""    }""
   ""  },""
-  "" "accounts": [""
+  ""  "accounts": [""
   ""    { "id": "aaa.bob.fspb", "currency": "USD" },""
   ""    { "id": "bbb.bob.fspb", "currency": "SGD" }""
   ""  ]""
   ""} ""
 end rnote
 
-Mojaloop -> Server ++: ""**PUT /parties/MSISDN/+1-222-222-2222**""
+Mojaloop -> Server ++: ""**PUT /parties/OPAQUE/bob1234**""
 Mojaloop <-- Server: ""200 OK""
 
 deactivate Mojaloop
