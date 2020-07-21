@@ -30,20 +30,7 @@ rnote right of App #Light
   ""    amount: {""
   ""      amount: "20",""
   ""      currency: "USD"""
-  ""    },""
-  ""    payer: {""
-  ""      personalInfo: {""
-  ""        complexName: {""
-  ""          firstName: "Bob",""
-  ""          lastName: "Beaver"""
-  ""        }""
-  ""      },""
-  ""      partyIdInfo: {""
-  ""        partyIdType: "MSISDN",""
-  ""        partyIdentifier: "+1-111-111-1111",""
-  ""        fspId: "fspb",""
-  ""      }""
-  ""    },""
+  ""    }""
   ""  }, { merge: true })""
 end rnote
 
@@ -62,6 +49,38 @@ Firebase -> Server ++: Notify update on transaction document
 Firebase <-- Server: ""200 OK""
 deactivate Firebase
 
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "555")""
+  ""  .get()""
+end rnote
+
+Server -> Firebase ++: Get payer info from consent data
+
+rnote right of Firebase #Light
+  ""result({""
+  ""  ...,""
+  ""  party: {""
+  ""    partyIdInfo: {""
+  ""      partyIdType: "MSISDN",""
+  ""      partyIdentifier: "+1-111-111-1111",""
+  ""      fspId: "fspb",""
+  ""    },""
+  ""    name: "Bob Beaver",""
+  ""    personalInfo: {""
+  ""      complexName: {""
+  ""        firstName: "Bob",""
+  ""        lastName: "Beaver"""
+  ""      }""
+  ""    }""
+  ""  },""
+  ""  ...""
+  ""})""
+end rnote
+
+return ""200 OK""
+
 rnote right of Server #Light 
   ""**POST /thirdpartyRequests/transactions**""
   ""FSPIOP-Source: pisp""
@@ -78,16 +97,17 @@ rnote right of Server #Light
   ""    }""
   ""  },""
   ""  "payer": {""
-  ""    "personalInfo": {""
-  ""      "complexName": {""
-  ""        "firstName": "Bob",""
-  ""        "lastName": "Beaver"""
-  ""      }""
+  ""    partyIdInfo: {""
+  ""      partyIdType: "MSISDN",""
+  ""      partyIdentifier: "+1-111-111-1111",""
+  ""      fspId: "fspb",""
   ""    },""
-  ""    "partyIdInfo": {""
-  ""      "partyIdType": "OPAQUE",""
-  ""      "partyIdentifier": "bob1234",""
-  ""      "fspId": "fspb"""
+  ""    name: "Bob Beaver",""
+  ""    personalInfo: {""
+  ""      complexName: {""
+  ""        firstName: "Bob",""
+  ""        lastName: "Beaver"""
+  ""      }""
   ""    }""
   ""  },""
   ""  "amountType": "SEND",""

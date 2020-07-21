@@ -29,10 +29,9 @@ rnote right of App #Light
   ""      authentication: "U2F",""
   ""      authenticationValue: {""
   ""        pinValue: "base64(xxx)",""
-  ""        counter: "1"""
   ""      }""
   ""    },""
-  ""    responseType: "ENTERED"""
+  ""    responseType: "AUTHORIZED"""
   ""  }, { merge: true })""
 end rnote
 
