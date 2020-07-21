@@ -86,7 +86,7 @@ rnote left of Mojaloop #Light
   ""      "dateOfBirth": "1971-12-25"""
   ""    }""
   ""  },""
-  "" "accounts": [""
+  ""  "accounts": [""
   ""    {""
   ""      "id": "alice.fspa",""
   ""      "currency": "USD"""
