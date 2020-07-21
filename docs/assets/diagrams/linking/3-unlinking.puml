@@ -19,37 +19,38 @@ end box
 'start flow
 Alice -> App++: I want to unlink this bank account
 
-App -> Server ++: ""**DELETE /consents/{ID}**""
-App <-- Server: ""**HTTP 202** (Accepted)""
+App -> Server ++: ""**DELETE /consents/123**""
+App <-- Server: ""202 Accepted""
 deactivate App
 
-Server -> Adapter ++: ""**DELETE /consents/{ID}**""
-Adapter <-- Server: ""**HTTP 202** (Accepted)""
+Server -> Adapter ++: ""**DELETE /consents/123**""
+Adapter <-- Server: ""202 Accepted""
 deactivate Server
 
-Adapter -> Server++: ""**DELETE /consents/{ID}**""
-Adapter <-- Server: ""**HTTP 200** (OK)""
+Adapter -> Server++: ""**DELETE /consents/123**""
+Adapter <-- Server: ""200 OK""
 deactivate Adapter
 
 rnote left of Server #Light
-  ""deleteDoc(""
-  ""  "/consents/users/1234/<uuid>"""
-  "")""
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .delete()""
 end rnote
 
 Server -> Firebase: The account has been unlinked.
-Server <-- Firebase: ""200 (OK)""
+Server <-- Firebase: ""200 OK""
 deactivate Server
 
 rnote left of Firebase #Light
   ""event(""
   ""  "document.delete",""
-  ""  "/consents/users/1234/<uuid>"""
+  ""  "consents/abc123"""
   "")""
 end rnote
 
-Firebase -> App: Notify update on consent status
-Firebase <-- App: ""200 (OK)""
+Firebase -> App: Notify deletion of consent document
+Firebase <-- App: ""200 OK""
 
 App -> Alice: The bank acc has been unlinked.
 

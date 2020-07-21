@@ -1,0 +1,85 @@
+@startuml
+
+title: Grant Consent
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+activate Mojaloop
+
+Mojaloop -> Mojaloop: Validate ""authToken""
+
+rnote left of Mojaloop #Light
+  ""{""
+  ""  "id": "123",""
+  ""  "requestId": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "participantId": "fspb",""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "credential": null""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++: ""**POST /consents**""
+
+Mojaloop <-- Server: ""**HTTP 202** (Accepted)""
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentRequestId", "==", "111")""
+  ""  .set({""
+  ""    consentId: "123",""
+  ""    initiatorId: "pisp",""
+  ""    participantId: "fspb",""
+  ""    status: "CONSENT_GRANTED"""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase: Update consent status
+return ""200 (OK)""
+deactivate Server
+
+rnote left of Firebase #Light 
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+
+
+App -> Alice: Consent has been granted.\nLet me know if you want to\nremember this device.
+
+opt User wants to remember the device
+
+...
+
+note over Alice, Mojaloop
+  Register credential with FIDO protocol. For more details, see the sequence diagram for credential registration.
+end note
+
+...
+
+end 
+
+@enduml

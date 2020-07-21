@@ -1,0 +1,61 @@
+@startuml
+
+title: Authentication (Web)
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App ++: Redirection to the\nprovided deep link
+
+rnote right of App #Light
+  ""{""
+  ""  "initiatorId": "pisp",""
+  ""  "authChannels": ["Web"],""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "callbackUri": "pisp-app://callback...",""
+  ""  "authUri": "dfspa.com/authorize?consentRequestId=111",""
+  ""  "authToken": <SECRET>""
+  ""}""
+end rnote
+
+App -> Server++: ""**PUT /consentRequests/111**""
+App <-- Server : ""200 OK""
+deactivate App
+
+rnote right of Server #Light
+  ""{""
+  ""  "initiatorId": "pisp",""
+  ""  "authChannels": ["Web"],""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "callbackUri": "pisp-app://callback...",""
+  ""  "authUri": "dfspa.com/authorize?consentRequestId=111",""
+  ""  "authToken": <SECRET>""
+  ""}""
+end rnote
+Server -> Mojaloop ++: ""**PUT /consentRequests/111**""
+
+Server <-- Mojaloop: ""200 OK""
+deactivate Server
+
+@enduml

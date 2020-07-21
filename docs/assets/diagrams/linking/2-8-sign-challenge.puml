@@ -1,0 +1,130 @@
+@startuml
+
+title: Sign Challenge
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+'start flow
+
+rnote right of App #Light
+  ""{""
+  ""  "requestId": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "participantId": "fspb",""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "credential": {""
+  ""    "id": "12345",""
+  ""    "credentialType": "FIDO",""
+  ""    "status": "PENDING",""
+  ""    "challenge": {""
+  ""      "payload": base64(...),""
+  ""      "signature": base64(...)""
+  ""    },""
+  ""    "payload": base64(...)""
+  ""  }""
+  ""}""
+end rnote
+
+App -> Server ++: ""**PUT /consents/123**""
+App <-- Server: ""202 Accepted   // not 200?""
+deactivate App
+
+rnote right of Server #Light
+  ""{""
+  ""  "requestId": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "participantId": "fspb",""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "credential": {""
+  ""    "id": "12345",""
+  ""    "credentialType": "FIDO",""
+  ""    "status": "PENDING",""
+  ""    "challenge": {""
+  ""      "payload": base64(...),""
+  ""      "signature": base64(...)""
+  ""    },""
+  ""    "payload": base64(...)""
+  ""  }""
+  ""}""
+end rnote
+
+Server -> Mojaloop ++: ""**PUT /consents/123**""
+Server <-- Mojaloop: ""202 Accepted   // not 200?""
+
+deactivate Server
+
+rnote left of Mojaloop #Light
+  ""{""
+  ""  "requestId": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "participantId": "fspb",""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "credential": {""
+  ""    "id": "12345",""
+  ""    "credentialType": "FIDO",""
+  ""    "status": "VERIFIED",""
+  ""    "challenge": {""
+  ""      "payload": base64(...),""
+  ""      "signature": base64(...)""
+  ""    },""
+  ""    "payload": base64(...)""
+  ""  }""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++: ""**PUT /consents/{ID}**""
+
+
+Mojaloop <-- Server: ""**HTTP 200** (OK)""
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .set({""
+  ""    status: "CREDENTIAL_REGISTERED"""
+  ""  })""
+end rnote
+
+Server -> Firebase: Update consent status
+return ""200 (OK)""
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+return ""200 (OK)""
+
+@enduml

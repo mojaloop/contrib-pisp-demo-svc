@@ -1,0 +1,138 @@
+@startuml
+
+title Discovery
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App: I want to link this account
+
+rnote right of App #Light 
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .add({""
+  ""    userId: "bob101",""
+  ""    party: {""
+  ""      partyIdInfo: {""
+  ""        partyIdType: "OPAQUE",""
+  ""        partyIdentifier: "bob1234"""
+  ""      }""
+  ""    }""
+  ""  })""
+end rnote
+
+App -> Firebase ++: Create a new consent document
+App <-- Firebase: ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify creation of consent document
+Firebase <-- Server: ""200 OK""
+deactivate Firebase 
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .doc("abc123")""
+  ""  .set({""
+  ""    consentRequestId: "111",""
+  ""    status: "PENDING_PARTY_LOOKUP",""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase++: Update consent document
+return ""200 OK""
+
+Server -> Mojaloop ++: ""**GET /parties/OPAQUE/bob1234**""
+Server <-- Mojaloop: ""202 Accepted""
+deactivate Server
+
+Mojaloop -> Mojaloop: Lookup data
+
+rnote left of Mojaloop #Light
+  ""{ ""
+  ""  "party": {""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": "OPAQUE",""
+  ""      "partyIdentifier": "bob1234",""
+  ""      "fspId": "fspb"""
+  ""    },""
+  ""    "name": "Bob Beaver",""
+  ""    "personalInfo": {""
+  ""      "complexName": {""
+  ""        "firstName": "Bob",""
+  ""        "lastName": "Beaver"""
+  ""      },""
+  ""    }""
+  ""  },""
+  "" "accounts": [""
+  ""    { "id": "aaa.bob.fspb", "currency": "USD" },""
+  ""    { "id": "bbb.bob.fspb", "currency": "SGD" }""
+  ""  ]""
+  ""} ""
+end rnote
+
+Mojaloop -> Server ++: ""**PUT /parties/MSISDN/+1-222-222-2222**""
+Mojaloop <-- Server: ""200 OK""
+
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .where("party.partyIdInfo.partyIdType", "==", "OPAQUE")""
+  ""  .where("party.partyIdInfo.partyIdentifier", "==", "bob1234")""
+  ""  .where("status", "==", "PENDING_PARTY_LOOKUP")""
+  ""  .set({""
+  ""    party: {""
+  ""      name: "Bob Beaver",""
+  ""      partyIdInfo: {""
+  ""        fspId: "fspb"""
+  ""      }""
+  ""    },""
+  ""    accounts: [""
+  ""      { "id": "aaa.bob.fspb", "currency": "USD" },""
+  ""      { "id": "bbb.bob.fspb", "currency": "SGD" }""
+  ""    ],""
+  ""    status: "PENDING_PARTY_CONFIRMATION",""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase ++: Update consent status
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+Firebase <-- App: ""200 OK""
+deactivate Firebase
+
+App -> Alice: Display party information
+
+@enduml

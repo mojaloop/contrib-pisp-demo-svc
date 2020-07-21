@@ -1,0 +1,105 @@
+@startuml
+
+title: Request Challenge
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+'start flow
+Alice -> App: I want to remember this device
+
+App -> Server ++: ""**POST /consents/123/generateChallenge**""
+App <-- Server: ""202 Accepted""
+deactivate App
+
+Server -> Mojaloop ++: ""**POST /consents/123/generateChallenge**""
+Server <-- Mojaloop: ""202 Accepted""
+deactivate Server
+
+Mojaloop -> Mojaloop: Generate a new challenge
+
+rnote left of Mojaloop #Light
+  ""{""
+  ""  "requestId": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "participantId": "fspb",""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "credential": {""
+  ""    "id": null,""
+  ""    "credentialType": "FIDO",""
+  ""    "status": "PENDING",""
+  ""    "challenge": {""
+  ""      "payload": base64(...),""
+  ""      "signature": null""
+  ""    },""
+  ""    "payload": null""
+  ""  }""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++: ""**PUT /consents/123**""
+Mojaloop <-- Server: ""200 OK""
+
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .set({""
+  ""    credential: {""
+  ""      id: null,""
+  ""      credentialType: "FIDO",""
+  ""      status: "PENDING",""
+  ""      challenge: {""
+  ""        payload: base64(...),""
+  ""        signature: null""
+  ""      },""
+  ""      payload: null""
+  ""    },""
+  ""    status: "CHALLENGE_GENERATED"""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase: Challenge has been generated.
+return ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on consent status
+return ""200 OK""
+
+App -> Alice: Challenge has been generated.\nProvide your fingerprint to continue
+
+...
+
+note over Alice, Mojaloop
+  PISP App uses FIDO registration flow to generate a new keypair and sign the challenge.
+end note
+
+...
+
+@enduml

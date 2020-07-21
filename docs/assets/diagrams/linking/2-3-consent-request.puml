@@ -1,0 +1,73 @@
+@startuml
+
+title: Consent Request
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+' start flow
+
+Alice -> App: Choose one of the available FSPs \nand provide identifier
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .doc("abc123")""
+  ""  .set({""
+  ""    authChannels: ["Web", "OTP"],""
+  ""    scopes: [""
+  ""      { accountId: "aaa.bob.fspb",""
+  ""        actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""      { accountId: "bbb.bob.fspb",""
+  ""        actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""    ]""
+  ""  }, { merge: true })""
+end rnote
+
+App -> Firebase: Create consent request in database
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server++: Notify update on consents collection
+Firebase <-- Server: ""200 OK""
+
+deactivate App
+
+rnote right of Server #Light
+  ""{""
+  ""  "id": "111",""
+  ""  "initiatorId": "pisp",""
+  ""  "authChannels": ["Web", "OTP"],""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""  ],""
+  ""  "callbackUri": "pisp-app://callback..."""
+  ""}""
+end rnote
+
+Server -> Mojaloop ++: ""**POST /consentRequests**""
+Server <-- Mojaloop : ""202 Accepted""
+deactivate Server
+
+@enduml

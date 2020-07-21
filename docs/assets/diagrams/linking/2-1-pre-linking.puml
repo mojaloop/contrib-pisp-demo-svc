@@ -1,0 +1,97 @@
+@startuml
+
+title: Discovery 
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+' start flow
+opt Update every certain time interval
+  Server -> Mojaloop: ""**GET /participants**""
+  Server <-- Mojaloop: ""**HTTP 202** (Accepted)""
+
+  Mojaloop -> Mojaloop: Lookup data in Mojaloop
+
+  rnote left of Mojaloop #Light
+  ""{ ""
+  ""  participants: [""
+  ""    {""
+  ""      "fspId": "fspa",""
+  ""      "name": "FSP A"""
+  ""    },""
+  ""    {""
+  ""      "fspId": "fspb",""
+  ""      "name": "FSP B"""
+  ""    }""
+  ""  ] ""
+  ""} ""
+  end rnote
+
+  Mojaloop -> Server: ""**PUT /participants**""
+  return ""**HTTP 200** (OK)""
+
+  rnote left of Server #Light
+    ""db = firebase.firestore()""
+    ""batch = db.batch()""
+    ""docRef = db.collections("participants")""
+    """"
+    ""db.collection().get().then(querySnapshot => {""
+    ""  querySnapshot.forEach(doc => {""
+    ""    batch.delete(doc.ref)""
+    ""  })""
+    ""})""
+    """"
+    ""req.payload.participants.forEach(entry => {""
+    ""  batch.add(docRef,""
+    ""    { fspId: entry.fspId, name: entry.name }""
+    ""  )""
+    ""})""
+    """"
+    ""batch.commit()""
+  end rnote
+  Server -> Firebase: Update list of participants atomically
+end
+
+deactivate Mojaloop
+
+Alice -> App ++: Open account linking screen
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("participants")""
+  ""  .get()""
+end rnote
+
+App -> Firebase ++: ""Query list of participants""
+
+rnote left of Firebase #Light
+  ""result(""
+  ""  [""
+  ""    {""
+  ""      fspId: "fspa",""
+  ""      name: "FSP A"""
+  ""    },""
+  ""    {""
+  ""      fspId: "fspb",""
+  ""      name: "FSP B"""
+  ""    }""
+  ""  ]""
+  "")""
+end rnote
+
+return ""**HTTP 200** (OK)""
+
+App -> Alice: Display list of available FSPs
+
+@enduml
