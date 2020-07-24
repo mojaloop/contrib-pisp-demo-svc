@@ -29,10 +29,8 @@ import { Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
-import config from '~/lib/config'
 import { Transaction, Status } from '~/lib/firebase/models/transactions'
 import firebase from '~/lib/firebase'
-import { delay } from '~/lib/utils'
 
 import * as validator from './transactions.validator'
 
@@ -44,12 +42,6 @@ export const onCreate: TransactionHandler =
       // all existing documents in the Firebase will be treated as a new
       // document.
       return
-    }
-
-    if (config.get('env') === 'development') {
-      // delay operations in development mode to observe the changes in Firebase
-      // and simulate network latency.
-      await delay(1500)
     }
 
     // Assign a transactionRequestId to the document and set the initial
@@ -73,18 +65,12 @@ export const onUpdate: TransactionHandler =
       return
     }
 
-    if (config.get('env') === 'development') {
-      // delay operations in development mode to observe the changes in Firebase
-      // and simulate network latency.
-      await delay(1500)
-    }
-
     switch (transaction.status) {
       case Status.PENDING_PARTY_LOOKUP:
         // Check whether the transaction document has all the necessary properties 
         // to perform a party lookup.
         if (validator.isValidPartyLookup(transaction)) {
-          // payee is guaranteed to be non-null by the validator.
+          // Payee is guaranteed to be non-null by the validator.
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           const payee = transaction.payee!
 

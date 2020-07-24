@@ -43,6 +43,13 @@ namespace Simulator {
      * header to determine the routing.
      */
     host?: string
+
+    /**
+     * A fixed delay time before injecting a response to the server.
+     * This is useful to simulate network latency that may happen when 
+     * communicating with the real Mojaloop services.
+     */
+    delay?: number
   }
 }
 
@@ -71,6 +78,12 @@ export class Simulator {
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = mockPutPartiesRequest(type, id)
 
+    if (this.opts.delay) {
+      // Delay operations to simulate network latency in real communication
+      // with Mojaloop.
+      await this.delay(1500)
+    }
+
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
     this.server.inject({
@@ -83,5 +96,14 @@ export class Simulator {
       },
       payload,
     })
+  }
+
+  /**
+   * Returns a promise that will be resolved after a certain duration.
+   * 
+   * @param ms the length of delay in milisecond.
+   */
+  private async delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms))
   }
 }

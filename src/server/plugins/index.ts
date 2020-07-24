@@ -73,6 +73,7 @@ const mojaloopClientOpts: MojaloopClientOpts = {
 // Config for mojaloop simulator
 const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
   host: 'mojaloop.pisp-demo-server.local',
+  delay: 2000,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
