@@ -9,24 +9,24 @@
 
 ## 1. Create Listener
 
-![Create Listener](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/01-create-listener.puml)
+![Create Listener](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/01-create-listener.puml)
 
 ## 2. Create Transaction
 
-![Create Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/02-create-transaction.puml)
+![Create Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/02-create-transaction.puml)
 
 ## 3. Confirm Payee
 
-![Confirm Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/03-confirm-payee.puml)
+![Confirm Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/03-confirm-payee.puml)
 
 ## 4. Authorization Prompt
 
-![Authorization Prompt](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/04-authorization-prompt.puml)
+![Authorization Prompt](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/04-authorization-prompt.puml)
 
 ## 5. Authorize Transaction
 
-![Authorize Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/05-authorize-transaction.puml)
+![Authorize Transaction](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/05-authorize-transaction.puml)
 
 ## 6. Transaction Feedback
 
-![Transaction Feedback](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/transfer-sequence-diagram/docs/assets/diagrams/transfer/06-transaction-feedback.puml)
+![Transaction Feedback](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/transfer/06-transaction-feedback.puml)
