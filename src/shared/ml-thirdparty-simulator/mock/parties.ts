@@ -28,17 +28,24 @@ import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-cl
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { participants } from './participants'
 
+/**
+ * Creates a Party object as defined in the Mojaloop schema.
+ * 
+ * @param type  type of the party identifier.
+ * @param id    the party identifier.
+ */
 const createParty = (type: PartyIdType, id: string): Party => {
   const randomFsp = participants[Math.floor(Math.random() * participants.length)]
   const randomFirstName = faker.name.firstName()
   const randomLastName = faker.name.lastName()
+
   return {
     partyIdInfo: {
       partyIdType: type,
       partyIdentifier: id,
       fspId: randomFsp.fspId
     },
-    name: randomFirstName + randomLastName,
+    name: randomFirstName + ' ' + randomLastName,
     personalInfo: {
       complexName: {
         firstName: randomFirstName,
@@ -48,15 +55,29 @@ const createParty = (type: PartyIdType, id: string): Party => {
   }
 }
 
+/**
+ * Creates an Account object as defined in the Mojaloop schema.
+ * 
+ * @param party     information about the party.
+ * @param currency  currency of the bank account.
+ */
 const createAccount = (party: Party, currency: Currency): Account => {
   const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
   const randomAlphanumeric = faker.random.alphaNumeric(5)
+
   return {
     id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
     currency
   }
 }
 
+/**
+ * Mocks out a `PUT /parties/{Type}/{ID}` request body that is normally sent
+ * by Mojaloop as a callback for party lookup operation.
+ * 
+ * @param type  type of the party identifier.
+ * @param id    the party identifier.
+ */
 export const mockPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
   const party = createParty(type, id)
   const accounts: Account[] = [ // hardcode two currencies

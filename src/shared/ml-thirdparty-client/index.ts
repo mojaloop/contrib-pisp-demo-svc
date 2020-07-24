@@ -27,15 +27,33 @@ import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
 
 namespace Client {
+  /**
+   * An interface definition for the configuration needed to setup the 
+   * Mojaloop client.
+   */
   export interface Config {
-    baseUrl: string
+    /**
+     * Mojaloop URL for the client to communicate with.
+     */
+    mojaloopUrl: string
   }
 }
 
+/**
+ * Default configurations for the mojaloop client libary.
+ */
 const defaultConfig: Client.Config = {
-  baseUrl: '',
+  mojaloopUrl: '',
 }
 
+/**
+ * A client object that abstracts out operations that could be performed in
+ * Mojaloop. With this, a service does not need to directly specify the request 
+ * endpoint, body, params, and headers that are required to talk with the 
+ * Mojaloop APIs. Instead, the service implementation could just pass the necessary
+ * config upon initialization and relevant information in the function parameters
+ * when it wants to perform a certain operation.
+ */
 export class Client {
   config: Client.Config
   simulator?: Simulator
@@ -44,9 +62,20 @@ export class Client {
     this.config = { ...defaultConfig, ...config }
   }
 
+  /**
+   * Performs a lookup for a party with the given identifier.
+   * 
+   * @param type  the type of party identifier
+   * @param id    the party identifier
+   */
   public async getParties(type: PartyIdType, id: string): Promise<void> {
     if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
       return this.simulator.getParties(type, id)
     }
+
+    // TODO: Implement communication with Mojaloop.
   }
 }

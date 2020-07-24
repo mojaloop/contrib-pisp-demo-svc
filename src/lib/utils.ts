@@ -23,31 +23,6 @@
  --------------
  ******/
 
-import { Plugin, Server } from '@hapi/hapi'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
-
-/**
- * An interface definition for options that need to be specfied to use this plugin.
- */
-export interface MojaloopSimulatorOpts {
-  host?: string
-}
-
-/**
- * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
- * In fact, the server only talks with a simulator that generates a random data 
- * and inject callbacks to the internal routes.
- * 
- * The 'MojaloopClient' plugin must be registered before trying to 
- * register this function as it will try to intercept the 
- */
-export const MojaloopSimulator: Plugin<MojaloopSimulatorOpts> = {
-  name: 'MojaloopSimulator',
-  version: '1.0.0',
-  register: (server: Server, opts: MojaloopSimulatorOpts) => {
-    server.app.mojaloopClient.simulator = new Simulator(
-      server,
-      { ...opts },
-    )
-  }
+export async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

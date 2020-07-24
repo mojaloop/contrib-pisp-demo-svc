@@ -31,11 +31,26 @@ import {
 } from './mock'
 
 namespace Simulator {
+  /**
+   * An interface definition for config options that could be passed
+   * to the simulator.
+   */
   export interface Options {
-    vhost?: string
+    /**
+     * An optional field to set the host value in the request header. 
+     * This is useful for a service that handles Mojaloop callback using
+     * a virtual host, because it will require the host field in the request
+     * header to determine the routing.
+     */
+    host?: string
   }
 }
 
+/**
+ * Simulator allows Mojaloop's client to mock out the communication and return
+ * randomly generated replies. This is useful to aid the testing process when
+ * Mojaloop is not deployed.
+ */
 export class Simulator {
   server: Server
   opts: Simulator.Options
@@ -45,19 +60,28 @@ export class Simulator {
     this.opts = opts
   }
 
+  /**
+   * Simulates a party lookup operation in Mojaloop, without the need of 
+   * sending `GET /parties/{Type}/{ID}` request.
+   * 
+   * @param type  type of the party identifier.
+   * @param id    the party identifier.
+   */
   async getParties(type: PartyIdType, id: string): Promise<void> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
-    console.log("tesstt", targetUrl)
+    const payload = mockPutPartiesRequest(type, id)
 
+    // Inject a request to the server as if it receives an inbound request
+    // from Mojaloop.
     this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
-        host: this.opts.vhost ?? '',
-        'Content-Length': '1234',
+        host: this.opts.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
-      payload: mockPutPartiesRequest(type, id),
+      payload,
     })
   }
 }

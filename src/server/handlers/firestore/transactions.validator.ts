@@ -23,31 +23,18 @@
  --------------
  ******/
 
-import { Plugin, Server } from '@hapi/hapi'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
+import { Transaction } from '~/lib/firebase/models/transactions'
 
 /**
- * An interface definition for options that need to be specfied to use this plugin.
- */
-export interface MojaloopSimulatorOpts {
-  host?: string
-}
-
-/**
- * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
- * In fact, the server only talks with a simulator that generates a random data 
- * and inject callbacks to the internal routes.
+ * Checks whether a transaction document has all the necessary fields to perform
+ * a party lookup.
  * 
- * The 'MojaloopClient' plugin must be registered before trying to 
- * register this function as it will try to intercept the 
+ * @param transaction the object representation of a transaction that is stored
+ *                    on Firebase.
  */
-export const MojaloopSimulator: Plugin<MojaloopSimulatorOpts> = {
-  name: 'MojaloopSimulator',
-  version: '1.0.0',
-  register: (server: Server, opts: MojaloopSimulatorOpts) => {
-    server.app.mojaloopClient.simulator = new Simulator(
-      server,
-      { ...opts },
-    )
-  }
+export const isValidPartyLookup = (transaction: Transaction): boolean => {
+  return transaction.payee != null
+    && transaction.payee.partyIdInfo != null
+    && transaction.payee.partyIdInfo.partyIdType != null
+    && transaction.payee.partyIdInfo.partyIdentifier != null
 }

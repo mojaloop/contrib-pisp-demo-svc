@@ -67,12 +67,12 @@ const firestoreOpts: FirestoreOpts = {
 
 // Config for mojaloop client
 const mojaloopClientOpts: MojaloopClientOpts = {
-  baseUrl: 'https://mojaloop.local',
+  mojaloopUrl: 'https://mojaloop.local',
 }
 
 // Config for mojaloop simulator
 const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
-  vhost: 'mojaloop.pisp-demo-server.local',
+  host: 'mojaloop.pisp-demo-server.local',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

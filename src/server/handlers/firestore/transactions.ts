@@ -24,56 +24,84 @@
  ******/
 
 import * as uuid from 'uuid'
-
 import { Server } from '@hapi/hapi'
 
-import { Transaction, Status } from '~/lib/firebase/models/transactions'
+import { logger } from '~/shared/logger'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
-import { logger } from '~/shared/logger'
+import config from '~/lib/config'
+import { Transaction, Status } from '~/lib/firebase/models/transactions'
 import firebase from '~/lib/firebase'
+import { delay } from '~/lib/utils'
 
-function isValidPartyQuery(transaction: Transaction): boolean {
-  if (transaction.payee) {
-    return true
+import * as validator from './transactions.validator'
+
+export const onCreate: TransactionHandler =
+  async (_: Server, id: string, transaction: Transaction): Promise<void> => {
+    if (transaction.status) {
+      // Skip transaction that has been processed previously.
+      // We need this because when the server starts for the first time, 
+      // all existing documents in the Firebase will be treated as a new
+      // document.
+      return
+    }
+
+    if (config.get('env') === 'development') {
+      // delay operations in development mode to observe the changes in Firebase
+      // and simulate network latency.
+      await delay(1500)
+    }
+
+    // Assign a transactionRequestId to the document and set the initial
+    // status. This operation will create an event that triggers the execution
+    // of the onUpdate function.
+    firebase.firestore()
+      .collection('transactions')
+      .doc(id)
+      .update({
+        transactionRequestId: uuid.v4(),
+        status: Status.PENDING_PARTY_LOOKUP
+      })
   }
-  return false
-}
 
-async function setupNewTransaction(id: string) {
-  await firebase.firestore()
-    .collection('transactions')
-    .doc(id)
-    .set({
-      transactionRequestId: uuid.v4(),
-      status: Status.PENDING_PARTY_LOOKUP
-    }, { merge: true })
-}
+export const onUpdate: TransactionHandler =
+  async (server: Server, __: string, transaction: Transaction): Promise<void> => {
+    if (!transaction.status) {
+      // Status is expected to be null only when the document is created for the first
+      // time by the user.
+      logger.error('Invalid transaction update, undefined status.')
+      return
+    }
 
-export const onCreate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
-  if (transaction.status) {
-    // Skip transaction that has been processed previously.
-    // We need this because when the server starts for the first time, 
-    // all existing documents in the Firebase will be treated as a new
-    // document.
-    return
+    if (config.get('env') === 'development') {
+      // delay operations in development mode to observe the changes in Firebase
+      // and simulate network latency.
+      await delay(1500)
+    }
+
+    switch (transaction.status) {
+      case Status.PENDING_PARTY_LOOKUP:
+        // Check whether the transaction document has all the necessary properties 
+        // to perform a party lookup.
+        if (validator.isValidPartyLookup(transaction)) {
+          // payee is guaranteed to be non-null by the validator.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const payee = transaction.payee!
+
+          server.app.mojaloopClient.getParties(
+            payee.partyIdInfo.partyIdType,
+            payee.partyIdInfo.partyIdentifier
+          )
+        }
+        break
+
+      case Status.PENDING_PAYEE_CONFIRMATION:
+        // Upon receiving a callback from Mojaloop that contains information about
+        // the payee, the server will update all relevant transaction documents 
+        // in the Firebase. However, we can just ignore all updates by the server
+        // and wait for the user to confirm the payee by keying in more details 
+        // about the transaction (i.e., source account ID, consent ID, and 
+        // transaction amount).
+        break
+    }
   }
-
-  await setupNewTransaction(id)
-
-  if (isValidPartyQuery(transaction)) {
-    server.app.mojaloopClient.getParties(
-      transaction.payee!.partyIdInfo.partyIdType,
-      transaction.payee!.partyIdInfo.partyIdentifier,
-    )
-  } else {
-    logger.error('invalid party query')
-  }
-}
-
-export const onUpdate: TransactionHandler = async (_: Server, __: string, transaction: Transaction) => {
-  if (!transaction.status) {
-    logger.error('Invalid transaction update. No status provided.')
-    return
-  }
-}
