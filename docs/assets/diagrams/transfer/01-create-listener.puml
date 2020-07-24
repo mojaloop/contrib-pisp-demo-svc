@@ -1,0 +1,24 @@
+@startuml
+
+title Create Listener
+
+hide footbox
+
+autonumber
+
+participant App
+database Firebase
+participant "PISP Server" as PISP
+
+PISP -> Firebase: ""firebase.firestore()""\n\
+  "".collection("transactions")""\n\
+  "".onSnapshot( ... )""
+return ""200 OK""
+
+App -> Firebase: ""firebase.firestore()""\n\
+  "".collection("transactions")""\n\
+  "".where("userId", "==", "bob101")""\n\
+  "".onSnapshot( ... )""
+return ""200 OK""
+
+@enduml

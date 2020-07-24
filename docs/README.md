@@ -2,6 +2,13 @@
 
 Documentation for the PISP demo server
 
+## Design
+
+> **_NOTE:_** PISP demo server uses [Firebase](https://firebase.google.com/) to assist in performing various tasks. For more details about the required services, you can take a look [here](./design/firebase.md).
+
+Below are the scenarios that are supported by the PISP Demo server:
+- [Transfer](./design/transfer.md)
+
 ## BDD
 
 [jest-cucumber](https://github.com/bencompton/jest-cucumber) allows to use `jest` to execute Gherkin scenarios. Thanks to `jest` we are getting also code coverage for BDD Scenarios.

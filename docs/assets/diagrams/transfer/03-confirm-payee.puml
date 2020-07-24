@@ -1,0 +1,138 @@
+@startuml
+
+title Confirm Payee
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App: Initiate this transaction
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("abc123")""
+  ""  .set({""
+  ""    sourceAccountId: "bob.fspb",""
+  ""    consentId: "555",""
+  ""    amount: {""
+  ""      amount: "20",""
+  ""      currency: "USD"""
+  ""    }""
+  ""  }, { merge: true })""
+end rnote
+
+App -> Firebase ++: Update transaction document
+Firebase <-- App: ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify update on transaction document
+Firebase <-- Server: ""200 OK""
+deactivate Firebase
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "555")""
+  ""  .get()""
+end rnote
+
+Server -> Firebase ++: Get payer info from consent data
+
+rnote right of Firebase #Light
+  ""result({""
+  ""  ...,""
+  ""  party: {""
+  ""    partyIdInfo: {""
+  ""      partyIdType: "MSISDN",""
+  ""      partyIdentifier: "+1-111-111-1111",""
+  ""      fspId: "fspb",""
+  ""    },""
+  ""    name: "Bob Beaver",""
+  ""    personalInfo: {""
+  ""      complexName: {""
+  ""        firstName: "Bob",""
+  ""        lastName: "Beaver"""
+  ""      }""
+  ""    }""
+  ""  },""
+  ""  ...""
+  ""})""
+end rnote
+
+return ""200 OK""
+
+rnote right of Server #Light 
+  ""**POST /thirdpartyRequests/transactions**""
+  ""FSPIOP-Source: pisp""
+  ""FSPIOP-Destination: fspb""
+  ""{""
+  ""  "transactionRequestId": "777",""
+  ""  "sourceAccountId": "bob.fspb",""
+  ""  "consentId": "555",""
+  ""  "payee": {""
+  ""    "partyIdInfo": {""
+  ""      "partyIdType": "MSISDN",""
+  ""      "partyIdentifier": "+1-222-222-2222",""
+  ""      "fspId": "fspa"""
+  ""    }""
+  ""  },""
+  ""  "payer": {""
+  ""    partyIdInfo: {""
+  ""      partyIdType: "MSISDN",""
+  ""      partyIdentifier: "+1-111-111-1111",""
+  ""      fspId: "fspb",""
+  ""    },""
+  ""    name: "Bob Beaver",""
+  ""    personalInfo: {""
+  ""      complexName: {""
+  ""        firstName: "Bob",""
+  ""        lastName: "Beaver"""
+  ""      }""
+  ""    }""
+  ""  },""
+  ""  "amountType": "SEND",""
+  ""  "amount": {,""
+  ""    "amount": "20",""
+  ""    "currency": "USD"""
+  ""  },""
+  ""  "transactionType": {""
+  ""    "scenario": "TRANSFER",""
+  ""    "initiator": "PAYER",""
+  ""    "initiatorType": "CONSUMER"""
+  ""  },""
+  ""  expiration: "2020-07-15T22:17:28.985-01:00"""
+  ""}""
+end rnote
+
+Server -> Mojaloop ++: ""**POST /thirdpartyRequests/transactions**""
+Server <-- Mojaloop: ""202 Accepted""
+
+...
+
+note over Alice, Mojaloop
+  Transaction processes happen in Mojaloop (validation and quoting).
+end note
+
+...
+
+@enduml
