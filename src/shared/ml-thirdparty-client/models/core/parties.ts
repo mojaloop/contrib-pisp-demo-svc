@@ -99,7 +99,7 @@ export enum PartyIdType {
    * Optionally, the MSISDN may be prefixed by a single plus sign,
    * indicating the international prefix.
    */
-  MSIDN = "MSIDN",
+  MSISDN = "MSISDN",
 
   /**
    * An email is used as reference to a participant.

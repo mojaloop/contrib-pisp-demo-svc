@@ -58,8 +58,12 @@ export class Client {
   config: Client.Config
   simulator?: Simulator
 
-  public constructor(config: Client.Config) {
-    this.config = { ...defaultConfig, ...config }
+  public constructor(config?: Client.Config) {
+    if (config) {
+      this.config = { ...defaultConfig, ...config }
+    } else {
+      this.config = defaultConfig
+    }
   }
 
   /**
@@ -73,7 +77,8 @@ export class Client {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
-      return this.simulator.getParties(type, id)
+      this.simulator.getParties(type, id)
+      return
     }
 
     // TODO: Implement communication with Mojaloop.
