@@ -33,8 +33,8 @@ import extensions from './extensions'
 import plugins from './plugins'
 
 export default async function create(config: ServiceConfig): Promise<Server> {
-  let server = await new Server({
-    host: config.get('host'),
+  let server = new Server({
+    host: config.get('ip'),
     port: config.get('port'),
     routes: {
       validate: {

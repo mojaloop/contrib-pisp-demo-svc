@@ -25,12 +25,18 @@
 
 import Path from 'path'
 import convict from 'convict'
+import * as dotenv from 'dotenv'
+
 import Package from '../../package.json'
 
+// Setup config to read environment variables from '.env' file.
+dotenv.config()
+
+// Config definition
 const config = convict({
   package: {
     name: {
-      doc: 'The application version.',
+      doc: 'The application name.',
       default: 'pisp-demo-server',
     },
     version: {
@@ -44,12 +50,18 @@ const config = convict({
     default: 'development',
     env: 'NODE_ENV',
   },
-  host: {
+  hostname: {
+    doc: 'Host name for the server.',
+    format: '*',
+    default: 'pisp-demo-server.local',
+    env: 'HOST',
+    arg: 'hostname',
+  },
+  ip: {
     doc: 'The IP address to bind.',
     format: '*',
-    default: '0.0.0.0',
-    env: 'HOST',
-    arg: 'host',
+    default: '127.0.0.1',
+    env: 'IP_ADDRESS',
   },
   port: {
     doc: 'The port to bind.',
@@ -74,6 +86,28 @@ const config = convict({
       }
     },
   },
+  experimental: {
+    mode: {
+      doc: 'On/off switch for the PISP demo server experimental mode',
+      format: ['on', 'off'],
+      default: 'off',
+      env: 'EXPERIMENTAL_MODE',
+    },
+    delay: {
+      doc: 'Delay time to be used in the experimental mode',
+      format: 'int',
+      default: 1000,
+      env: 'EXPERIMENTAL_DELAY',
+    }
+  },
+  mojaloop: {
+    url: {
+      doc: 'URL of the Mojaloop\'s API gateway',
+      format: '*',
+      default: '',
+      env: 'MOJALOOP_URL',
+    }
+  }
 })
 
 config.load({
