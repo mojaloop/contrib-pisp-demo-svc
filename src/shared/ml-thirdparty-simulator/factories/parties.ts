@@ -72,13 +72,13 @@ const createAccount = (party: Party, currency: Currency): Account => {
 }
 
 /**
- * Mocks out a `PUT /parties/{Type}/{ID}` request body that is normally sent
+ * Creates a `PUT /parties/{Type}/{ID}` request body that is normally sent
  * by Mojaloop as a callback for party lookup operation.
  * 
  * @param type  type of the party identifier.
  * @param id    the party identifier.
  */
-export const mockPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
+export const createPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
   const party = createParty(type, id)
   const accounts: Account[] = [ // hardcode two currencies
     createAccount(party, Currency.USD),

@@ -27,8 +27,8 @@ import { Server } from '@hapi/hapi'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {
-  mockPutPartiesRequest,
-} from './mock'
+  createPutPartiesRequest,
+} from './factories'
 
 namespace Simulator {
   /**
@@ -62,9 +62,9 @@ export class Simulator {
   server: Server
   opts: Simulator.Options
 
-  constructor(server: Server, opts: Simulator.Options) {
+  constructor(server: Server, opts?: Simulator.Options) {
     this.server = server
-    this.opts = opts
+    this.opts = opts ?? {}
   }
 
   /**
@@ -76,12 +76,12 @@ export class Simulator {
    */
   async getParties(type: PartyIdType, id: string): Promise<void> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
-    const payload = mockPutPartiesRequest(type, id)
+    const payload = createPutPartiesRequest(type, id)
 
     if (this.opts.delay) {
       // Delay operations to simulate network latency in real communication
       // with Mojaloop.
-      await this.delay(1500)
+      await this.delay(this.opts.delay)
     }
 
     // Inject a request to the server as if it receives an inbound request

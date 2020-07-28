@@ -29,9 +29,11 @@
 import { Server } from '@hapi/hapi'
 import { ServiceConfig } from '../lib/config'
 import onValidateFail from './handlers/onValidateFail'
+import extensions from './extensions'
+import plugins from './plugins'
 
 export default async function create(config: ServiceConfig): Promise<Server> {
-  const server: Server = await new Server({
+  let server = await new Server({
     host: config.get('host'),
     port: config.get('port'),
     routes: {
@@ -40,6 +42,9 @@ export default async function create(config: ServiceConfig): Promise<Server> {
       },
     },
   })
+
+  server = await plugins.register(server)
+  extensions.register(server)
 
   return server
 }
