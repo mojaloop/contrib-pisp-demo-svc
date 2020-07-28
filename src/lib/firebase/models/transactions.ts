@@ -52,6 +52,12 @@ export enum Status {
 
 export interface Transaction {
   /**
+   * User ID in Firebase that differentiate transaction documents for 
+   * different users.
+   */
+  userId?: string
+
+  /**
    * Information about the payee in the proposed financial transaction.
    */
   payee?: Party

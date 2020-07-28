@@ -57,7 +57,7 @@ export const onCreate: TransactionHandler =
   }
 
 export const onUpdate: TransactionHandler =
-  async (server: Server, __: string, transaction: Transaction): Promise<void> => {
+  async (server: Server, _: string, transaction: Transaction): Promise<void> => {
     if (!transaction.status) {
       // Status is expected to be null only when the document is created for the first
       // time by the user.

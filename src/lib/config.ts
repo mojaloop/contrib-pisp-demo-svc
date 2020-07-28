@@ -66,6 +66,12 @@ const config = convict({
         default: Path.resolve(__dirname, '../../secret/serviceAccountKey.json'),
         env: 'FIREBASE_KEY_PATH',
       },
+      url: {
+        doc: 'Url for the database',
+        format: '*',
+        default: '',
+        env: 'FIREBASE_URL',
+      }
     },
   },
 })

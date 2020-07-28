@@ -23,17 +23,13 @@
  --------------
  ******/
 
-import * as admin from 'firebase-admin'
-import config from '~/lib/config'
-
-// Load the service account key to be able to access Firebase admin.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const serviceAccount = require(config.get('db.firebase.keyPath'))
-
-// Initialize the connection to Firebase.
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: config.get('db.firebase.url')
-})
-
-export default admin
+export default {
+  firestore: jest.fn().mockReturnThis(),
+  collection: jest.fn().mockReturnThis(),
+  doc: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  add: jest.fn(),
+  set: jest.fn(),
+  update: jest.fn(),
+  onSnapshot: jest.fn().mockImplementation(() => jest.fn()),
+}
