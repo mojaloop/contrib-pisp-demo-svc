@@ -83,7 +83,7 @@ const config = convict({
         format: '*',
         default: '',
         env: 'FIREBASE_URL',
-      }
+      },
     },
   },
   experimental: {
@@ -98,16 +98,16 @@ const config = convict({
       format: 'int',
       default: 1000,
       env: 'EXPERIMENTAL_DELAY',
-    }
+    },
   },
   mojaloop: {
     url: {
-      doc: 'URL of the Mojaloop\'s API gateway',
+      doc: 'URL of the API gateway for Mojaloop',
       format: '*',
       default: '',
       env: 'MOJALOOP_URL',
-    }
-  }
+    },
+  },
 })
 
 config.load({
