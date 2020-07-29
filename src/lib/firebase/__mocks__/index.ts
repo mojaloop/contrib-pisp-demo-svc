@@ -23,6 +23,12 @@
  --------------
  ******/
 
+/**
+ * A mock object to simulate the operations on Firebase.
+ * Since there are a lot of chained methods from various classes,
+ * in the current implementation, we only use a single mocked object 
+ * to avoid unnecessary complexity.
+ */
 export default {
   firestore: jest.fn().mockReturnThis(),
   collection: jest.fn().mockReturnThis(),
