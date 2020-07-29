@@ -24,26 +24,25 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import createServer from '~/server/create'
+
 import config from '~/lib/config'
 
 import { Client } from '~/shared/ml-thirdparty-client'
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
-jest.mock('~/lib/firebase')
-
 describe('Mojaloop third-party client', () => {
-  let server: Server
   let client: Client
   let simulator: Simulator
 
   beforeAll(async () => {
-    server = await createServer(config)
+    // Setup client and simulator
     client = new Client()
-    simulator = new Simulator(server, {
-      host: 'mojaloop.pisp-demo-server.local',
-      delay: 1000,
+
+    // Use jest function for the purpose of dependency injection
+    simulator = new Simulator(jest.fn() as unknown as Server, {
+      host: 'mojaloop.' + config.get('hostname'),
+      delay: 100,
     })
   })
 

@@ -27,7 +27,6 @@ import config from '~/lib/config'
 import server from '~/server'
 
 jest.mock('~/server')
-jest.mock('~/lib/firebase')
 
 describe('cli', (): void => {
   afterAll((): void => {

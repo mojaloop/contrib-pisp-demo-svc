@@ -23,14 +23,14 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
 import { logger } from '~/shared/logger'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+import { Status } from '~/models/transactions'
+import { transactionRepository } from '~/repositories/transaction'
 
 /**
  * Handles callback from Mojaloop that specifies detailed info about a requested party.
@@ -39,7 +39,7 @@ import { Status } from '~/lib/firebase/models/transactions'
  * @param request   original request object as defined by the hapi library.
  * @param h         original request toolkit as defined by the hapi libary.
  */
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   // Log information about the incoming request
   logger.logRequest(context, request, h)
 
@@ -52,39 +52,19 @@ export const put: Handler = async (context: Context, request: Request, h: Respon
   // party lookup with the specified type and identifier. The execution of this 
   // function is expected to run asynchronously, so the server could quickly 
   // give a response to Mojaloop.
-  firebase.firestore()
-    .collection('transactions')
-    .where("payee.partyIdInfo.partyIdType", "==", partyIdType)
-    .where("payee.partyIdInfo.partyIdentifier", "==", partyIdentifier)
-    .where("status", "==", Status.PENDING_PARTY_LOOKUP)
-    .get()
-    .then((response) => {
-      // Create a batch to perform all of the updates using a single request.
-      // Firebase will also execute the updates atomically according to the 
-      // API specification.
-      let batch = firebase.firestore().batch()
-
-      // Iterate through all matching documents add them to the processing batch.
-      response.docs.forEach((doc) => {
-        batch.set(
-          // Put a reference to the document.
-          firebase.firestore().collection('transactions').doc(doc.id),
-          // Specify the updated fields and their new values.
-          {
-            payee: body.party,
-            status: Status.PENDING_PAYEE_CONFIRMATION,
-          },
-          // Merge with all the existing fields in the transaction document,
-          // including the nested ones.
-          { merge: true },
-        )
-      })
-
-      // Commit the updates.
-      batch.commit()
-    }).catch((err) => {
-      logger.error(err)
-    })
+  transactionRepository.update(
+    // Conditions for the documents that need to be updated
+    {
+      "payee.partyIdInfo.partyIdType": partyIdType,
+      "payee.partyIdInfo.partyIdentifier": partyIdentifier,
+      "status": Status.PENDING_PARTY_LOOKUP,
+    },
+    // Update the given field by their new values
+    {
+      payee: body.party,
+      status: Status.PENDING_PAYEE_CONFIRMATION,
+    }
+  )
 
   // Return "200 OK" as defined by the Mojaloop API for successful request.
   return h.response().code(200)

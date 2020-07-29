@@ -28,13 +28,9 @@ import { Plugin, Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 
 import firebase from '~/lib/firebase'
-import { Transaction } from '~/lib/firebase/models/transactions'
+import { Transaction } from '~/models/transactions'
 
-export type TransactionHandler = (
-  server: Server,
-  id: string,
-  obj: Transaction
-) => Promise<void>
+export type TransactionHandler = (server: Server, transaction: Transaction) => Promise<void>
 
 /**
  * An interface definition for options that need to be specfied to use this plugin.
@@ -59,10 +55,7 @@ export interface FirestoreOpts {
  * @param opts a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToTransactions = (
-  server: Server,
-  opts: FirestoreOpts
-): (() => void) => {
+const listenToTransactions = (server: Server, opts: FirestoreOpts): (() => void) => {
   return firebase
     .firestore()
     .collection('transactions')
@@ -71,14 +64,18 @@ const listenToTransactions = (
         if (change.type === 'added') {
           opts.handlers.transactions.onCreate(
             server,
-            change.doc.id,
-            change.doc.data()
+            {
+              id: change.doc.id,
+              ...change.doc.data()
+            }
           )
         } else if (change.type === 'modified') {
           opts.handlers.transactions.onUpdate(
             server,
-            change.doc.id,
-            change.doc.data()
+            {
+              id: change.doc.id,
+              ...change.doc.data()
+            }
           )
         } else {
           logger.error('Unhandled transaction operation')

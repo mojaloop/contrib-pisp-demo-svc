@@ -27,6 +27,7 @@ import index from '~/index'
 import Config from '~/lib/config'
 import { Server } from '@hapi/hapi'
 
+// Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
 
 describe('index', (): void => {

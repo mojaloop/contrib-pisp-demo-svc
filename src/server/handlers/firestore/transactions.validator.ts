@@ -23,7 +23,7 @@
  --------------
  ******/
 
-import { Transaction } from '~/lib/firebase/models/transactions'
+import { Transaction } from '~/models/transactions'
 
 /**
  * Checks whether a transaction document has all the necessary fields to perform

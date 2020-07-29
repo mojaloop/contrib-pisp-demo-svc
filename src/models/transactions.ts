@@ -52,6 +52,11 @@ export enum Status {
 
 export interface Transaction {
   /**
+   * Internal id that is used to identify the transaction.
+   */
+  id: string
+
+  /**
    * User ID in Firebase that differentiate transaction documents for 
    * different users.
    */
@@ -63,7 +68,7 @@ export interface Transaction {
   payee?: Party
 
   /**
-   * Common ID (decided by the PISP) to identify a transaction request
+   * Common ID (decided by the PISP) to identify a transaction request.
    */
   transactionRequestId?: string
 

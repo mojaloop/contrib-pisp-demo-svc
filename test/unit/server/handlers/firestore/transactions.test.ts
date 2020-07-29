@@ -24,33 +24,30 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import * as uuid from 'uuid'
 
-import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
 import config from '~/lib/config'
-import firebase from '~/lib/firebase'
-import createServer from '~/server/create'
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { Status } from '~/lib/firebase/models/transactions'
+import { transactionRepository } from '~/repositories/transaction'
 
+import createServer from '~/server/create'
+import * as transactionsHandler from '~/server/handlers/firestore/transactions'
+
+import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { Status } from '~/models/transactions'
+
+// Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
 
+// Mock uuid to consistently return the provided value.
 jest.mock('uuid', () => ({
   v4: jest.fn().mockImplementation(() => '12345')
 }))
 
 describe('Handlers for transaction documents in Firebase', () => {
   let server: Server
-  let mockFirebase: any
 
   beforeAll(async () => {
     server = await createServer(config)
-
-    // Typecast to an `any` type. This is important to avoid strict checking 
-    // from Typescript since a single mock object is used to test the execution 
-    // on the chained functions.
-    mockFirebase = firebase
   })
 
   beforeEach(() => {
@@ -62,9 +59,11 @@ describe('Handlers for transaction documents in Firebase', () => {
   })
 
   it('Should set status and transactionRequestId for new transaction', () => {
+    const transactionRepositorySpy = jest.spyOn(transactionRepository, 'updateById')
     const documentId = '111'
 
-    transactionsHandler.onCreate(server, documentId, {
+    transactionsHandler.onCreate(server, {
+      id: documentId,
       userId: 'bob123',
       payee: {
         partyIdInfo: {
@@ -74,11 +73,7 @@ describe('Handlers for transaction documents in Firebase', () => {
       }
     })
 
-    expect(mockFirebase.firestore).toBeCalled()
-    expect(mockFirebase.collection).toBeCalledWith('transactions')
-    expect(mockFirebase.doc).toBeCalledWith(documentId)
-    expect(uuid.v4).toBeCalledTimes(1)
-    expect(mockFirebase.update).toBeCalledWith({
+    expect(transactionRepositorySpy).toBeCalledWith(documentId, {
       transactionRequestId: '12345',
       status: Status.PENDING_PARTY_LOOKUP,
     })
@@ -88,7 +83,8 @@ describe('Handlers for transaction documents in Firebase', () => {
     const documentId = '111'
     let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'getParties').mockImplementation()
 
-    transactionsHandler.onUpdate(server, documentId, {
+    transactionsHandler.onUpdate(server, {
+      id: documentId,
       userId: 'bob123',
       payee: {
         partyIdInfo: {

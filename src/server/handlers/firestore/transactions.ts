@@ -29,13 +29,13 @@ import { Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
-import { Transaction, Status } from '~/lib/firebase/models/transactions'
-import firebase from '~/lib/firebase'
+import { Transaction, Status } from '~/models/transactions'
+import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
 
 export const onCreate: TransactionHandler =
-  async (_: Server, id: string, transaction: Transaction): Promise<void> => {
+  async (_: Server, transaction: Transaction): Promise<void> => {
     if (transaction.status) {
       // Skip transaction that has been processed previously.
       // We need this because when the server starts for the first time, 
@@ -47,17 +47,14 @@ export const onCreate: TransactionHandler =
     // Assign a transactionRequestId to the document and set the initial
     // status. This operation will create an event that triggers the execution
     // of the onUpdate function.
-    firebase.firestore()
-      .collection('transactions')
-      .doc(id)
-      .update({
-        transactionRequestId: uuid.v4(),
-        status: Status.PENDING_PARTY_LOOKUP
-      })
+    transactionRepository.updateById(transaction.id, {
+      transactionRequestId: uuid.v4(),
+      status: Status.PENDING_PARTY_LOOKUP,
+    })
   }
 
 export const onUpdate: TransactionHandler =
-  async (server: Server, _: string, transaction: Transaction): Promise<void> => {
+  async (server: Server, transaction: Transaction): Promise<void> => {
     if (!transaction.status) {
       // Status is expected to be null only when the document is created for the first
       // time by the user.
