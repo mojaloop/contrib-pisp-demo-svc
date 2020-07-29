@@ -25,7 +25,7 @@
 
 import { Participant } from '~/shared/ml-thirdparty-client/models/core';
 
-let participants: Participant[] = [
+const participants: Participant[] = [
   {
     fspId: "fspa",
     name: "FSP A",
@@ -36,4 +36,8 @@ let participants: Participant[] = [
   },
 ]
 
-export { participants }
+export class ParticipantFactory {
+  public static getParticipants() {
+    return participants
+  }
+}

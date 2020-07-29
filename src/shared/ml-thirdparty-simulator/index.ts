@@ -26,9 +26,9 @@
 import { Server } from '@hapi/hapi'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  createPutPartiesRequest,
-} from './factories'
+
+import { ParticipantFactory } from './factories/participant'
+import { PartyFactory } from './factories/party'
 
 namespace Simulator {
   /**
@@ -50,6 +50,11 @@ namespace Simulator {
      * communicating with the real Mojaloop services.
      */
     delay?: number
+
+    /**
+     * Number of DFSP participants that the simulator will generate.
+     */
+    numOfParticipants?: number
   }
 }
 
@@ -65,6 +70,10 @@ export class Simulator {
   constructor(server: Server, opts?: Simulator.Options) {
     this.server = server
     this.opts = opts ?? {}
+
+    if (this.opts.numOfParticipants) {
+      ParticipantFactory.numOfParticipants = this.opts.numOfParticipants
+    }
   }
 
   /**
@@ -76,7 +85,7 @@ export class Simulator {
    */
   async getParties(type: PartyIdType, id: string): Promise<void> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
-    const payload = createPutPartiesRequest(type, id)
+    const payload = PartyFactory.createPutPartiesRequest(type, id)
 
     if (this.opts.delay) {
       // Delay operations to simulate network latency in real communication

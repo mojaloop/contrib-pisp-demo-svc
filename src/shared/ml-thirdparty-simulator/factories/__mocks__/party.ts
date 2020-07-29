@@ -26,7 +26,7 @@
 import { PartyIdType, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-let data: PartiesTypeIDPutRequest[] = [
+const data: PartiesTypeIDPutRequest[] = [
   {
     party: {
       partyIdInfo: {
@@ -69,13 +69,15 @@ let data: PartiesTypeIDPutRequest[] = [
   },
 ]
 
-export const createPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
-  let result = null;
-  data.forEach((value) => {
-    if (value.party.partyIdInfo.partyIdType == type && value.party.partyIdInfo.partyIdentifier == id) {
-      result = value
-    }
-  })
-  // TODO: error handling if there is no matching data.
-  return result ?? data[0]
+export class PartyFactory {
+  public static createPutPartiesRequest(type: PartyIdType, id: string): PartiesTypeIDPutRequest {
+    let result = null;
+    data.forEach((value) => {
+      if (value.party.partyIdInfo.partyIdType == type && value.party.partyIdInfo.partyIdentifier == id) {
+        result = value
+      }
+    })
+    // TODO: error handling if there is no matching data.
+    return result ?? data[0]
+  }
 }
