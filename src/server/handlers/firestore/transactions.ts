@@ -106,9 +106,9 @@ export const onUpdate: TransactionHandler =
             amountType: AmountType.RECEIVE,
             amount: transaction.amount!,
             transactionType: {
-              scenario: "TRANSFER",
-              initiator: "PAYER",
-              intiiatorType: "CONSUMER",
+              scenario: 'TRANSFER',
+              initiator: 'PAYER',
+              intiiatorType: 'CONSUMER',
             },
             expiration: getTomorrowsDate().toISOString()
           })
