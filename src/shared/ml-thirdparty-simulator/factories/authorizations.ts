@@ -33,7 +33,13 @@ import {
 import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
 
 export class AuthorizationFactory {
-  static mockPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+  /**
+   * Creates a `POST /authorizations` request body that is normally sent
+   * by Mojaloop as a callback for a transaction request operation.
+   * 
+   * @param request  The transaction request object as defined by the Mojaloop API.
+   */
+  public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
     return {
       authenticationType: AuthenticationType.U2F,
       retriesLeft: "1",

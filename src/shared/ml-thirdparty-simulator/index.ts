@@ -109,7 +109,13 @@ export class Simulator {
     })
   }
 
-  async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+  /**
+   * Simulates a transaction initiation in Mojaloop by third-party application,
+   * without the need of sending `POST /thirdpartyRequests/transactions` request.
+   * 
+   * @param request a transaction request object as defined by the Mojaloop API.
+   */
+  public async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
     this.server.inject({
       method: 'POST',
       url: '/authorizations',
@@ -118,7 +124,7 @@ export class Simulator {
         'Content-Length': '1234',
         'Content-Type': 'application/json',
       },
-      payload: AuthorizationFactory.mockPostAuthorizationsRequest(request),
+      payload: AuthorizationFactory.createPostAuthorizationsRequest(request),
     })
   }
 

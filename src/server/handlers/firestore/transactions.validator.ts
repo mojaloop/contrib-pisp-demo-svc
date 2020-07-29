@@ -39,6 +39,13 @@ export const isValidPartyLookup = (transaction: Transaction): boolean => {
     && transaction.payee.partyIdInfo.partyIdentifier != null
 }
 
+/**
+ * Checks whether a transaction document has all the necessary fields to be 
+ * processed as a transaction request.
+ * 
+ * @param transaction the object representation of a transaction that is stored
+ *                    on Firebase.
+ */
 export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
   if (transaction.transactionRequestId
     && transaction.consentId && transaction.sourceAccountId

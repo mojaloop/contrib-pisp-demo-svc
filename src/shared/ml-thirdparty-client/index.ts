@@ -85,9 +85,19 @@ export class Client {
     // TODO: Implement communication with Mojaloop.
   }
 
+  /**
+   * Performs a transaction initiation with the given transaction request object.
+   * 
+   * @param requestBody a transaction request object as defined by the Mojaloop API.
+   */
   public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
     if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
       return this.simulator.postTransactions(requestBody)
     }
+
+    // TODO: Implement communication with Mojaloop.
   }
 }

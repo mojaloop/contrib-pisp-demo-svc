@@ -91,8 +91,12 @@ export const onUpdate: TransactionHandler =
         // and wait for the user to confirm the payee by keying in more details
         // about the transaction (i.e., source account ID, consent ID, and
         // transaction amount).
-
         if (validator.isValidPayeeConfirmation(transaction)) {
+          // If the update contains all the necessary fields, process document
+          // to the next step by sending a transaction request to Mojaloop.
+
+          // The optional values are guaranteed to exist by the validator.
+          // eslint-disable @typescript-eslint/no-non-null-assertion
           server.app.mojaloopClient.postTransactions({
             transactionRequestId: transaction.transactionRequestId!,
             sourceAccountId: transaction.sourceAccountId!,
@@ -108,8 +112,8 @@ export const onUpdate: TransactionHandler =
             },
             expiration: getTomorrowsDate().toISOString()
           })
+          // eslint-enable @typescript-eslint/no-non-null-assertion
         }
-
         break
     }
   }
