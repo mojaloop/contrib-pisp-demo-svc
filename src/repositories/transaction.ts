@@ -29,8 +29,20 @@ import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
 
 export interface ITransactionRepository {
+  /**
+   * Updates a transaction document based on a unique identifier.
+   * 
+   * @param id    Id for the transaction document that needs to be updated.
+   * @param data  Document fields that are about to be updated.
+   */
   updateById(id: string, data: Record<string, any>): Promise<void>
 
+  /**
+   * Updates one or more transaction documents based on the given conditions.
+   * 
+   * @param conditions  Conditions for the documents that need to be updated.
+   * @param data        Document fields that are about to be updated.
+   */
   update(
     conditions: Record<string, any>,
     data: Record<string, any>
@@ -56,7 +68,7 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
     }
 
     // Find and update all matching documents in Firebase that match the given conditions.
-    firestoreQuery
+    await firestoreQuery
       .get()
       .then((response) => {
         // Create a batch to perform all of the updates using a single request.
