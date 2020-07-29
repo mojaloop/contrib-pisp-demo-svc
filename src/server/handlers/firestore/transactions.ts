@@ -80,10 +80,10 @@ export const onUpdate: TransactionHandler =
 
       case Status.PENDING_PAYEE_CONFIRMATION:
         // Upon receiving a callback from Mojaloop that contains information about
-        // the payee, the server will update all relevant transaction documents 
+        // the payee, the server will update all relevant transaction documents
         // in the Firebase. However, we can just ignore all updates by the server
-        // and wait for the user to confirm the payee by keying in more details 
-        // about the transaction (i.e., source account ID, consent ID, and 
+        // and wait for the user to confirm the payee by keying in more details
+        // about the transaction (i.e., source account ID, consent ID, and
         // transaction amount).
         break
     }
