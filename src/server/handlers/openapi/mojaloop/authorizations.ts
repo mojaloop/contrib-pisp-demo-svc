@@ -25,37 +25,26 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+
 import { logger } from '~/shared/logger'
 import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+
+import { transactionRepository } from '~/repositories/transaction'
+import { Status } from '~/models/transaction'
 
 export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
   let body = request.payload as AuthorizationsPostRequest
 
-  firebase.firestore()
-    .collection('transactions')
-    .where("transactionRequestId", "==", body.transactionRequestId)
-    .get()
-    .then((response) => {
-      let batch = firebase.firestore().batch()
-      response.docs.forEach((doc) => {
-        console.log('doc id', doc.id)
-        const docRef = firebase.firestore().collection('transactions').doc(doc.id)
-        batch.set(
-          docRef,
-          {
-            authenticationType: body.authenticationType,
-            transactionId: body.transactionId,
-            quote: body.quote,
-            status: Status.AUTHORIZATION_REQUIRED,
-          },
-          { merge: true },
-        )
-      })
-      batch.commit()
-    })
+  transactionRepository.update(
+    { transactionRequestId: body.transactionRequestId },
+    {
+      authenticationType: body.authenticationType,
+      transactionId: body.transactionId,
+      quote: body.quote,
+      status: Status.AUTHORIZATION_REQUIRED,
+    }
+  )
 
   return h.response().code(202)
 }

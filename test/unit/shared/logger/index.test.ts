@@ -24,7 +24,7 @@
  ******/
 
 import util from 'util'
-import { logger, RequestLogged } from '../../../../src/shared/logger'
+import { logger, RequestLogged } from '~/shared/logger'
 
 const mockLogger = {
   info: jest.fn(),

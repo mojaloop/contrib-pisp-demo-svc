@@ -23,41 +23,49 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+
 import { logger } from '~/shared/logger'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+import { Status } from '~/models/transaction'
+import { transactionRepository } from '~/repositories/transaction'
+
+/**
+ * Handles callback from Mojaloop that specifies detailed info about a requested party.
+ * 
+ * @param context   an object that contains detailed information about the incoming request.
+ * @param request   original request object as defined by the hapi library.
+ * @param h         original request toolkit as defined by the hapi libary.
+ */
+export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
+  // Log information about the incoming request
   logger.logRequest(context, request, h)
+
+  // Retrieve the data that have been validated by the openapi-backend library.
   let body = context.request.body as PartiesTypeIDPutRequest
   let partyIdType = context.request.params.Type
   let partyIdentifier = context.request.params.ID
 
-  firebase.firestore()
-    .collection('transactions')
-    .where("payee.partyIdInfo.partyIdType", "==", partyIdType)
-    .where("payee.partyIdInfo.partyIdentifier", "==", partyIdentifier)
-    .where("status", "==", Status.PENDING_PARTY_LOOKUP.toString())
-    .get()
-    .then((response) => {
-      let batch = firebase.firestore().batch()
-      response.docs.forEach((doc) => {
-        const docRef = firebase.firestore().collection('transactions').doc(doc.id)
-        batch.set(
-          docRef,
-          {
-            partyQuery: firebase.firestore.FieldValue.delete(),
-            payee: body.party,
-            status: Status.PENDING_PAYEE_CONFIRMATION,
-          },
-          { merge: true },
-        )
-      })
-      batch.commit()
-    })
+  // Find all matching documents in Firebase that are waiting for the result of
+  // party lookup with the specified type and identifier. The execution of this 
+  // function is expected to run asynchronously, so the server could quickly 
+  // give a response to Mojaloop.
+  transactionRepository.update(
+    // Conditions for the documents that need to be updated
+    {
+      "payee.partyIdInfo.partyIdType": partyIdType,
+      "payee.partyIdInfo.partyIdentifier": partyIdentifier,
+      "status": Status.PENDING_PARTY_LOOKUP,
+    },
+    // Update the given field by their new values
+    {
+      payee: body.party,
+      status: Status.PENDING_PAYEE_CONFIRMATION,
+    }
+  )
 
+  // Return "200 OK" as defined by the Mojaloop API for successful request.
   return h.response().code(200)
 }

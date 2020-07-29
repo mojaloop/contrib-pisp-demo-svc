@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,28 +23,19 @@
  --------------
  ******/
 
-import * as faker from 'faker'
-
-import {
-  AuthorizationsPostRequest,
-  ThirdPartyTransactionRequest,
-} from '~/shared/ml-thirdparty-client/models/openapi'
-
-import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
-
-export const mockPostAuthorizationsRequest =
-  (request: ThirdPartyTransactionRequest): AuthorizationsPostRequest => {
-    return {
-      authenticationType: AuthenticationType.U2F,
-      retriesLeft: "1",
-      amount: request.amount,
-      transactionId: faker.random.uuid(),
-      transactionRequestId: request.transactionRequestId,
-      quote: {
-        transferAmount: request.amount,
-        expiration: request.expiration,
-        ilpPacket: faker.random.alphaNumeric(70),
-        condition: faker.random.alphaNumeric(43),
-      }
-    }
-  }
+/**
+ * A mock object to simulate the operations on Firebase.
+ * Since there are a lot of chained methods from various classes,
+ * in the current implementation, we only use a single mocked object 
+ * to avoid unnecessary complexity.
+ */
+export default {
+  firestore: jest.fn().mockReturnThis(),
+  collection: jest.fn().mockReturnThis(),
+  doc: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  add: jest.fn(),
+  set: jest.fn(),
+  update: jest.fn(),
+  onSnapshot: jest.fn().mockImplementation(() => jest.fn()),
+}

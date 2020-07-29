@@ -10,7 +10,7 @@
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.build.json",
     "build:openapi": "npm run build:openapi:app && npm run build:openapi:mojaloop",
     "build:openapi:app": "swagger-cli bundle -t yaml -o dist/openapi/app.yaml ./src/interface/app.yaml && swagger-cli validate dist/openapi/app.yaml",
     "build:openapi:mojaloop": "swagger-cli bundle -t yaml -o dist/openapi/mojaloop.yaml ./src/interface/mojaloop.yaml && swagger-cli validate dist/openapi/mojaloop.yaml",
@@ -104,6 +104,7 @@
     "@hapi/vision": "^6.0.0",
     "@types/uuid": "^8.0.0",
     "convict": "^6.0.0",
+    "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "firebase-admin": "^8.13.0",
     "openapi-backend": "^3.5.1",

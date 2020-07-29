@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src",
+    "ambient.d.ts",
+  ],
+  "exclude": [
+    "coverage",
+    "dist",
+    "node_modules",
+    "test",
+    "commitlint.config.js",
+    "jest.bdd.config.js",
+    "jest.config.js"
+  ],
+}

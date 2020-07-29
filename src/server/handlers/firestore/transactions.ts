@@ -24,32 +24,16 @@
  ******/
 
 import * as uuid from 'uuid'
-
 import { Server } from '@hapi/hapi'
-
-import firebase from '~/lib/firebase'
-import { Transaction, Status } from '~/lib/firebase/models/transactions'
-import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
 import { logger } from '~/shared/logger'
 import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
 
+import { TransactionHandler } from '~/server/plugins/internal/firestore'
+import { Transaction, Status } from '~/models/transaction'
+import { transactionRepository } from '~/repositories/transaction'
 
-function isValidPartyQuery(transaction: Transaction): boolean {
-  if (transaction.payee) {
-    return true
-  }
-  return false
-}
-
-function isValidPayeeConfirmation(transaction: Transaction): boolean {
-  if (transaction.transactionRequestId
-    && transaction.consentId && transaction.sourceAccountId
-    && transaction.amount && transaction.payer && transaction.payee) {
-    return true
-  }
-  return false
-}
+import * as validator from './transactions.validator'
 
 function isValidAuthorization(transaction: Transaction): boolean {
   if (transaction.transactionRequestId
@@ -64,60 +48,81 @@ function getTomorrowsDate(): Date {
   return new Date(currentDate.getDate() + 1)
 }
 
-async function setupNewTransaction(id: string) {
-  await firebase.firestore()
-    .collection('transactions')
-    .doc(id)
-    .set({
+export const onCreate: TransactionHandler =
+  async (_: Server, transaction: Transaction): Promise<void> => {
+    if (transaction.status) {
+      // Skip transaction that has been processed previously.
+      // We need this because when the server starts for the first time, 
+      // all existing documents in the Firebase will be treated as a new
+      // document.
+      return
+    }
+
+    // Assign a transactionRequestId to the document and set the initial
+    // status. This operation will create an event that triggers the execution
+    // of the onUpdate function.
+    transactionRepository.updateById(transaction.id, {
       transactionRequestId: uuid.v4(),
-      status: Status.PENDING_PARTY_LOOKUP
-    }, { merge: true })
-}
-
-export const onCreate: TransactionHandler = async (server: Server, id: string, transaction: Transaction) => {
-  if (transaction.status) {
-    // Skip transaction that has been processed previously.
-    // We need this because when the server starts for the first time, 
-    // all existing documents in the Firebase will be treated as a new
-    // document.
-    return
+      status: Status.PENDING_PARTY_LOOKUP,
+    })
   }
 
-  await setupNewTransaction(id)
+export const onUpdate: TransactionHandler =
+  async (server: Server, transaction: Transaction): Promise<void> => {
+    if (!transaction.status) {
+      // Status is expected to be null only when the document is created for the first
+      // time by the user.
+      logger.error('Invalid transaction update, undefined status.')
+      return
+    }
 
-  if (isValidPartyQuery(transaction)) {
-    server.app.mojaloopClient.getParties(
-      transaction.payee!.partyIdInfo.partyIdType,
-      transaction.payee!.partyIdInfo.partyIdentifier,
-    )
-  } else {
-    logger.error('invalid party query')
-  }
-}
+    switch (transaction.status) {
+      case Status.PENDING_PARTY_LOOKUP:
+        // Check whether the transaction document has all the necessary properties 
+        // to perform a party lookup.
+        if (validator.isValidPartyLookup(transaction)) {
+          // Payee is guaranteed to be non-null by the validator.
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const payee = transaction.payee!
 
-export const onUpdate: TransactionHandler = async (server: Server, _: string, transaction: Transaction) => {
-  if (!transaction.status) {
-    logger.error('Invalid transaction update. No status provided.')
-    return
-  }
+          server.app.mojaloopClient.getParties(
+            payee.partyIdInfo.partyIdType,
+            payee.partyIdInfo.partyIdentifier
+          )
+        }
+        break
 
-  if (transaction.status === Status.PENDING_PAYEE_CONFIRMATION.toString()) {
-    if (isValidPayeeConfirmation(transaction)) {
-      server.app.mojaloopClient.postTransactions({
-        transactionRequestId: transaction.transactionRequestId!,
-        sourceAccountId: transaction.sourceAccountId!,
-        consentId: transaction.consentId!,
-        payee: transaction.payee!,
-        payer: transaction.payer!,
-        amountType: AmountType.RECEIVE,
-        amount: transaction.amount!,
-        transactionType: {
-          scenario: "TRANSFER",
-          initiator: "PAYER",
-          intiiatorType: "CONSUMER",
-        },
-        expiration: getTomorrowsDate().toISOString()
-      })
+      case Status.PENDING_PAYEE_CONFIRMATION:
+        // Upon receiving a callback from Mojaloop that contains information about
+        // the payee, the server will update all relevant transaction documents
+        // in the Firebase. However, we can just ignore all updates by the server
+        // and wait for the user to confirm the payee by keying in more details
+        // about the transaction (i.e., source account ID, consent ID, and
+        // transaction amount).
+        if (validator.isValidPayeeConfirmation(transaction)) {
+          // If the update contains all the necessary fields, process document
+          // to the next step by sending a transaction request to Mojaloop.
+
+          // The optional values are guaranteed to exist by the validator.
+          // eslint-disable @typescript-eslint/no-non-null-assertion
+          server.app.mojaloopClient.postTransactions({
+            transactionRequestId: transaction.transactionRequestId!,
+            sourceAccountId: transaction.sourceAccountId!,
+            consentId: transaction.consentId!,
+            payee: transaction.payee!,
+            payer: transaction.payer!,
+            amountType: AmountType.RECEIVE,
+            amount: transaction.amount!,
+            transactionType: {
+              scenario: "TRANSFER",
+              initiator: "PAYER",
+              intiiatorType: "CONSUMER",
+            },
+            expiration: getTomorrowsDate().toISOString()
+          })
+          // eslint-enable @typescript-eslint/no-non-null-assertion
+        }
+        break
     }
 
   } else if (transaction.status === Status.AUTHORIZATION_REQUIRED.toString()) {
@@ -132,5 +137,3 @@ export const onUpdate: TransactionHandler = async (server: Server, _: string, tr
       )
     }
   }
-}
-

@@ -28,6 +28,8 @@ import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 
+import config from '~/lib/config'
+
 // Import necessary files to setup openapi
 import { OpenApi, OpenApiOpts } from './internal/openapi'
 import { extHandlers, appApiHandlers, mojaloopApiHandlers } from '~/server/handlers/openapi'
@@ -44,7 +46,7 @@ import { MojaloopSimulator, MojaloopSimulatorOpts } from './internal/mojaloopSim
 
 // Config for openapi
 const openApiOpts: OpenApiOpts = {
-  baseHost: 'pisp-demo-server.local',
+  baseHost: config.get('hostname'),
   definition: {
     app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
     mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
@@ -67,12 +69,13 @@ const firestoreOpts: FirestoreOpts = {
 
 // Config for mojaloop client
 const mojaloopClientOpts: MojaloopClientOpts = {
-  baseUrl: 'https://mojaloop.local',
+  mojaloopUrl: config.get('mojaloop.url'),
 }
 
 // Config for mojaloop simulator
 const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
-  vhost: 'mojaloop.pisp-demo-server.local',
+  host: 'mojaloop.' + config.get('hostname'),
+  delay: config.get('experimental.delay'),
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,14 +94,18 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
     plugin: MojaloopClient,
     options: mojaloopClientOpts,
   },
-  {
-    plugin: MojaloopSimulator,
-    options: mojaloopSimulatorOpts,
-  }
 ]
 
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
+
+  if (config.get('experimental.mode') === 'on') {
+    await server.register({
+      plugin: MojaloopSimulator,
+      options: mojaloopSimulatorOpts,
+    })
+  }
+
   return server
 }
 

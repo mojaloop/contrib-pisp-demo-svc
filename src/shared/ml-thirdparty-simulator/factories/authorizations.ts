@@ -23,7 +23,35 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './participants'
-export * from './parties'
-export * from './transfers'
+import * as faker from 'faker'
+
+import {
+  AuthorizationsPostRequest,
+  ThirdPartyTransactionRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
+
+import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
+
+export class AuthorizationFactory {
+  /**
+   * Creates a `POST /authorizations` request body that is normally sent
+   * by Mojaloop as a callback for a transaction request operation.
+   * 
+   * @param request  The transaction request object as defined by the Mojaloop API.
+   */
+  public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+    return {
+      authenticationType: AuthenticationType.U2F,
+      retriesLeft: "1",
+      amount: request.amount,
+      transactionId: faker.random.uuid(),
+      transactionRequestId: request.transactionRequestId,
+      quote: {
+        transferAmount: request.amount,
+        expiration: request.expiration,
+        ilpPacket: faker.random.alphaNumeric(70),
+        condition: faker.random.alphaNumeric(43),
+      }
+    }
+  }
+}

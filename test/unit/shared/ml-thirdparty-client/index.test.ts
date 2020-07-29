@@ -23,21 +23,37 @@
  --------------
  ******/
 
-import * as faker from 'faker'
+import { Server } from '@hapi/hapi'
 
-import { Participant } from '../../ml-thirdparty-client/models/core'
+import config from '~/lib/config'
 
-const numberOfParticipants = 10
+import { Client } from '~/shared/ml-thirdparty-client'
+import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
-let participants: Participant[] = []
+describe('Mojaloop third-party client', () => {
+  let client: Client
+  let simulator: Simulator
 
-for (var i = 0; i < numberOfParticipants; i++) {
-  let participant: Participant = {
-    fspId: faker.finance.bic(),
-    name: faker.company.companyName()
-  }
+  beforeAll(async () => {
+    // Setup client and simulator
+    client = new Client()
 
-  participants.push(participant)
-}
+    // Use jest function for the purpose of dependency injection
+    simulator = new Simulator(jest.fn() as unknown as Server, {
+      host: 'mojaloop.' + config.get('hostname'),
+      delay: 100,
+    })
+  })
 
-export { participants }
+  it('Should use simulator to perform party lookup when it is provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest.spyOn(simulator, 'getParties').mockImplementation()
+
+    const type = PartyIdType.MSISDN
+    const identifier = "+1-111-111-1111"
+    client.getParties(PartyIdType.MSISDN, "+1-111-111-1111")
+
+    expect(simulatorSpy).toBeCalledWith(type, identifier)
+  })
+})

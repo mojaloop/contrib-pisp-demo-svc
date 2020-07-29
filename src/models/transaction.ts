@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -31,26 +31,37 @@ export enum Status {
   /**
    * Waiting for a callback from Mojaloop to give the payee information.
    */
-  PENDING_PARTY_LOOKUP = "PENDING_PARTY_LOOKUP",
+  PENDING_PARTY_LOOKUP = 'PENDING_PARTY_LOOKUP',
 
   /**
    * Waiting for the user to confirm payee information and provide more
    * details about the transaction.
    */
-  PENDING_PAYEE_CONFIRMATION = "PENDING_PAYEE_CONFIRMATION",
+  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
 
   /**
    * Waiting for the user to authorize the transaction.
    */
-  AUTHORIZATION_REQUIRED = "AUTHORIZATION_REQUIRED",
+  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
 
   /**
    * The transaction is successful.
    */
-  SUCCESS = "SUCCESS",
+  SUCCESS = 'SUCCESS',
 }
 
 export interface Transaction {
+  /**
+   * Internal id that is used to identify the transaction.
+   */
+  id: string
+
+  /**
+   * User ID in Firebase that differentiate transaction documents for
+   * different users.
+   */
+  userId?: string
+
   /**
    * Information about the payee in the proposed financial transaction.
    */
@@ -96,7 +107,7 @@ export interface Transaction {
   responseType?: AuthenticationResponseType
 
   /**
-   * Common ID (decided by the PISP) to identify a transaction request
+   * Common ID (decided by the PISP) to identify a transaction request.
    */
   transactionRequestId?: string
 

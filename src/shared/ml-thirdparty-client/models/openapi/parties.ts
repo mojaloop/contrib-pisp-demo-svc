@@ -27,7 +27,7 @@ import { Party, Account } from '../core'
 
 export interface PartiesTypeIDPutRequest {
   /**
-   * 
+   * Information about the requested party.
    */
   party: Party
 
