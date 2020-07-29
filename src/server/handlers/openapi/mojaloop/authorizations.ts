@@ -34,10 +34,13 @@ import { Status } from '~/models/transaction'
 
 export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
-  let body = request.payload as AuthorizationsPostRequest
+  let body = context.request.body as AuthorizationsPostRequest
 
   transactionRepository.update(
-    { transactionRequestId: body.transactionRequestId },
+    {
+      transactionRequestId: body.transactionRequestId,
+      status: Status.PENDING_PAYEE_CONFIRMATION,
+    },
     {
       authenticationType: body.authenticationType,
       transactionId: body.transactionId,
