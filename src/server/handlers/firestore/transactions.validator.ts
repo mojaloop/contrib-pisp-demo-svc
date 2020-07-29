@@ -23,7 +23,7 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transactions'
+import { Transaction } from '~/models/transaction'
 
 /**
  * Checks whether a transaction document has all the necessary fields to perform

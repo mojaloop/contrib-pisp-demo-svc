@@ -29,7 +29,7 @@ import { Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 
-import { Transaction, Status } from '~/models/transactions'
+import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'

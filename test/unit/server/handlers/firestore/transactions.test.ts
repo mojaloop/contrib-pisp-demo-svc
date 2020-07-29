@@ -33,7 +33,7 @@ import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { Status } from '~/models/transactions'
+import { Status } from '~/models/transaction'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')

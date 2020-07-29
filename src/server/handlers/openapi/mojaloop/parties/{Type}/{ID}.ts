@@ -29,7 +29,7 @@ import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-import { Status } from '~/models/transactions'
+import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 /**

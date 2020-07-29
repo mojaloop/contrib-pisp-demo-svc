@@ -31,7 +31,7 @@ import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import { transactionRepository } from '~/repositories/transaction'
 import * as PartiesByTypeAndIdHandlers from '~/server/handlers/openapi/mojaloop/parties/{Type}/{ID}'
 import { Context } from 'openapi-backend'
-import { Status } from '~/models/transactions'
+import { Status } from '~/models/transaction'
 
 import config from '~/lib/config'
 

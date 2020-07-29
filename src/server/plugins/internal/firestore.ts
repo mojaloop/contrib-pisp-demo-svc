@@ -28,7 +28,7 @@ import { Plugin, Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 
 import firebase from '~/lib/firebase'
-import { Transaction } from '~/models/transactions'
+import { Transaction } from '~/models/transaction'
 
 export type TransactionHandler = (server: Server, transaction: Transaction) => Promise<void>
 
