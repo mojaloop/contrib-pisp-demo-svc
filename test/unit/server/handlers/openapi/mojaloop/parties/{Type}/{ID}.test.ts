@@ -46,6 +46,9 @@ jest.mock('~/shared/logger', () => ({
   }
 }))
 
+// Mock firebase to prevent transaction repository from opening the connection.
+jest.mock('~/lib/firebase')
+
 const mockRequest = jest.fn().mockImplementation()
 
 const mockResponseToolkit = {

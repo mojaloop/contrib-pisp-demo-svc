@@ -26,7 +26,9 @@
 import config from '~/lib/config'
 import server from '~/server'
 
-jest.mock('~/server')
+jest.mock('~/server', () => ({
+  run: jest.fn()
+}))
 
 describe('cli', (): void => {
   afterAll((): void => {
