@@ -30,7 +30,7 @@ import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/mode
 
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
-import { AuthorizationFactory } from './factories/authorizations'
+import { AuthorizationFactory } from './factories/authorization'
 
 namespace Simulator {
   /**
