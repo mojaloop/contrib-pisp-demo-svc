@@ -26,10 +26,18 @@
 import { Client } from '~/shared/ml-thirdparty-client'
 import { Plugin, Server } from '@hapi/hapi'
 
+/**
+ * An interface definition for options that need to be specfied to use this plugin.
+ */
 export interface MojaloopClientOpts {
-  baseUrl: string
+  mojaloopUrl: string
 }
 
+/**
+ * A plugin to setup a mojaloop client in the PISP demo server.
+ * Note that the client object that could be used to perform various operations 
+ * in Mojaloop is stored in the application state. 
+ */
 export const MojaloopClient: Plugin<MojaloopClientOpts> = {
   name: 'MojaloopClient',
   version: '1.0.0',

@@ -28,10 +28,13 @@ import { Plugin, Server } from '@hapi/hapi'
 import { logger } from '~/shared/logger'
 
 import firebase from '~/lib/firebase'
-import { Transaction } from '~/lib/firebase/models/transactions'
+import { Transaction } from '~/models/transaction'
 
-export type TransactionHandler = (server: Server, id: string, obj: Transaction) => Promise<void>
+export type TransactionHandler = (server: Server, transaction: Transaction) => Promise<void>
 
+/**
+ * An interface definition for options that need to be specfied to use this plugin.
+ */
 export interface FirestoreOpts {
   handlers: {
     transactions: {
@@ -41,28 +44,59 @@ export interface FirestoreOpts {
   }
 }
 
+/**
+ * Listens to events that happen in the "transactions" collection.
+ * Note that when the server starts running, all existing documents in Firestore
+ * will be treated as a document that is created for the first time. The handler for
+ * `onCreate` transaction must be able to differentiate whether a document is created in
+ * realtime or because it has persisted in the database when the server starts.
+ *
+ * @param server a server object as defined in the hapi library.
+ * @param opts a configuration object for the plugin.
+ * @returns a function to unsubscribe the listener.
+ */
 const listenToTransactions = (server: Server, opts: FirestoreOpts): (() => void) => {
-  return firebase.firestore().collection('transactions').onSnapshot((querySnapshot) => {
-    querySnapshot.docChanges().forEach(change => {
-      if (change.type === 'added') {
-        opts.handlers.transactions.onCreate(server, change.doc.id, change.doc.data())
-      } else if (change.type == 'modified') {
-        opts.handlers.transactions.onUpdate(server, change.doc.id, change.doc.data())
-      } else {
-        logger.error('unhandled transaction operation')
-      }
+  return firebase
+    .firestore()
+    .collection('transactions')
+    .onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          opts.handlers.transactions.onCreate(
+            server,
+            {
+              id: change.doc.id,
+              ...change.doc.data()
+            }
+          )
+        } else if (change.type === 'modified') {
+          opts.handlers.transactions.onUpdate(
+            server,
+            {
+              id: change.doc.id,
+              ...change.doc.data()
+            }
+          )
+        } else {
+          logger.error('Unhandled transaction operation')
+        }
+      })
     })
-  })
 }
 
+/**
+ * A plugin that enables the hapi server to listen to changes in the Firestore
+ * collections that are relevant for the PISP demo.
+ */
 export const Firestore: Plugin<FirestoreOpts> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
   register: async (server: Server, opts: FirestoreOpts) => {
-    let unsubscribeTransactions = listenToTransactions(server, opts)
+    const unsubscribeTransactions = listenToTransactions(server, opts)
 
+    // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {
       unsubscribeTransactions()
     })
-  }
+  },
 }

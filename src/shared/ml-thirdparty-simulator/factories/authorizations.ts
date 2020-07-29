@@ -23,6 +23,29 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './participants'
-export * from './parties'
+import * as faker from 'faker'
+
+import {
+  AuthorizationsPostRequest,
+  ThirdPartyTransactionRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
+
+import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
+
+export class AuthorizationFactory {
+  static mockPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+    return {
+      authenticationType: AuthenticationType.U2F,
+      retriesLeft: "1",
+      amount: request.amount,
+      transactionId: faker.random.uuid(),
+      transactionRequestId: request.transactionRequestId,
+      quote: {
+        transferAmount: request.amount,
+        expiration: request.expiration,
+        ilpPacket: faker.random.alphaNumeric(70),
+        condition: faker.random.alphaNumeric(43),
+      }
+    }
+  }
+}

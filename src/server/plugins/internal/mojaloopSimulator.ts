@@ -26,10 +26,32 @@
 import { Plugin, Server } from '@hapi/hapi'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
+/**
+ * An interface definition for options that need to be specfied to use this plugin.
+ */
 export interface MojaloopSimulatorOpts {
-  vhost?: string
+  /**
+   * Host of the server. This will tell the simulator to add a `host` header in the 
+   * injected requests with the given value.
+   */
+  host?: string
+
+  /**
+   * The delay in milisecond before the simulator injects a response back to the server.
+   * This could be used to simulate the network latency that may appear when communicating
+   * with the real Mojaloop services.
+   */
+  delay?: number
 }
 
+/**
+ * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
+ * In fact, the server only talks with a simulator that generates a random data 
+ * and inject callbacks to the internal routes.
+ * 
+ * The 'MojaloopClient' plugin must be registered before trying to 
+ * register this function as it will try to intercept the 
+ */
 export const MojaloopSimulator: Plugin<MojaloopSimulatorOpts> = {
   name: 'MojaloopSimulator',
   version: '1.0.0',

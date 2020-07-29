@@ -23,14 +23,21 @@
  --------------
  ******/
 
-import Config from '../../src/shared/config'
-import server from '../../src/server'
-jest.mock('../../src/server')
+import config from '~/lib/config'
+import server from '~/server'
+
+jest.mock('~/server', () => ({
+  run: jest.fn()
+}))
 
 describe('cli', (): void => {
+  afterAll((): void => {
+    jest.clearAllTimers()
+  })
+
   it('should use default port & host', async (): Promise<void> => {
-    const cli = await import('../../src/cli')
+    const cli = await import('~/cli')
     expect(cli).toBeDefined()
-    expect(server.run).toHaveBeenCalledWith(Config)
+    expect(server.run).toHaveBeenCalledWith(config)
   })
 })

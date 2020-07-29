@@ -23,49 +23,61 @@
  --------------
  ******/
 
-import * as faker from 'faker'
-import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
+import { PartyIdType, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import { participants } from './participants'
 
-const createParty = (type: PartyIdType, id: string): Party => {
-  const randomFsp = participants[Math.floor(Math.random() * participants.length)]
-  const randomFirstName = faker.name.firstName()
-  const randomLastName = faker.name.lastName()
-  return {
-    partyIdInfo: {
-      partyIdType: type,
-      partyIdentifier: id,
-      fspId: randomFsp.fspId
+const data: PartiesTypeIDPutRequest[] = [
+  {
+    party: {
+      partyIdInfo: {
+        partyIdType: PartyIdType.MSISDN,
+        partyIdentifier: "+1-111-111-1111",
+        fspId: 'fspa',
+      },
+      name: 'Alice Alpaca',
+      personalInfo: {
+        complexName: {
+          firstName: 'Alice',
+          lastName: 'Alpaca',
+        },
+      },
     },
-    name: randomFirstName + randomLastName,
-    personalInfo: {
-      complexName: {
-        firstName: randomFirstName,
-        lastName: randomLastName,
+    accounts: [
+      { id: 'alice.aaaaa.fspa', currency: Currency.SGD },
+      { id: 'alice.bbbbb.fspa', currency: Currency.USD },
+    ],
+  },
+  {
+    party: {
+      partyIdInfo: {
+        partyIdType: PartyIdType.MSISDN,
+        partyIdentifier: "+1-222-222-2222",
+        fspId: 'fspb',
+      },
+      name: 'Bob Beaver',
+      personalInfo: {
+        complexName: {
+          firstName: 'Bob',
+          lastName: 'Beaver',
+        },
+      },
+    },
+    accounts: [
+      { id: 'bob.aaaaa.fspb', currency: Currency.SGD },
+      { id: 'bob.bbbbb.fspb', currency: Currency.USD },
+    ],
+  },
+]
+
+export class PartyFactory {
+  public static createPutPartiesRequest(type: PartyIdType, id: string): PartiesTypeIDPutRequest {
+    let result = null;
+    data.forEach((value) => {
+      if (value.party.partyIdInfo.partyIdType == type && value.party.partyIdInfo.partyIdentifier == id) {
+        result = value
       }
-    }
-  }
-}
-
-const createAccount = (party: Party, currency: Currency): Account => {
-  const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
-  const randomAlphanumeric = faker.random.alphaNumeric(5)
-  return {
-    id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
-    currency
-  }
-}
-
-export const mockPutPartiesRequest = (type: PartyIdType, id: string): PartiesTypeIDPutRequest => {
-  const party = createParty(type, id)
-  const accounts: Account[] = [ // hardcode two currencies
-    createAccount(party, Currency.USD),
-    createAccount(party, Currency.SGD),
-  ]
-
-  return {
-    party,
-    accounts
+    })
+    // TODO: error handling if there is no matching data.
+    return result ?? data[0]
   }
 }

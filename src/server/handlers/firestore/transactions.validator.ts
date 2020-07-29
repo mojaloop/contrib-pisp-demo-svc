@@ -23,17 +23,27 @@
  --------------
  ******/
 
-import * as admin from 'firebase-admin'
-import config from '~/lib/config'
+import { Transaction } from '~/models/transaction'
 
-// Load the service account key to be able to access Firebase admin.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const serviceAccount = require(config.get('db.firebase.keyPath'))
+/**
+ * Checks whether a transaction document has all the necessary fields to perform
+ * a party lookup.
+ * 
+ * @param transaction the object representation of a transaction that is stored
+ *                    on Firebase.
+ */
+export const isValidPartyLookup = (transaction: Transaction): boolean => {
+  return transaction.payee != null
+    && transaction.payee.partyIdInfo != null
+    && transaction.payee.partyIdInfo.partyIdType != null
+    && transaction.payee.partyIdInfo.partyIdentifier != null
+}
 
-// Initialize the connection to Firebase.
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: config.get('db.firebase.url')
-})
-
-export default admin
+export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
+  if (transaction.transactionRequestId
+    && transaction.consentId && transaction.sourceAccountId
+    && transaction.amount && transaction.payer && transaction.payee) {
+    return true
+  }
+  return false
+}

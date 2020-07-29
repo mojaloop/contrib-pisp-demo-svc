@@ -26,7 +26,7 @@
 import Boom from '@hapi/boom'
 import { Request, ResponseToolkit } from '@hapi/hapi'
 
-import onValidateFail from '../../../../src/server/handlers/onValidateFail'
+import onValidateFail from '~/server/handlers/onValidateFail'
 
 describe('server/handlers/onValidateFail', (): void => {
   it('should throw error from Boom.boomify', (): void => {

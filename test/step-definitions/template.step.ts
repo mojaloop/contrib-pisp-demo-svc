@@ -26,8 +26,8 @@
 import path from 'path'
 import { loadFeature, defineFeature } from 'jest-cucumber'
 import { Server, ServerInjectResponse } from '@hapi/hapi'
-import Config from '../../src/shared/config'
-import PispDemoServer from '../../src/server'
+import Config from '~/lib/config'
+import PispDemoServer from '~/server'
 
 const featurePath = path.join(__dirname, '../features/template.scenario.feature')
 const feature = loadFeature(featurePath)
