@@ -31,7 +31,7 @@ import { logger } from '~/shared/logger'
 export interface ITransactionRepository {
   /**
    * Updates a transaction document based on a unique identifier.
-   * 
+   *
    * @param id    Id for the transaction document that needs to be updated.
    * @param data  Document fields that are about to be updated.
    */
@@ -39,7 +39,7 @@ export interface ITransactionRepository {
 
   /**
    * Updates one or more transaction documents based on the given conditions.
-   * 
+   *
    * @param conditions  Conditions for the documents that need to be updated.
    * @param data        Document fields that are about to be updated.
    */
