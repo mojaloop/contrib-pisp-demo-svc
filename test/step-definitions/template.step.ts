@@ -32,6 +32,9 @@ import PispDemoServer from '~/server'
 const featurePath = path.join(__dirname, '../features/template.scenario.feature')
 const feature = loadFeature(featurePath)
 
+// Mock firebase to prevent transaction repository from opening the connection.
+jest.mock('~/lib/firebase')
+
 defineFeature(feature, (test): void => {
   let server: Server
   let response: ServerInjectResponse
