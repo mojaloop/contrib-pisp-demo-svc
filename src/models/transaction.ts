@@ -23,31 +23,29 @@
  --------------
  ******/
 
-import {
-  Party,
-} from '~/shared/ml-thirdparty-client/models/core';
+import { Party } from '~/shared/ml-thirdparty-client/models/core'
 
 export enum Status {
   /**
    * Waiting for a callback from Mojaloop to give the payee information.
    */
-  PENDING_PARTY_LOOKUP = "PENDING_PARTY_LOOKUP",
+  PENDING_PARTY_LOOKUP = 'PENDING_PARTY_LOOKUP',
 
   /**
    * Waiting for the user to confirm payee information and provide more
    * details about the transaction.
    */
-  PENDING_PAYEE_CONFIRMATION = "PENDING_PAYEE_CONFIRMATION",
+  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
 
   /**
    * Waiting for the user to authorize the transaction.
    */
-  AUTHORIZATION_REQUIRED = "AUTHORIZATION_REQUIRED",
+  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
 
   /**
    * The transaction is successful.
    */
-  SUCCESS = "SUCCESS",
+  SUCCESS = 'SUCCESS',
 }
 
 export interface Transaction {
@@ -57,7 +55,7 @@ export interface Transaction {
   id: string
 
   /**
-   * User ID in Firebase that differentiate transaction documents for 
+   * User ID in Firebase that differentiate transaction documents for
    * different users.
    */
   userId?: string

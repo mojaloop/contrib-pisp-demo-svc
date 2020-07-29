@@ -99,7 +99,7 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
 
-  if (config.get('experimental.mode') == 'on') {
+  if (config.get('experimental.mode') === 'on') {
     await server.register({
       plugin: MojaloopSimulator,
       options: mojaloopSimulatorOpts,
