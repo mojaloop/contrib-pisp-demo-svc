@@ -114,6 +114,11 @@ export const onUpdate: TransactionHandler =
 
       case Status.AUTHORIZATION_REQUIRED:
         if (validator.isValidAuthorization(transaction)) {
+          // If the update contains all the necessary fields, process document
+          // to the next step by sending an authorization to Mojaloop.
+
+          // The optional values are guaranteed to exist by the validator.
+          // eslint-disable @typescript-eslint/no-non-null-assertion
           server.app.mojaloopClient.putAuthorizations(
             transaction.transactionRequestId!,
             {
@@ -122,6 +127,7 @@ export const onUpdate: TransactionHandler =
             },
             transaction.transactionId,
           )
+          // eslint-enable @typescript-eslint/no-non-null-assertion
         }
     }
   }
