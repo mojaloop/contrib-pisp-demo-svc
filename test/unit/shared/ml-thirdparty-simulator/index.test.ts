@@ -167,7 +167,6 @@ describe('Mojaloop third-party simulator', () => {
       responseType: AuthenticationResponseType.ENTERED,
     }
 
-
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
     await simulator.putAuthorizations(transactionRequestId, request, transactionId)

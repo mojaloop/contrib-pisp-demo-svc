@@ -32,9 +32,9 @@ import { transactionRepository } from '~/repositories/transaction'
 import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
-import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
 import { Status, Transaction } from '~/models/transaction'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -173,5 +173,39 @@ describe('Handlers for transaction documents in Firebase', () => {
     transactionsHandler.onUpdate(server, transactionData)
 
     expect(mojaloopClientSpy).toBeCalledWith(transactionRequest)
+  })
+
+  it('Should send authorization when all necessary fields are set', () => {
+    const documentId = '111'
+    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'putAuthorizations').mockImplementation()
+
+    // Mock transaction data given by Firebase
+    const transactionData: Transaction = {
+      id: documentId,
+      userId: 'bob123',
+      transactionRequestId: '111',
+      transactionId: '222',
+      authentication: {
+        type: AuthenticationType.U2F,
+        value: '12345'
+      },
+      responseType: AuthenticationResponseType.ENTERED,
+      status: Status.AUTHORIZATION_REQUIRED,
+    }
+
+    // Mock the expected authorization being sent.
+    const authorization: AuthorizationsPutIdRequest = {
+      authenticationInfo: {
+        authentication: AuthenticationType.U2F,
+        authenticationValue: '12345'
+      },
+      responseType: AuthenticationResponseType.ENTERED,
+    }
+
+    transactionsHandler.onUpdate(server, transactionData)
+
+    expect(mojaloopClientSpy).toBeCalledWith(
+      transactionData.transactionRequestId!, authorization, transactionData.transactionId
+    )
   })
 })
