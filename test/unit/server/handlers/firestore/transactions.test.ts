@@ -25,15 +25,16 @@
 
 import { Server } from '@hapi/hapi'
 
-
+import * as utils from '~/lib/utils'
 import config from '~/lib/config'
 import { transactionRepository } from '~/repositories/transaction'
 
 import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { Status } from '~/models/transaction'
+import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import { Status, Transaction } from '~/models/transaction'
+import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -41,6 +42,13 @@ jest.mock('~/lib/firebase')
 // Mock uuid to consistently return the provided value.
 jest.mock('uuid', () => ({
   v4: jest.fn().mockImplementation(() => '12345')
+}))
+
+// Mock utils to consistently return the provided value.
+jest.mock('~/lib/utils', () => ({
+  getTomorrowsDate: jest.fn().mockImplementation(() => {
+    return new Date(100)
+  })
 }))
 
 describe('Handlers for transaction documents in Firebase', () => {
@@ -89,7 +97,7 @@ describe('Handlers for transaction documents in Firebase', () => {
       payee: {
         partyIdInfo: {
           partyIdType: PartyIdType.MSISDN,
-          partyIdentifier: "+1-111-111-1111",
+          partyIdentifier: '+1-111-111-1111',
         }
       },
       transactionRequestId: '12345',
@@ -97,5 +105,73 @@ describe('Handlers for transaction documents in Firebase', () => {
     })
 
     expect(mojaloopClientSpy).toBeCalledWith(PartyIdType.MSISDN, "+1-111-111-1111")
+  })
+
+  it('Should initiate transaction request when all necessary fields are set', () => {
+    const documentId = '111'
+    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'postTransactions').mockImplementation()
+
+    // Mock transaction data given by Firebase
+    const transactionData: Transaction = {
+      id: documentId,
+      userId: 'bob123',
+      transactionRequestId: '888',
+      sourceAccountId: '111',
+      consentId: '222',
+      amount: {
+        amount: '20',
+        currency: Currency.USD,
+      },
+      payee: {
+        partyIdInfo: {
+          partyIdType: PartyIdType.MSISDN,
+          partyIdentifier: '+1-111-111-1111',
+          fspId: 'fspa',
+        },
+        name: 'Alice Alpaca',
+        personalInfo: {
+          complexName: {
+            firstName: 'Alice',
+            lastName: 'Alpaca',
+          },
+        },
+      },
+      payer: {
+        partyIdInfo: {
+          partyIdType: PartyIdType.MSISDN,
+          partyIdentifier: '+1-222-222-2222',
+          fspId: 'fspb',
+        },
+        name: 'Bob Beaver',
+        personalInfo: {
+          complexName: {
+            firstName: 'Bob',
+            lastName: 'Beaver'
+          },
+        },
+      },
+      status: Status.PENDING_PAYEE_CONFIRMATION,
+    }
+
+    // Mock the expected transaction request being sent.
+    const transactionRequest: ThirdPartyTransactionRequest = {
+      transactionRequestId: transactionData.transactionRequestId!,
+      sourceAccountId: transactionData.sourceAccountId!,
+      consentId: transactionData.consentId!,
+      payee: transactionData.payee!,
+      payer: transactionData.payer!,
+      amountType: AmountType.RECEIVE,
+      amount: transactionData.amount!,
+      transactionType: {
+        scenario: 'TRANSFER',
+        initiator: 'PAYER',
+        intiiatorType: 'CONSUMER',
+      },
+      expiration: utils.getTomorrowsDate().toISOString(),
+    }
+
+    transactionsHandler.onUpdate(server, transactionData)
+
+    expect(mojaloopClientSpy).toBeCalledWith(transactionRequest)
   })
 })

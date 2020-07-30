@@ -26,6 +26,7 @@
 import * as uuid from 'uuid'
 import { Server } from '@hapi/hapi'
 
+import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
 
@@ -34,11 +35,6 @@ import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
-
-function getTomorrowsDate(): Date {
-  let currentDate = new Date()
-  return new Date(currentDate.getDate() + 1)
-}
 
 export const onCreate: TransactionHandler =
   async (_: Server, transaction: Transaction): Promise<void> => {
@@ -110,7 +106,7 @@ export const onUpdate: TransactionHandler =
               initiator: 'PAYER',
               intiiatorType: 'CONSUMER',
             },
-            expiration: getTomorrowsDate().toISOString()
+            expiration: utils.getTomorrowsDate().toISOString()
           })
           // eslint-enable @typescript-eslint/no-non-null-assertion
         }
