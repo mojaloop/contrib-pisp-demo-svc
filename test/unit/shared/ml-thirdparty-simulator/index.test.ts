@@ -24,15 +24,20 @@
  ******/
 
 import { Server } from '@hapi/hapi'
+import * as faker from 'faker'
 
 import config from '~/lib/config'
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  ThirdPartyTransactionRequest,
+  AuthorizationsPutIdRequest
+} from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
 import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
+import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 
 jest.useFakeTimers()
 
@@ -72,6 +77,7 @@ jest.mock('~/lib/firebase')
 jest.mock('~/shared/ml-thirdparty-simulator/factories/participant')
 jest.mock('~/shared/ml-thirdparty-simulator/factories/party')
 jest.mock('~/shared/ml-thirdparty-simulator/factories/authorization')
+jest.mock('~/shared/ml-thirdparty-simulator/factories/transfer')
 
 describe('Mojaloop third-party simulator', () => {
   let simulator: Simulator
@@ -135,6 +141,44 @@ describe('Mojaloop third-party simulator', () => {
     expect(server.inject).toBeCalledTimes(1)
     expect(server.inject).toBeCalledWith({
       method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: 'mojaloop.' + config.get('hostname'),
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  })
+
+  it('Should inject server with the transfer result', async () => {
+    const transactionRequestId = '111'
+    const transactionId = '222'
+    const transferId = '78910'
+
+    const randomUuidSpy = jest.spyOn(faker.random, 'uuid').mockImplementation(() => transferId)
+    const targetUrl = '/transfers/' + transferId
+
+    const request: AuthorizationsPutIdRequest = {
+      authenticationInfo: {
+        authentication: AuthenticationType.U2F,
+        authenticationValue: 'abcdefg',
+      },
+      responseType: AuthenticationResponseType.ENTERED,
+    }
+
+
+    // this is a workaround to handle the delay before injecting response to the server
+    Promise.resolve().then(() => jest.advanceTimersByTime(100))
+    await simulator.putAuthorizations(transactionRequestId, request, transactionId)
+
+    const payload = TransferFactory.createTransferIdPutRequest(
+      transactionRequestId, request, transactionId)
+
+    expect(randomUuidSpy).toHaveBeenCalledTimes(1)
+    expect(server.inject).toHaveBeenCalledTimes(1)
+    expect(server.inject).toHaveBeenCalledWith({
+      method: 'PUT',
       url: targetUrl,
       headers: {
         host: 'mojaloop.' + config.get('hostname'),

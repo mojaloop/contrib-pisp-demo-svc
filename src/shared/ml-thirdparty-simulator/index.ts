@@ -151,8 +151,8 @@ export class Simulator {
       url: targetUrl,
       headers: {
         host: this.opts.host ?? '',
-        'content-length': JSON.stringify(payload).length.toString(),
-        'content-type': 'application/json',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
       },
       payload,
     })

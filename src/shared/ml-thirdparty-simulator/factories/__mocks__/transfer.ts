@@ -23,8 +23,6 @@
  --------------
  ******/
 
-import * as faker from 'faker'
-
 import {
   AuthorizationsPutIdRequest,
   TransferIDPutRequest
@@ -45,8 +43,8 @@ export class TransferFactory {
     __: AuthorizationsPutIdRequest, transactionId: string): TransferIDPutRequest {
     return {
       transactionId,
-      fulfilment: faker.random.alphaNumeric(43),
-      completedTimestamp: faker.date.recent().toISOString(),
+      fulfilment: 'abc123',
+      completedTimestamp: '2020-02-20T03:01:38',
       transferState: TransferState.COMMITTED,
     }
   }
