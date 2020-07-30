@@ -101,13 +101,29 @@ export class Client {
     // TODO: Implement communication with Mojaloop.
   }
 
+  /**
+   * Performs a transaction authorization with the given authorization object.
+   * 
+   * @param id              a transaction request id that corresponds with the 
+   *                        authorization.
+   * @param requestBody     an authorization object as defined by the Mojaloop API.
+   * @param transactionId   an optional field that needs to be passed in order for
+   *                        the mojaloop simulator to generate a callback. If the 
+   *                        value is not provided, the Mojaloop client will not be 
+   *                        able to use a simulator.
+   */
   public async putAuthorizations(
     id: string,
     requestBody: AuthorizationsPutIdRequest,
     transactionId?: string,
   ) {
-    if (this.simulator && transactionId) {
+    if (transactionId && this.simulator) {
+      // If a transaction id is provided and the client is configured with a 
+      // simulator, then it will not communicate with Mojaloop directly. Instead, 
+      // it will only generate a random response that is injected to the internal routes.
       return this.simulator.putAuthorizations(id, requestBody, transactionId)
     }
+
+    // TODO: Implement communication with Mojaloop.
   }
 }
