@@ -31,7 +31,7 @@ const data: PartiesTypeIDPutRequest[] = [
     party: {
       partyIdInfo: {
         partyIdType: PartyIdType.MSISDN,
-        partyIdentifier: "+1-111-111-1111",
+        partyIdentifier: '+1-111-111-1111',
         fspId: 'fspa',
       },
       name: 'Alice Alpaca',
@@ -51,7 +51,7 @@ const data: PartiesTypeIDPutRequest[] = [
     party: {
       partyIdInfo: {
         partyIdType: PartyIdType.MSISDN,
-        partyIdentifier: "+1-222-222-2222",
+        partyIdentifier: '+1-222-222-2222',
         fspId: 'fspb',
       },
       name: 'Bob Beaver',

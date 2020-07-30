@@ -27,12 +27,12 @@ import { Participant } from '~/shared/ml-thirdparty-client/models/core';
 
 const participants: Participant[] = [
   {
-    fspId: "fspa",
-    name: "FSP A",
+    fspId: 'fspa',
+    name: 'FSP A',
   },
   {
-    fspId: "fspb",
-    name: "FSP B",
+    fspId: 'fspb',
+    name: 'FSP B',
   },
 ]
 

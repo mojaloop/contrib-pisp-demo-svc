@@ -26,7 +26,6 @@
 import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { logger } from '~/shared/logger'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { Status } from '~/models/transaction'
@@ -39,10 +38,7 @@ import { transactionRepository } from '~/repositories/transaction'
  * @param request   original request object as defined by the hapi library.
  * @param h         original request toolkit as defined by the hapi libary.
  */
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit): Promise<ResponseObject> => {
-  // Log information about the incoming request
-  logger.logRequest(context, request, h)
-
+export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit): Promise<ResponseObject> => {
   // Retrieve the data that have been validated by the openapi-backend library.
   let body = context.request.body as PartiesTypeIDPutRequest
   let partyIdType = context.request.params.Type
