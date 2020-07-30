@@ -26,11 +26,9 @@
 import { OpenApiExtHandlers } from '../../plugins/internal/openapi'
 import { Context } from 'openapi-backend'
 import { Request, ResponseToolkit } from '@hapi/hapi'
-import { logger } from '~/shared/logger'
 
 import { apiHandlers as appApiHandlers } from './app'
 import { apiHandlers as mojaloopApiHandlers } from './mojaloop'
-import util from 'util'
 
 export {
   appApiHandlers,
@@ -43,28 +41,19 @@ export const apiHandlers = {
 }
 
 export const extHandlers: OpenApiExtHandlers = {
-  notFound: (context: Context, request: Request, h: ResponseToolkit) => {
-    logger.error(`notFound, context: ${context}, request: ${request}, h: ${h}`)
-    logger.logRequest(context, request, h)
+  notFound: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(404)
   },
 
-  methodNotAllowed: (context: Context, request: Request, h: ResponseToolkit) => {
-    logger.error(`methodNotAllowed, context: ${context}, request: ${request}, h: ${h}`)
-    logger.logRequest(context, request, h)
+  methodNotAllowed: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(405)
   },
 
-  validationFail: (context: Context, request: Request, h: ResponseToolkit) => {
-    let errorStr = util.inspect(context.validation.errors, { showHidden: true, depth: null })
-    logger.error(`validationFail ${errorStr}`)
-    logger.logRequest(context, request, h)
+  validationFail: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(406)
   },
 
-  notImplemented: (context: Context, request: Request, h: ResponseToolkit) => {
-    logger.error(`notImplemented, context: ${context}, request: ${request}, h: ${h}`)
-    logger.logRequest(context, request, h)
+  notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(501)
   },
 }
