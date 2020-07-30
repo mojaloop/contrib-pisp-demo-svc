@@ -63,9 +63,10 @@ export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
  *                    on Firebase.
  */
 export const isValidAuthorization = (transaction: Transaction): boolean => {
-  if (transaction.transactionRequestId
-    && transaction.authenticationInfo && transaction.responseType) {
-    return true
-  }
-  return false
+  return transaction.transactionRequestId != null
+    && transaction.transactionId != null
+    && transaction.authentication != null
+    && transaction.authentication.type != null
+    && transaction.authentication.value != null
+    && transaction.responseType != null
 }

@@ -24,12 +24,12 @@
  ******/
 
 import {
-  AuthenticationInfo,
   AuthenticationResponseType,
   AuthenticationType,
   Party,
   Money,
   Quote,
+  AuthenticationValue,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 export enum Status {
@@ -95,16 +95,22 @@ export interface Transaction {
   amount?: Money
 
   /**
-   * The type of authentication that is required to authorize the proposed
-   * financial transaction.
-   */
-  authenticationType?: AuthenticationType
-
-  /**
    * The authentication info that may be entered by the payer to authorize a
    * proposed financial transaction.
    */
-  authenticationInfo?: AuthenticationInfo
+  authentication?: {
+    /**
+     * The type of authentication that is required to authorize the proposed
+     * financial transaction.
+     */
+    type?: AuthenticationType
+
+    /**
+     * The value of authentication that is provided by payer to authorize the 
+     * proposed financial transaction.
+     */
+    value?: AuthenticationValue
+  }
 
   /**
    * Payer's response after being prompted to authorize a proposed financial transaction.

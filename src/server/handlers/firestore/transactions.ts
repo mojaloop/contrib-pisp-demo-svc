@@ -123,7 +123,10 @@ export const onUpdate: TransactionHandler =
             transaction.transactionRequestId!,
             {
               responseType: transaction.responseType!,
-              authenticationInfo: transaction.authenticationInfo!
+              authenticationInfo: {
+                authentication: transaction.authentication!.type!,
+                authenticationValue: transaction.authentication!.value!,
+              }
             },
             transaction.transactionId,
           )
