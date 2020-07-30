@@ -51,8 +51,8 @@ export enum AmountType {
  * The currency is temporarily trimmed to two options for prototype.
  */
 export enum Currency {
-  SGD = "SGD",
-  USD = "USD",
+  SGD = 'SGD',
+  USD = 'USD',
 }
 
 /**
