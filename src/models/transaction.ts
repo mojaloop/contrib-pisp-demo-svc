@@ -93,10 +93,16 @@ export interface Transaction {
   amount?: Money
 
   /**
-   * The type of authentication that is required to authorize the proposed
-   * financial transaction.
+   * The authentication info that may be entered by the payer to authorize a
+   * proposed financial transaction.
    */
-  authenticationType?: AuthenticationType
+  authentication?: {
+    /**
+     * The type of authentication that is required to authorize the proposed
+     * financial transaction.
+     */
+    type?: AuthenticationType
+  }
 
   /**
    * Common ID (decided by the PISP) to identify a transaction request.

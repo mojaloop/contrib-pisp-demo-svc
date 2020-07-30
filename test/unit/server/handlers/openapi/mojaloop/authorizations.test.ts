@@ -128,7 +128,9 @@ describe('/authorizations', () => {
           status: Status.PENDING_PAYEE_CONFIRMATION,
         },
         {
-          authenticationType: requestBody.authenticationType,
+          authentication: {
+            type: requestBody.authenticationType,
+          },
           transactionId: requestBody.transactionId,
           quote: requestBody.quote,
           status: Status.AUTHORIZATION_REQUIRED,

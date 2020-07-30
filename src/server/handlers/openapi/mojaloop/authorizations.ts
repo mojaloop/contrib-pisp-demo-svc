@@ -42,7 +42,9 @@ export const post: Handler = async (context: Context, request: Request, h: Respo
       status: Status.PENDING_PAYEE_CONFIRMATION,
     },
     {
-      authenticationType: body.authenticationType,
+      authentication: {
+        type: body.authenticationType,
+      },
       transactionId: body.transactionId,
       quote: body.quote,
       status: Status.AUTHORIZATION_REQUIRED,
