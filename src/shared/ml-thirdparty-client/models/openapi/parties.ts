@@ -23,10 +23,16 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Party, Account } from '../core'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+export interface PartiesTypeIDPutRequest {
+  /**
+   * Information about the requested party.
+   */
+  party: Party
+
+  /**
+   * List of accounts that are associated with a particular user.
+   */
+  accounts?: Account[]
 }

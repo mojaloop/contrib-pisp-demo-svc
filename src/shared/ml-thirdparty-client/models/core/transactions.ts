@@ -23,10 +23,15 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
-
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+/**
+ * The currency codes defined in 
+ * [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) 
+ * as three-letter alphabetic codes are used as the standard naming 
+ * representation for currencies.
+ * 
+ * The currency is temporarily trimmed to two options for prototype.
+ */
+export enum Currency {
+  SGD = 'SGD',
+  USD = 'USD',
 }

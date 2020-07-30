@@ -23,10 +23,18 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Transaction } from '~/models/transaction'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+/**
+ * Checks whether a transaction document has all the necessary fields to perform
+ * a party lookup.
+ * 
+ * @param transaction the object representation of a transaction that is stored
+ *                    on Firebase.
+ */
+export const isValidPartyLookup = (transaction: Transaction): boolean => {
+  return transaction.payee != null
+    && transaction.payee.partyIdInfo != null
+    && transaction.payee.partyIdInfo.partyIdType != null
+    && transaction.payee.partyIdInfo.partyIdentifier != null
 }

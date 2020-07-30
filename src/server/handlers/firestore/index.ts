@@ -23,10 +23,8 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import * as transactionHandlers from './transactions'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+export default {
+  transactions: transactionHandlers
 }

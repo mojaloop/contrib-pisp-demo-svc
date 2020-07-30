@@ -23,10 +23,19 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
-
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+/**
+ * A mock object to simulate the operations on Firebase.
+ * Since there are a lot of chained methods from various classes,
+ * in the current implementation, we only use a single mocked object 
+ * to avoid unnecessary complexity.
+ */
+export default {
+  firestore: jest.fn().mockReturnThis(),
+  collection: jest.fn().mockReturnThis(),
+  doc: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
+  add: jest.fn(),
+  set: jest.fn(),
+  update: jest.fn(),
+  onSnapshot: jest.fn().mockImplementation(() => jest.fn()),
 }

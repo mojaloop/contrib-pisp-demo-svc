@@ -72,7 +72,7 @@ const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     path: '/{path*}',
     vhost: 'app.' + opts.baseHost,
-    handler: (request: Request, h: ResponseToolkit): Promise<any> =>
+    handler: (request: Request, h: ResponseToolkit) =>
       api.handleRequest(
         {
           method: request.method,
@@ -82,8 +82,8 @@ const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
           headers: request.headers,
         },
         request,
-        h,
-      )
+        h
+      ),
   })
 }
 
@@ -105,7 +105,7 @@ const registerMojaloopBackend = (server: Server, opts: OpenApiOpts) => {
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     path: '/{path*}',
     vhost: 'mojaloop.' + opts.baseHost,
-    handler: (request: Request, h: ResponseToolkit): Promise<any> =>
+    handler: (request: Request, h: ResponseToolkit) =>
       api.handleRequest(
         {
           method: request.method,
@@ -115,8 +115,8 @@ const registerMojaloopBackend = (server: Server, opts: OpenApiOpts) => {
           headers: request.headers,
         },
         request,
-        h,
-      )
+        h
+      ),
   })
 }
 
@@ -126,5 +126,5 @@ export const OpenApi: Plugin<OpenApiOpts> = {
   register: async (server: Server, opts: OpenApiOpts) => {
     registerAppBackend(server, opts)
     registerMojaloopBackend(server, opts)
-  }
+  },
 }

@@ -33,7 +33,6 @@ import * as MojaloopParticipants from './participants'
 import * as MojaloopParticipantsError from './participants/error'
 import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
 import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
-import * as MojaloopThirdpartyRequestsTransactionsById from './thirdpartyRequests/transactions/{ID}'
 
 export const apiHandlers = {
   getHealth: Health.get,
@@ -47,5 +46,4 @@ export const apiHandlers = {
   putParticipantsError: MojaloopParticipantsError.put,
   putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
   putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putThirdpartyRequestsTransactionsById: MojaloopThirdpartyRequestsTransactionsById.put,
 }

@@ -23,10 +23,55 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Party } from '~/shared/ml-thirdparty-client/models/core'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+export enum Status {
+  /**
+   * Waiting for a callback from Mojaloop to give the payee information.
+   */
+  PENDING_PARTY_LOOKUP = 'PENDING_PARTY_LOOKUP',
+
+  /**
+   * Waiting for the user to confirm payee information and provide more
+   * details about the transaction.
+   */
+  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
+
+  /**
+   * Waiting for the user to authorize the transaction.
+   */
+  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
+
+  /**
+   * The transaction is successful.
+   */
+  SUCCESS = 'SUCCESS',
+}
+
+export interface Transaction {
+  /**
+   * Internal id that is used to identify the transaction.
+   */
+  id: string
+
+  /**
+   * User ID in Firebase that differentiate transaction documents for
+   * different users.
+   */
+  userId?: string
+
+  /**
+   * Information about the payee in the proposed financial transaction.
+   */
+  payee?: Party
+
+  /**
+   * Common ID (decided by the PISP) to identify a transaction request.
+   */
+  transactionRequestId?: string
+
+  /**
+   * Status of the proposed financial transaction.
+   */
+  status?: Status
 }

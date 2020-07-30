@@ -23,10 +23,37 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { OpenApiExtHandlers } from '../../plugins/internal/openapi'
+import { Context } from 'openapi-backend'
+import { Request, ResponseToolkit } from '@hapi/hapi'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+import { apiHandlers as appApiHandlers } from './app'
+import { apiHandlers as mojaloopApiHandlers } from './mojaloop'
+
+export {
+  appApiHandlers,
+  mojaloopApiHandlers
+}
+
+export const apiHandlers = {
+  ...appApiHandlers,
+  ...mojaloopApiHandlers
+}
+
+export const extHandlers: OpenApiExtHandlers = {
+  notFound: (_: Context, __: Request, h: ResponseToolkit) => {
+    return h.response().code(404)
+  },
+
+  methodNotAllowed: (_: Context, __: Request, h: ResponseToolkit) => {
+    return h.response().code(405)
+  },
+
+  validationFail: (_: Context, __: Request, h: ResponseToolkit) => {
+    return h.response().code(406)
+  },
+
+  notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {
+    return h.response().code(501)
+  },
 }

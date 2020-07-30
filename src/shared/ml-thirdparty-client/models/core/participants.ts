@@ -23,10 +23,17 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+/**
+ * An object that represents FSP information in Mojaloop network.
+ */
+export interface Participant {
+  /**
+   * A unique id that identifies the FSP.
+   */
+  fspId: string
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+  /**
+   * Name of the FSP.
+   */
+  name: string
 }

@@ -28,13 +28,25 @@ import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
 import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 
-import { OpenApi, OpenApiOpts } from './openAPI'
-import { extHandlers } from '../handlers/openApiHandlers'
-import { apiHandlers as appApiHandlers } from '~/server/handlers/app'
-import { apiHandlers as mojaloopApiHandlers } from '~/server/handlers/mojaloop'
+import config from '~/lib/config'
 
+// Import necessary files to setup openapi
+import { OpenApi, OpenApiOpts } from './internal/openapi'
+import { extHandlers, appApiHandlers, mojaloopApiHandlers } from '~/server/handlers/openapi'
+
+// Import necessary files to setup firestore
+import { Firestore, FirestoreOpts } from './internal/firestore'
+import firestoreHandlers from '~/server/handlers/firestore'
+
+// Import necessary files to setup mojaloop client
+import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
+
+// Import necessary files to setup mojaloop simulator
+import { MojaloopSimulator, MojaloopSimulatorOpts } from './internal/mojaloopSimulator'
+
+// Config for openapi
 const openApiOpts: OpenApiOpts = {
-  baseHost: 'pisp-demo-server.local',
+  baseHost: config.get('hostname'),
   definition: {
     app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
     mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
@@ -50,6 +62,22 @@ const openApiOpts: OpenApiOpts = {
   }
 }
 
+// Config for firestore
+const firestoreOpts: FirestoreOpts = {
+  handlers: firestoreHandlers
+}
+
+// Config for mojaloop client
+const mojaloopClientOpts: MojaloopClientOpts = {
+  mojaloopUrl: config.get('mojaloop.url'),
+}
+
+// Config for mojaloop simulator
+const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
+  host: 'mojaloop.' + config.get('hostname'),
+  delay: config.get('experimental.delay'),
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const plugins: Array<ServerRegisterPluginObject<any>> = [
   { plugin: Inert },
@@ -57,11 +85,27 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
   {
     plugin: OpenApi,
     options: openApiOpts,
-  }
+  },
+  {
+    plugin: Firestore,
+    options: firestoreOpts,
+  },
+  {
+    plugin: MojaloopClient,
+    options: mojaloopClientOpts,
+  },
 ]
 
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
+
+  if (config.get('experimental.mode') === 'on') {
+    await server.register({
+      plugin: MojaloopSimulator,
+      options: mojaloopSimulatorOpts,
+    })
+  }
+
   return server
 }
 

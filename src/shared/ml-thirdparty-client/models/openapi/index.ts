@@ -23,10 +23,4 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
-
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
-}
+export * from './parties'

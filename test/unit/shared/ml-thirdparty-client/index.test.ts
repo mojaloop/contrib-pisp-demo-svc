@@ -23,10 +23,37 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import { Server } from '@hapi/hapi'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
-}
+import config from '~/lib/config'
+
+import { Client } from '~/shared/ml-thirdparty-client'
+import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { Simulator } from '~/shared/ml-thirdparty-simulator'
+
+describe('Mojaloop third-party client', () => {
+  let client: Client
+  let simulator: Simulator
+
+  beforeAll(async () => {
+    // Setup client and simulator
+    client = new Client()
+
+    // Use jest function for the purpose of dependency injection
+    simulator = new Simulator(jest.fn() as unknown as Server, {
+      host: 'mojaloop.' + config.get('hostname'),
+      delay: 100,
+    })
+  })
+
+  it('Should use simulator to perform party lookup when it is provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest.spyOn(simulator, 'getParties').mockImplementation()
+
+    const type = PartyIdType.MSISDN
+    const identifier = "+1-111-111-1111"
+    client.getParties(PartyIdType.MSISDN, "+1-111-111-1111")
+
+    expect(simulatorSpy).toBeCalledWith(type, identifier)
+  })
+})

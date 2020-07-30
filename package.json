@@ -10,7 +10,7 @@
   "scripts": {
     "audit:resolve": "SHELL=sh resolve-audit --production",
     "audit:check": "SHELL=sh check-audit --production",
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.build.json",
     "build:openapi": "npm run build:openapi:app && npm run build:openapi:mojaloop",
     "build:openapi:app": "swagger-cli bundle -t yaml -o dist/openapi/app.yaml ./src/interface/app.yaml && swagger-cli validate dist/openapi/app.yaml",
     "build:openapi:mojaloop": "swagger-cli bundle -t yaml -o dist/openapi/mojaloop.yaml ./src/interface/mojaloop.yaml && swagger-cli validate dist/openapi/mojaloop.yaml",
@@ -60,8 +60,9 @@
   "devDependencies": {
     "@commitlint/cli": "^9.0.1",
     "@commitlint/config-conventional": "^9.0.1",
-    "@mojaloop/api-snippets": "git+https://github.com/stevenwjy/api-snippets.git#1e3a7bdcb2f0468d57d87c2c922831a931d183c0",
+    "@mojaloop/api-snippets": "git+https://github.com/stevenwjy/api-snippets.git#446972b2d7c8aaa6cc000ec4eb738e9b9ec14eb9",
     "@types/convict": "^5.2.1",
+    "@types/faker": "^4.1.12",
     "@types/hapi": "^18.0.3",
     "@types/hapi__hapi": "^19.0.3",
     "@types/hapi__inert": "^5.2.0",
@@ -101,8 +102,13 @@
     "@hapi/hapi": "^19.1.1",
     "@hapi/inert": "^6.0.1",
     "@hapi/vision": "^6.0.0",
+    "@types/uuid": "^8.0.0",
     "convict": "^6.0.0",
+    "dotenv": "^8.2.0",
+    "faker": "^4.1.0",
+    "firebase-admin": "^8.13.0",
     "openapi-backend": "^3.5.1",
+    "uuid": "^8.2.0",
     "winston": "^3.3.3"
   }
 }

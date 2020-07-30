@@ -2,7 +2,7 @@
  License
  --------------
  Copyright © 2020 Mojaloop Foundation
- The Mojaloop files are made available by the Bill & Melinda Gates Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
+ The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the 'License') and you may not use these files except in compliance with the License. You may obtain a copy of the License at
  http://www.apache.org/licenses/LICENSE-2.0
  Unless required by applicable law or agreed to in writing, the Mojaloop files are distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
  Contributors
@@ -23,11 +23,25 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
+import { Client } from '~/shared/ml-thirdparty-client'
+import { Plugin, Server } from '@hapi/hapi'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  return h.response().code(200)
+/**
+ * An interface definition for options that need to be specfied to use this plugin.
+ */
+export interface MojaloopClientOpts {
+  mojaloopUrl: string
+}
+
+/**
+ * A plugin to setup a mojaloop client in the PISP demo server.
+ * Note that the client object that could be used to perform various operations 
+ * in Mojaloop is stored in the application state. 
+ */
+export const MojaloopClient: Plugin<MojaloopClientOpts> = {
+  name: 'MojaloopClient',
+  version: '1.0.0',
+  register: (server: Server, opts: MojaloopClientOpts) => {
+    server.app.mojaloopClient = new Client({ ...opts })
+  }
 }
