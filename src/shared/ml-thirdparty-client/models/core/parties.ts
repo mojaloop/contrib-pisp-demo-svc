@@ -99,14 +99,14 @@ export enum PartyIdType {
    * Optionally, the MSISDN may be prefixed by a single plus sign,
    * indicating the international prefix.
    */
-  MSISDN = "MSISDN",
+  MSISDN = 'MSISDN',
 
   /**
    * An email is used as reference to a participant.
    * The format of the email should be according to the informational
    * [RFC 3696](https://tools.ietf.org/html/rfc3696).
    */
-  EMAIL = "EMAIL",
+  EMAIL = 'EMAIL',
 
   /**
    * A personal identifier is used as reference to a participant. Examples
@@ -115,7 +115,7 @@ export enum PartyIdType {
    * PartyIdentifier element. The personal identifier type is added in the
    *  PartySubIdOrType element. to a participant.
    */
-  PERSONAL_ID = "PERSONAL_ID",
+  PERSONAL_ID = 'PERSONAL_ID',
 
   /**
    * A specific Business (for example, an organization or a company) is used
@@ -123,7 +123,7 @@ export enum PartyIdType {
    * To make a transaction connected to a specific username or bill number in a
    * Business, the PartySubIdOrType element should be used.
    */
-  BUSINESS = "BUSINESS",
+  BUSINESS = 'BUSINESS',
 
   /**
    * A specific device (for example, a POS or ATM) ID connected to a specific
@@ -131,21 +131,21 @@ export enum PartyIdType {
    * a specific device under a specific business or organization, use the
    * PartySubIdOrType element.
    */
-  DEVICE = "DEVICE",
+  DEVICE = 'DEVICE',
 
   /**
    * A bank account number or FSP account ID should be used as reference to
    * a participant. The ACCOUNT_ID identifier can be in any format, as formats
    * can greatly differ depending on country and FSP.
    */
-  ACCOUNT_ID = "ACCOUNT_ID",
+  ACCOUNT_ID = 'ACCOUNT_ID',
 
   /**
    * A bank account number or FSP account ID is used as reference to a participant.
    * The IBAN identifier can consist of up to 34 alphanumeric characters and
    * should be entered without whitespace.
    */
-  IBAN = "IBAN",
+  IBAN = 'IBAN',
 
   /**
    * An alias is used as reference to a participant. The alias should be created
@@ -154,7 +154,7 @@ export enum PartyIdType {
    * any format. It is also possible to use the PartySubIdOrType element for
    * identifying an account under an Alias defined by the PartyIdentifier.
    */
-  ALIAS = "ALIAS",
+  ALIAS = 'ALIAS',
 }
 
 /**
