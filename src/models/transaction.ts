@@ -30,7 +30,7 @@ import {
   Party,
   Money,
   Quote,
-} from '~/shared/ml-thirdparty-client/models/core';
+} from '~/shared/ml-thirdparty-client/models/core'
 
 export enum Status {
   /**
