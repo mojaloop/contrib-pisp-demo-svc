@@ -30,20 +30,20 @@ export enum TransferState {
   /**
    * Next ledger has received the transfer.
    */
-  RECEIVED = "RECEIVED",
+  RECEIVED = 'RECEIVED',
 
   /**
    * Next ledger has reserved the transfer.
    */
-  RESERVED = "RESERVED",
+  RESERVED = 'RESERVED',
 
   /**
    * Next ledger has successfully performed the transfer.
    */
-  COMMITTED = "COMMITTED",
+  COMMITTED = 'COMMITTED',
 
   /**
    * Next ledger has aborted the transfer due to a rejection or failure to perform the transfer.
    */
-  ABORTED = "ABORTED",
+  ABORTED = 'ABORTED',
 }
