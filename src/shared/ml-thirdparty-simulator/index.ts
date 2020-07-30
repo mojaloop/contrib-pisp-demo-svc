@@ -141,18 +141,20 @@ export class Simulator {
     })
   }
 
-  async putAuthorizations(id: string,
+  public async putAuthorizations(id: string,
     request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
+    const targetUrl = '/transfers/' + faker.random.uuid()
+    const payload = TransferFactory.createTransferIdPutRequest(id, request, transactionId)
 
     this.server.inject({
       method: 'PUT',
-      url: '/transfers/' + faker.random.uuid(),
+      url: targetUrl,
       headers: {
         host: this.opts.host ?? '',
-        'content-length': '1234',
+        'content-length': JSON.stringify(payload).length.toString(),
         'content-type': 'application/json',
       },
-      payload: TransferFactory.createTransferIdPutRequest(id, request, transactionId),
+      payload,
     })
   }
 
