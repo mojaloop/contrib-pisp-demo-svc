@@ -26,35 +26,24 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { logger } from '~/shared/logger'
 import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-import firebase from '~/lib/firebase'
-import { Status } from '~/lib/firebase/models/transactions'
+import { Status } from '~/models/transaction'
+import { transactionRepository } from '~/repositories/transaction'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let body = request.payload as TransferIDPutRequest
+export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  let body = context.request.body as TransferIDPutRequest
 
-  firebase.firestore()
-    .collection('transactions')
-    .where("transactionId", "==", body.transactionId)
-    .get()
-    .then((response) => {
-      let batch = firebase.firestore().batch()
-      response.docs.forEach((doc) => {
-        const docRef = firebase.firestore().collection('transactions').doc(doc.id)
-        batch.set(
-          docRef,
-          {
-            completedTimestamp: body.completedTimestamp,
-            status: Status.SUCCESS,
-          },
-          { merge: true },
-        )
-      })
-      batch.commit()
-    })
+  transactionRepository.update(
+    {
+      transactionId: body.transactionId,
+      status: Status.AUTHORIZATION_REQUIRED,
+    },
+    {
+      completedTimestamp: body.completedTimestamp,
+      status: Status.SUCCESS,
+    }
+  )
 
   return h.response().code(200)
 }
