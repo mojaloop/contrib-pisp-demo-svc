@@ -1,0 +1,78 @@
+@startuml
+
+title Authorize Transaction
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App: Authorize the transaction
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .doc("abc123")""
+  ""  .set({""
+  ""    authentication: {""
+  ""      type: "U2F",""
+  ""      value: "base64(xxx)"""
+  ""    },""
+  ""    responseType: "AUTHORIZED"""
+  ""  }, { merge: true })""
+end rnote
+
+App -> Firebase: Update transaction document
+return ""200 OK""
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server ++: Notify update on transaction document
+Firebase <-- Server: ""200 OK""
+
+rnote right of Server #Light
+  ""**PUT /authorizations/777**""
+  ""FSPIOP-Source: pisp""
+  ""FSPIOP-Destination: fspb""
+  ""{""
+  ""  authenticationInfo: {""
+  ""    authentication: "U2F",""
+  ""    authenticationValue: {""
+  ""      pinValue: "base64(xxx)",""
+  ""      counter: "1"""
+  ""    }""
+  ""  },""
+  ""  responseType: "ENTERED"""
+  ""}""
+end rnote
+
+Server -> Mojaloop ++: ""**PUT /authorizations/777**""
+Server <-- Mojaloop: ""200 OK""
+deactivate Server
+
+...
+
+note over Alice, Mojaloop
+  Transaction is processed if the user provides a valid authorization.
+end note
+
+...
+
+@enduml
