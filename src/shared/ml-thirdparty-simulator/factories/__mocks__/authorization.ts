@@ -23,42 +23,29 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
+import {
+  ThirdPartyTransactionRequest,
+  AuthorizationsPostRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
 
-/**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- * 
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return transaction.payee != null
-    && transaction.payee.partyIdInfo != null
-    && transaction.payee.partyIdInfo.partyIdType != null
-    && transaction.payee.partyIdInfo.partyIdentifier != null
-}
+import {
+  AuthenticationType
+} from '~/shared/ml-thirdparty-client/models/core'
 
-/**
- * Checks whether a transaction document has all the necessary fields to be 
- * processed as a transaction request.
- * 
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  if (transaction.transactionRequestId
-    && transaction.consentId && transaction.sourceAccountId
-    && transaction.amount && transaction.payer && transaction.payee) {
-    return true
+export class AuthorizationFactory {
+  public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+    return {
+      authenticationType: AuthenticationType.U2F,
+      retriesLeft: '1',
+      amount: request.amount,
+      transactionId: '12345',
+      transactionRequestId: request.transactionRequestId,
+      quote: {
+        transferAmount: request.amount,
+        expiration: request.expiration,
+        ilpPacket: 'abc123',
+        condition: 'abc123',
+      }
+    }
   }
-  return false
-}
-
-export const isValidAuthorization = (transaction: Transaction): boolean => {
-  if (transaction.transactionRequestId
-    && transaction.authenticationInfo && transaction.responseType) {
-    return true
-  }
-  return false
 }

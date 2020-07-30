@@ -33,13 +33,13 @@ export enum AmountType {
    * Amount the Payer would like to send, that is, the amount 
    * that should be withdrawn from the Payer account including any fees.
    */
-  SEND = "SEND",
+  SEND = 'SEND',
 
   /**
    * Amount the Payer would like the Payee to receive, that is, the amount 
    * that should be sent to the receiver exclusive of any fees
    */
-  RECEIVE = "RECEIVE",
+  RECEIVE = 'RECEIVE',
 }
 
 /**

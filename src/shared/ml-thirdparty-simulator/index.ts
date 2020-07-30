@@ -33,7 +33,7 @@ import {
 
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
-import { AuthorizationFactory } from './factories/authorizations'
+import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 
 namespace Simulator {
@@ -120,15 +120,24 @@ export class Simulator {
    * @param request a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+    const targetUrl = '/authorizations'
+    const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
+
+    if (this.opts.delay) {
+      // Delay operations to simulate network latency in real communication
+      // with Mojaloop.
+      await this.delay(this.opts.delay)
+    }
+
     this.server.inject({
       method: 'POST',
-      url: '/authorizations',
+      url: targetUrl,
       headers: {
         host: this.opts.host ?? '',
-        'Content-Length': '1234',
+        'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
-      payload: AuthorizationFactory.createPostAuthorizationsRequest(request),
+      payload,
     })
   }
 
