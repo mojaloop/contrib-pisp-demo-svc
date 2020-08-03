@@ -24,13 +24,12 @@ rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
   ""  .doc("abc123")""
-  ""  .update({""
+  ""  .set({""
   ""    authentication: {""
-  ""      type: "U2F",""
   ""      value: "base64(xxx)"""
   ""    },""
   ""    responseType: "AUTHORIZED"""
-  ""  })""
+  ""  }, { merge: true })""
 end rnote
 
 App -> Firebase: Update transaction document
