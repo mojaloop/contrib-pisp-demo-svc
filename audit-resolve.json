@@ -1,12 +1,14 @@
 {
   "decisions": {
     "1523|openapi-backend>lodash": {
-      "decision": "fix",
-      "madeAt": 1596435958178
+      "decision": "ignore",
+      "madeAt": 1596436193432,
+      "expiresAt": 1599028176377
     },
     "1523|openapi-backend>mock-json-schema>lodash": {
-      "decision": "fix",
-      "madeAt": 1596435958178
+      "decision": "ignore",
+      "madeAt": 1596436193433,
+      "expiresAt": 1599028176377
     }
   },
   "rules": {},
