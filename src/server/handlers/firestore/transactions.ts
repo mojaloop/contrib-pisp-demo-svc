@@ -103,6 +103,28 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
   }
 }
 
+async function handleAuthorization(server: Server, transaction: Transaction) {
+  if (validator.isValidAuthorization(transaction)) {
+    // If the update contains all the necessary fields, process document
+    // to the next step by sending an authorization to Mojaloop.
+
+    // The optional values are guaranteed to exist by the validator.
+    // eslint-disable @typescript-eslint/no-non-null-assertion
+    server.app.mojaloopClient.putAuthorizations(
+      transaction.transactionRequestId!,
+      {
+        responseType: transaction.responseType!,
+        authenticationInfo: {
+          authentication: transaction.authentication!.type!,
+          authenticationValue: transaction.authentication!.value!,
+        }
+      },
+      transaction.transactionId,
+    )
+    // eslint-enable @typescript-eslint/no-non-null-assertion
+  }
+}
+
 export const onCreate: TransactionHandler =
   async (server: Server, transaction: Transaction): Promise<void> => {
     if (transaction.status) {
@@ -135,24 +157,7 @@ export const onUpdate: TransactionHandler =
         break
 
       case Status.AUTHORIZATION_REQUIRED:
-        if (validator.isValidAuthorization(transaction)) {
-          // If the update contains all the necessary fields, process document
-          // to the next step by sending an authorization to Mojaloop.
-
-          // The optional values are guaranteed to exist by the validator.
-          // eslint-disable @typescript-eslint/no-non-null-assertion
-          server.app.mojaloopClient.putAuthorizations(
-            transaction.transactionRequestId!,
-            {
-              responseType: transaction.responseType!,
-              authenticationInfo: {
-                authentication: transaction.authentication!.type!,
-                authenticationValue: transaction.authentication!.value!,
-              }
-            },
-            transaction.transactionId,
-          )
-          // eslint-enable @typescript-eslint/no-non-null-assertion
-        }
+        await handleAuthorization(server, transaction)
+        break
     }
   }

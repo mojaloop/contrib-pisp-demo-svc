@@ -26,10 +26,10 @@
 import {
   AuthenticationResponseType,
   AuthenticationType,
-  Party,
-  Money,
-  Quote,
   AuthenticationValue,
+  Money,
+  Party,
+  Quote,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 export enum Status {
