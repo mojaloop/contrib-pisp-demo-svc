@@ -98,7 +98,7 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
 
       // eslint-enable @typescript-eslint/no-non-null-assertion
     } catch (err) {
-      logger.error(err.message)
+      logger.error(err)
     }
   }
 }
