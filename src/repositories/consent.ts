@@ -27,6 +27,7 @@
 
 import firebase from '~/lib/firebase'
 import { Consent } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 export interface IConsentRepository {
   /**
@@ -40,16 +41,20 @@ export interface IConsentRepository {
 export class FirebaseConsentRepository implements IConsentRepository {
   async getByConsentId(id: string): Promise<Consent> {
     return new Promise((resolve, reject) => {
-      firebase.firestore()
+      firebase
+        .firestore()
         .collection('consents')
         .where('consentId', '==', id)
         .get()
         .then((response) => {
           if (response.empty) {
-            reject(new Error('Consent not found'))
+            return reject(new Error('Consent not found'))
           } else {
-            resolve(response.docs[0].data() as Consent)
+            return resolve(response.docs[0].data() as Consent)
           }
+        })
+        .catch((err) => {
+          logger.error(err)
         })
     })
   }
