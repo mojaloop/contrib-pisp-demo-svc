@@ -23,31 +23,41 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import firebase from '~/lib/firebase'
+import { Consent } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
-import { transactionRepository } from '~/repositories/transaction'
-import { Status } from '~/models/transaction'
-
-export const post: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  let body = context.request.body as AuthorizationsPostRequest
-
-  transactionRepository.update(
-    {
-      transactionRequestId: body.transactionRequestId,
-      status: Status.PENDING_PAYEE_CONFIRMATION,
-    },
-    {
-      authentication: {
-        type: body.authenticationType,
-      },
-      transactionId: body.transactionId,
-      quote: body.quote,
-      status: Status.AUTHORIZATION_REQUIRED,
-    }
-  )
-
-  return h.response().code(202)
+export interface IConsentRepository {
+  /**
+   * Retrieves a consent document based on its consent ID.
+   *
+   * @param id    Consent ID of the document that needs to be retrieved.
+   */
+  getByConsentId(id: string): Promise<Consent>
 }
+
+export class FirebaseConsentRepository implements IConsentRepository {
+  async getByConsentId(id: string): Promise<Consent> {
+    return new Promise((resolve, reject) => {
+      firebase
+        .firestore()
+        .collection('consents')
+        .where('consentId', '==', id)
+        .get()
+        .then((response) => {
+          if (response.empty) {
+            return reject(new Error('Consent not found'))
+          } else {
+            return resolve(response.docs[0].data() as Consent)
+          }
+        })
+        .catch((err) => {
+          logger.error(err)
+        })
+    })
+  }
+}
+
+export const consentRepository: IConsentRepository = new FirebaseConsentRepository()

@@ -49,7 +49,7 @@ export const isValidPartyLookup = (transaction: Transaction): boolean => {
 export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
   if (transaction.transactionRequestId
     && transaction.consentId && transaction.sourceAccountId
-    && transaction.amount && transaction.payer && transaction.payee) {
+    && transaction.amount && transaction.payee) {
     return true
   }
   return false

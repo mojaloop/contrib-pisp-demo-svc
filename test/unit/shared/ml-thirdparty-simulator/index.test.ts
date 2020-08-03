@@ -52,8 +52,7 @@ const partyLookupParams = {
 /**
  * Mock data for transaction request.
  */
-const transactionData = {
-  transactionId: '111',
+const transactionRequestData = {
   transactionRequestId: '222',
   sourceAccountId: '123',
   consentId: '333',
@@ -129,7 +128,7 @@ describe('Mojaloop third-party simulator', () => {
     const request: ThirdPartyTransactionRequest = {
       payer: payerInfo.party,
       payee: payeeInfo.party,
-      ...transactionData,
+      ...transactionRequestData,
     }
 
     // this is a workaround to handle the delay before injecting response to the server

@@ -35,6 +35,8 @@ import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
 import { Status, Transaction } from '~/models/transaction'
 import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { consentRepository } from '~/repositories/consent'
+import { Consent } from '~/models/consent'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -50,6 +52,57 @@ jest.mock('~/lib/utils', () => ({
     return new Date(100)
   })
 }))
+
+// Define mock data to perform transaction request
+function mockTransactionRequestData(): Transaction {
+  return {
+    id: '111',
+    transactionRequestId: '888',
+    sourceAccountId: '111',
+    consentId: '222',
+    amount: {
+      amount: '20',
+      currency: Currency.USD,
+    },
+    payee: {
+      partyIdInfo: {
+        partyIdType: PartyIdType.MSISDN,
+        partyIdentifier: '+1-111-111-1111',
+        fspId: 'fspa',
+      },
+      name: 'Alice Alpaca',
+      personalInfo: {
+        complexName: {
+          firstName: 'Alice',
+          lastName: 'Alpaca',
+        },
+      },
+    },
+    status: Status.PENDING_PAYEE_CONFIRMATION,
+  }
+}
+
+// Define mock consent data related to the transaction
+function mockConsentData(): Consent {
+  return {
+    id: '123',
+    consentId: '222',
+    party: {
+      partyIdInfo: {
+        partyIdType: PartyIdType.MSISDN,
+        partyIdentifier: '+1-222-222-2222',
+        fspId: 'fspb',
+      },
+      name: 'Bob Beaver',
+      personalInfo: {
+        complexName: {
+          firstName: 'Bob',
+          lastName: 'Beaver'
+        },
+      },
+    }
+  }
+}
 
 describe('Handlers for transaction documents in Firebase', () => {
   let server: Server
@@ -87,11 +140,11 @@ describe('Handlers for transaction documents in Firebase', () => {
     })
   })
 
-  it('Should perform party lookup when all necessary fields are set', () => {
+  it('Should perform party lookup when all necessary fields are set', async () => {
     const documentId = '111'
     let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'getParties').mockImplementation()
 
-    transactionsHandler.onUpdate(server, {
+    await transactionsHandler.onUpdate(server, {
       id: documentId,
       userId: 'bob123',
       payee: {
@@ -107,61 +160,27 @@ describe('Handlers for transaction documents in Firebase', () => {
     expect(mojaloopClientSpy).toBeCalledWith(PartyIdType.MSISDN, "+1-111-111-1111")
   })
 
-  it('Should initiate transaction request when all necessary fields are set', () => {
-    const documentId = '111'
-    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'postTransactions').mockImplementation()
+  it('Should initiate transaction request when all necessary fields are set', async () => {
+    const mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'postTransactions').mockImplementation()
 
     // Mock transaction data given by Firebase
-    const transactionData: Transaction = {
-      id: documentId,
-      userId: 'bob123',
-      transactionRequestId: '888',
-      sourceAccountId: '111',
-      consentId: '222',
-      amount: {
-        amount: '20',
-        currency: Currency.USD,
-      },
-      payee: {
-        partyIdInfo: {
-          partyIdType: PartyIdType.MSISDN,
-          partyIdentifier: '+1-111-111-1111',
-          fspId: 'fspa',
-        },
-        name: 'Alice Alpaca',
-        personalInfo: {
-          complexName: {
-            firstName: 'Alice',
-            lastName: 'Alpaca',
-          },
-        },
-      },
-      payer: {
-        partyIdInfo: {
-          partyIdType: PartyIdType.MSISDN,
-          partyIdentifier: '+1-222-222-2222',
-          fspId: 'fspb',
-        },
-        name: 'Bob Beaver',
-        personalInfo: {
-          complexName: {
-            firstName: 'Bob',
-            lastName: 'Beaver'
-          },
-        },
-      },
-      status: Status.PENDING_PAYEE_CONFIRMATION,
-    }
+    const transactionRequestData = mockTransactionRequestData()
+
+    // Mock consent data that would be retrieved from Firebase
+    const consentData = mockConsentData()
+
+    let consentRepositorySpy = jest.spyOn(consentRepository, 'getByConsentId')
+      .mockImplementation(() => new Promise((resolve) => resolve(consentData)))
 
     // Mock the expected transaction request being sent.
     const transactionRequest: ThirdPartyTransactionRequest = {
-      transactionRequestId: transactionData.transactionRequestId!,
-      sourceAccountId: transactionData.sourceAccountId!,
-      consentId: transactionData.consentId!,
-      payee: transactionData.payee!,
-      payer: transactionData.payer!,
+      transactionRequestId: transactionRequestData.transactionRequestId!,
+      sourceAccountId: transactionRequestData.sourceAccountId!,
+      consentId: transactionRequestData.consentId!,
+      payee: transactionRequestData.payee!,
+      payer: consentData.party!,
       amountType: AmountType.RECEIVE,
-      amount: transactionData.amount!,
+      amount: transactionRequestData.amount!,
       transactionType: {
         scenario: 'TRANSFER',
         initiator: 'PAYER',
@@ -170,8 +189,9 @@ describe('Handlers for transaction documents in Firebase', () => {
       expiration: utils.getTomorrowsDate().toISOString(),
     }
 
-    transactionsHandler.onUpdate(server, transactionData)
+    await transactionsHandler.onUpdate(server, transactionRequestData)
 
+    expect(consentRepositorySpy).toBeCalled()
     expect(mojaloopClientSpy).toBeCalledWith(transactionRequest)
   })
 

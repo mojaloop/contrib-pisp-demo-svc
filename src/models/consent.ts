@@ -23,31 +23,22 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
+import { Party } from '~/shared/ml-thirdparty-client/models/core'
 
-import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+export interface Consent {
+  /**
+   * Internal id that is used to identify the transaction.
+   */
+  id: string
 
-import { transactionRepository } from '~/repositories/transaction'
-import { Status } from '~/models/transaction'
+  /**
+   * Common ID between the PISP and FSP for the Consent object. This tells
+   * DFSP and auth-service which constent allows the PISP to initiate transaction.
+   */
+  consentId?: string
 
-export const post: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  let body = context.request.body as AuthorizationsPostRequest
-
-  transactionRepository.update(
-    {
-      transactionRequestId: body.transactionRequestId,
-      status: Status.PENDING_PAYEE_CONFIRMATION,
-    },
-    {
-      authentication: {
-        type: body.authenticationType,
-      },
-      transactionId: body.transactionId,
-      quote: body.quote,
-      status: Status.AUTHORIZATION_REQUIRED,
-    }
-  )
-
-  return h.response().code(202)
+  /**
+   * Information about the party that is associated with the consent.
+   */
+  party?: Party
 }

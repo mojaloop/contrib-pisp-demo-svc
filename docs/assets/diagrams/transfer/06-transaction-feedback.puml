@@ -1,0 +1,68 @@
+@startuml
+
+title Transaction Feedback
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+activate Mojaloop
+
+rnote left of Mojaloop #Light
+  ""**PUT /transfers/999**""
+  ""FSPIOP-Source: fspb""
+  ""FSPIOP-Destination: pisp""
+  ""{""
+  ""  "transactionId": "888",""
+  ""  "fulfilment": base64(xxx),""
+  ""  "completedTimestamp": "2020-07-15T22:15:28.985-01:00",""
+  ""  "transactionRequestState": "COMMITTED"""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++: ""**PUT /transfers/999**""
+Mojaloop <-- Server: ""200 OK""
+deactivate Mojaloop
+
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .where("transactionId", "==", "888")""
+  ""  .set({""
+  ""    completedTimestamp: "2020-07-15T22:15:28.985-01:00",""
+  ""    status: "SUCCESS"""
+  ""  }, { merge: true })""
+end rnote
+
+Server -> Firebase: Update transaction document
+Server <-- Firebase: ""200 OK""
+
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction document
+return ""200 OK""
+
+App -> Alice: Transaction success
+
+@enduml
