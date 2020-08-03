@@ -28,8 +28,49 @@ import { Server } from '@hapi/hapi'
 import config from '~/lib/config'
 
 import { Client } from '~/shared/ml-thirdparty-client'
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
+
+import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+
+const transactionRequestData: ThirdPartyTransactionRequest = {
+  transactionRequestId: '888',
+  sourceAccountId: '111',
+  consentId: '222',
+  payee: {
+    partyIdInfo: {
+      partyIdType: PartyIdType.MSISDN,
+      partyIdentifier: '+1-111-111-1111',
+      fspId: 'fspa',
+    },
+    name: 'Alice Alpaca',
+  },
+  payer: {
+    partyIdInfo: {
+      partyIdType: PartyIdType.MSISDN,
+      partyIdentifier: '+1-222-222-2222',
+      fspId: 'fspb',
+    },
+    name: 'Bob Beaver',
+    personalInfo: {
+      complexName: {
+        firstName: 'Bob',
+        lastName: 'Beaver'
+      },
+    },
+  },
+  amountType: AmountType.RECEIVE,
+  amount: {
+    amount: '20',
+    currency: Currency.USD,
+  },
+  transactionType: {
+    scenario: 'TRANSFER',
+    initiator: 'PAYER',
+    intiiatorType: 'CONSUMER',
+  },
+  expiration: (new Date(100)).toISOString(),
+}
 
 describe('Mojaloop third-party client', () => {
   let client: Client
@@ -55,5 +96,14 @@ describe('Mojaloop third-party client', () => {
     client.getParties(PartyIdType.MSISDN, "+1-111-111-1111")
 
     expect(simulatorSpy).toBeCalledWith(type, identifier)
+  })
+
+  it('Should use simulator to perform transaction request when it is provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest.spyOn(simulator, 'postTransactions').mockImplementation()
+
+    client.postTransactions(transactionRequestData)
+
+    expect(simulatorSpy).toBeCalledWith(transactionRequestData)
   })
 })
