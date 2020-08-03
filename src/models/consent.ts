@@ -23,34 +23,22 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
+import { Party } from '~/shared/ml-thirdparty-client/models/core'
 
-/**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- * 
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return transaction.payee != null
-    && transaction.payee.partyIdInfo != null
-    && transaction.payee.partyIdInfo.partyIdType != null
-    && transaction.payee.partyIdInfo.partyIdentifier != null
-}
+export interface Consent {
+  /**
+   * Internal id that is used to identify the transaction.
+   */
+  id: string
 
-/**
- * Checks whether a transaction document has all the necessary fields to be 
- * processed as a transaction request.
- * 
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  if (transaction.transactionRequestId
-    && transaction.consentId && transaction.sourceAccountId
-    && transaction.amount && transaction.payee) {
-    return true
-  }
-  return false
+  /**
+   * Common ID between the PISP and FSP for the Consent object. This tells
+   * DFSP and auth-service which constent allows the PISP to initiate transaction.
+   */
+  consentId?: string
+
+  /**
+   * Information about the party that is associated with the consent.
+   */
+  party?: Party
 }
