@@ -55,6 +55,29 @@ export enum Status {
   SUCCESS = 'SUCCESS',
 }
 
+export enum ResponseType {
+  /**
+   * The user authorized the transaction.
+   */
+  AUTHORIZED = 'AUTHORIZED',
+
+  /**
+   * The user rejected the transaction.
+   */
+  REJECTED = 'REJECTED',
+}
+
+export namespace ResponseType {
+  export function toMojaloopResponseType(type: ResponseType): AuthenticationResponseType {
+    switch (type) {
+      case ResponseType.AUTHORIZED:
+        return AuthenticationResponseType.ENTERED
+      case ResponseType.REJECTED:
+        return AuthenticationResponseType.REJECTED
+    }
+  }
+}
+
 export interface Transaction {
   /**
    * Internal id that is used to identify the transaction.
@@ -115,7 +138,7 @@ export interface Transaction {
   /**
    * Payer's response after being prompted to authorize a proposed financial transaction.
    */
-  responseType?: AuthenticationResponseType
+  responseType?: ResponseType
 
   /**
    * Common ID (decided by the PISP) to identify a transaction request.

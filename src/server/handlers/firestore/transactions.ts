@@ -31,7 +31,7 @@ import { logger } from '~/shared/logger'
 import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
-import { Transaction, Status } from '~/models/transaction'
+import { Transaction, Status, ResponseType } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
@@ -108,12 +108,16 @@ async function handleAuthorization(server: Server, transaction: Transaction) {
     // If the update contains all the necessary fields, process document
     // to the next step by sending an authorization to Mojaloop.
 
+    // Convert to a response type that is understood by Mojaloop.
+    let mojaloopResponseType =
+      ResponseType.toMojaloopResponseType(transaction.responseType!)
+
     // The optional values are guaranteed to exist by the validator.
     // eslint-disable @typescript-eslint/no-non-null-assertion
     server.app.mojaloopClient.putAuthorizations(
       transaction.transactionRequestId!,
       {
-        responseType: transaction.responseType!,
+        responseType: mojaloopResponseType,
         authenticationInfo: {
           authentication: transaction.authentication!.type!,
           authenticationValue: transaction.authentication!.value!,
