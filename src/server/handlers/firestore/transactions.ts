@@ -28,7 +28,10 @@ import { Server } from '@hapi/hapi'
 
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
-import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  AmountType,
+  AuthenticationResponseType,
+} from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 import { Transaction, Status, ResponseType } from '~/models/transaction'
@@ -48,7 +51,7 @@ async function handleNewTransaction(_: Server, transaction: Transaction) {
 }
 
 async function handlePartyLookup(server: Server, transaction: Transaction) {
-  // Check whether the transaction document has all the necessary properties 
+  // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (validator.isValidPartyLookup(transaction)) {
     // Payee is guaranteed to be non-null by the validator.
@@ -62,7 +65,10 @@ async function handlePartyLookup(server: Server, transaction: Transaction) {
   }
 }
 
-async function handlePartyConfirmation(server: Server, transaction: Transaction) {
+async function handlePartyConfirmation(
+  server: Server,
+  transaction: Transaction
+) {
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
   // in the Firebase. However, we can just ignore all updates by the server
@@ -73,12 +79,13 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
     // If the update contains all the necessary fields, process document
     // to the next step by sending a transaction request to Mojaloop.
 
-
     try {
       // The optional values are guaranteed to exist by the validator.
       // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      let consent = await consentRepository.getByConsentId(transaction.consentId!)
+      const consent = await consentRepository.getByConsentId(
+        transaction.consentId!
+      )
 
       server.app.mojaloopClient.postTransactions({
         transactionRequestId: transaction.transactionRequestId!,
@@ -93,7 +100,7 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
           initiator: 'PAYER',
           intiiatorType: 'CONSUMER',
         },
-        expiration: utils.getTomorrowsDate().toISOString()
+        expiration: utils.getTomorrowsDate().toISOString(),
       })
 
       // eslint-enable @typescript-eslint/no-non-null-assertion
@@ -103,14 +110,26 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
   }
 }
 
+function toMojaloopResponseType(
+  type: ResponseType
+): AuthenticationResponseType {
+  switch (type) {
+    case ResponseType.AUTHORIZED:
+      return AuthenticationResponseType.ENTERED
+    case ResponseType.REJECTED:
+      return AuthenticationResponseType.REJECTED
+  }
+}
+
 async function handleAuthorization(server: Server, transaction: Transaction) {
   if (validator.isValidAuthorization(transaction)) {
     // If the update contains all the necessary fields, process document
     // to the next step by sending an authorization to Mojaloop.
 
     // Convert to a response type that is understood by Mojaloop.
-    let mojaloopResponseType =
-      ResponseType.toMojaloopResponseType(transaction.responseType!)
+    const mojaloopResponseType = toMojaloopResponseType(
+      transaction.responseType!
+    )
 
     // The optional values are guaranteed to exist by the validator.
     // eslint-disable @typescript-eslint/no-non-null-assertion
@@ -121,47 +140,51 @@ async function handleAuthorization(server: Server, transaction: Transaction) {
         authenticationInfo: {
           authentication: transaction.authentication!.type!,
           authenticationValue: transaction.authentication!.value!,
-        }
+        },
       },
-      transaction.transactionId,
+      transaction.transactionId
     )
     // eslint-enable @typescript-eslint/no-non-null-assertion
   }
 }
 
-export const onCreate: TransactionHandler =
-  async (server: Server, transaction: Transaction): Promise<void> => {
-    if (transaction.status) {
-      // Skip transaction that has been processed previously.
-      // We need this because when the server starts for the first time, 
-      // all existing documents in the Firebase will be treated as a new
-      // document.
-      return
-    }
-
-    await handleNewTransaction(server, transaction)
+export const onCreate: TransactionHandler = async (
+  server: Server,
+  transaction: Transaction
+): Promise<void> => {
+  if (transaction.status) {
+    // Skip transaction that has been processed previously.
+    // We need this because when the server starts for the first time,
+    // all existing documents in the Firebase will be treated as a new
+    // document.
+    return
   }
 
-export const onUpdate: TransactionHandler =
-  async (server: Server, transaction: Transaction): Promise<void> => {
-    if (!transaction.status) {
-      // Status is expected to be null only when the document is created for the first
-      // time by the user.
-      logger.error('Invalid transaction update, undefined status.')
-      return
-    }
+  await handleNewTransaction(server, transaction)
+}
 
-    switch (transaction.status) {
-      case Status.PENDING_PARTY_LOOKUP:
-        await handlePartyLookup(server, transaction)
-        break
-
-      case Status.PENDING_PAYEE_CONFIRMATION:
-        await handlePartyConfirmation(server, transaction)
-        break
-
-      case Status.AUTHORIZATION_REQUIRED:
-        await handleAuthorization(server, transaction)
-        break
-    }
+export const onUpdate: TransactionHandler = async (
+  server: Server,
+  transaction: Transaction
+): Promise<void> => {
+  if (!transaction.status) {
+    // Status is expected to be null only when the document is created for the first
+    // time by the user.
+    logger.error('Invalid transaction update, undefined status.')
+    return
   }
+
+  switch (transaction.status) {
+    case Status.PENDING_PARTY_LOOKUP:
+      await handlePartyLookup(server, transaction)
+      break
+
+    case Status.PENDING_PAYEE_CONFIRMATION:
+      await handlePartyConfirmation(server, transaction)
+      break
+
+    case Status.AUTHORIZATION_REQUIRED:
+      await handleAuthorization(server, transaction)
+      break
+  }
+}

@@ -24,7 +24,6 @@
  ******/
 
 import {
-  AuthenticationResponseType,
   AuthenticationType,
   AuthenticationValue,
   Money,
@@ -65,17 +64,6 @@ export enum ResponseType {
    * The user rejected the transaction.
    */
   REJECTED = 'REJECTED',
-}
-
-export namespace ResponseType {
-  export function toMojaloopResponseType(type: ResponseType): AuthenticationResponseType {
-    switch (type) {
-      case ResponseType.AUTHORIZED:
-        return AuthenticationResponseType.ENTERED
-      case ResponseType.REJECTED:
-        return AuthenticationResponseType.REJECTED
-    }
-  }
 }
 
 export interface Transaction {
@@ -129,7 +117,7 @@ export interface Transaction {
     type?: AuthenticationType
 
     /**
-     * The value of authentication that is provided by payer to authorize the 
+     * The value of authentication that is provided by payer to authorize the
      * proposed financial transaction.
      */
     value?: AuthenticationValue

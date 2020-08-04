@@ -33,7 +33,7 @@ import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
 import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
-import { Status, Transaction } from '~/models/transaction'
+import { Status, Transaction, ResponseType } from '~/models/transaction'
 import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { consentRepository } from '~/repositories/consent'
 import { Consent } from '~/models/consent'
@@ -209,7 +209,7 @@ describe('Handlers for transaction documents in Firebase', () => {
         type: AuthenticationType.U2F,
         value: '12345'
       },
-      responseType: AuthenticationResponseType.ENTERED,
+      responseType: ResponseType.AUTHORIZED,
       status: Status.AUTHORIZATION_REQUIRED,
     }
 
