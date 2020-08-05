@@ -17,8 +17,6 @@ box "Mojaloop" #Light
 end box
 
 'start flow
-Alice -> App: I want to remember this device
-
 App -> Server ++: ""**POST /consents/123/generateChallenge**""
 App <-- Server: ""202 Accepted""
 deactivate App
@@ -62,7 +60,7 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
-  ""  .set({""
+  ""  .update({""
   ""    credential: {""
   ""      id: null,""
   ""      credentialType: "FIDO",""
@@ -74,7 +72,7 @@ rnote left of Server #Light
   ""      payload: null""
   ""    },""
   ""    status: "CHALLENGE_GENERATED"""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 Server -> Firebase: Challenge has been generated.

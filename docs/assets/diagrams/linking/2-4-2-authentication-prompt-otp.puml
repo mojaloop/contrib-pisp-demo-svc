@@ -41,11 +41,11 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentRequestId", "==", "111")""
-  ""  .set({""
+  ""  .update({""
   ""    authChannels: ["OTP"],""
   ""    authUri: null,""
   ""    status: "AUTH_REQUIRED"""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 Server -> Firebase: Update consent status

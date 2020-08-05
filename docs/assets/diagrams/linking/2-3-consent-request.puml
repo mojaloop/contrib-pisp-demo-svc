@@ -24,15 +24,9 @@ rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .doc("abc123")""
-  ""  .set({""
-  ""    authChannels: ["Web", "OTP"],""
-  ""    scopes: [""
-  ""      { accountId: "aaa.bob.fspb",""
-  ""        actions: ["accounts.transfer", "accounts.getBalance"] },""
-  ""      { accountId: "bbb.bob.fspb",""
-  ""        actions: ["accounts.transfer", "accounts.getBalance"] }""
-  ""    ]""
-  ""  }, { merge: true })""
+  ""  .update({""
+  ""    authChannels: ["Web", "OTP"]""
+  ""  })""
 end rnote
 
 App -> Firebase: Create consent request in database

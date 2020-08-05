@@ -19,31 +19,22 @@ end box
 'start flow
 
 rnote right of App #Light
-  ""{""
-  ""  "requestId": "111",""
-  ""  "initiatorId": "pisp",""
-  ""  "participantId": "fspb",""
-  ""  "scopes": [""
-  ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
-  ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
-  ""  ],""
-  ""  "credential": {""
-  ""    "id": "12345",""
-  ""    "credentialType": "FIDO",""
-  ""    "status": "PENDING",""
-  ""    "challenge": {""
-  ""      "payload": base64(...),""
-  ""      "signature": base64(...)""
-  ""    },""
-  ""    "payload": base64(...)""
-  ""  }""
-  ""}""
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .set({""
+  ""    credential: {""
+  ""      id: "12345",""
+  ""      challenge: {""
+  ""        signature: base64(...)""
+  ""      },""
+  ""      payload: base64(...)""
+  ""    }""
+  ""  }, { merge: true })""
 end rnote
 
 App -> Server ++: ""**PUT /consents/123**""
-App <-- Server: ""202 Accepted   // not 200?""
+App <-- Server: ""202 Accepted""
 deactivate App
 
 rnote right of Server #Light
@@ -71,7 +62,7 @@ rnote right of Server #Light
 end rnote
 
 Server -> Mojaloop ++: ""**PUT /consents/123**""
-Server <-- Mojaloop: ""202 Accepted   // not 200?""
+Server <-- Mojaloop: ""202 Accepted""
 
 deactivate Server
 
@@ -108,7 +99,7 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
-  ""  .set({""
+  ""  .update({""
   ""    status: "CREDENTIAL_REGISTERED"""
   ""  })""
 end rnote
