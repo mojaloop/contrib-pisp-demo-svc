@@ -12,6 +12,7 @@ participant "PISP Server" as PISP
 
 PISP -> Firebase: ""firebase.firestore()""\n\
   "".collection("transactions")""\n\
+  "".where("status", "!=", "SUCCESS")""\n\
   "".onSnapshot( ... )""
 return ""200 OK""
 

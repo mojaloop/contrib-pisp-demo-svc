@@ -24,14 +24,14 @@ rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
   ""  .doc("abc123")""
-  ""  .set({""
+  ""  .update({""
   ""    sourceAccountId: "bob.fspb",""
   ""    consentId: "555",""
   ""    amount: {""
   ""      amount: "20",""
   ""      currency: "USD"""
   ""    }""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 App -> Firebase ++: Update transaction document
