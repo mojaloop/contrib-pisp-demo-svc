@@ -173,7 +173,7 @@ export interface TransactionType {
   initiator: string
 
   /**
-   * Consumer, agent, business, …
+   * Type of the transaction initiator - consumer, agent, business, etc.
    */
   initiatorType: string
 
