@@ -4,7 +4,10 @@ Documentation for the PISP demo server
 
 ## Design
 
-There are two main scenarios that are handled by the PISP demo server:
+> **_NOTE:_** PISP demo server uses [Firebase](https://firebase.google.com/) to assist in performing various tasks. For more details about the required services, you can take a look [here](./design/firebase.md).
+
+Below are the scenarios that are supported by the PISP Demo server:
+- [Transfer](./design/transfer.md)
 - [Linking](./design/linking.md)
 
 ## BDD

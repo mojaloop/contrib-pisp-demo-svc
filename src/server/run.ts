@@ -24,15 +24,11 @@
  ******/
 
 import { Server } from '@hapi/hapi'
-import { ServiceConfig } from '../shared/config'
+import { ServiceConfig } from '../lib/config'
 import create from './create'
 import start from './start'
-import extensions from './extensions'
-import plugins from './plugins'
 
 export default async function run(config: ServiceConfig): Promise<Server> {
   const server = await create(config)
-  await plugins.register(server)
-  await extensions.register(server)
   return start(server)
 }

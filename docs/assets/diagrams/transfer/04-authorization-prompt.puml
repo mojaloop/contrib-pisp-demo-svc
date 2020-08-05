@@ -1,0 +1,104 @@
+@startuml
+
+title Authorization Prompt
+
+hide footbox
+
+autonumber
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  database Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+activate Mojaloop 
+
+rnote left of Mojaloop #Light
+  ""**POST /authorizations**""
+  ""FSPIOP-Source: fspb""
+  ""FSPIOP-Destination: pisp""
+  ""{""
+  ""  "authenticationType": "U2F"""
+  ""  "retriesLeft": "1",""
+  ""  "amount": {""
+  ""    "amount": "20",""
+  ""    "currency": "USD"""
+  ""  },""
+  ""  "transactionId": "888",""
+  ""  "transactionRequestId": "777",""
+  ""  "quote": {""
+  ""    "transferAmount": {""
+  ""      "amount": "20",""
+  ""      "currency": "USD"""
+  ""    },""
+  ""    "payeeReceiveAmount": {""
+  ""      "amount": "20",""
+  ""      "currency": "USD"""
+  ""    },""
+  ""    "payeeFspFee": {""
+  ""      "amount": "1",""
+  ""      "currency": "USD"""
+  ""    },""
+  ""    "payeeFspCommission": {""
+  ""      "amount": "1",""
+  ""      "currency": "USD"""
+  ""    },""
+  ""    "expiration": "2020-07-16T22:17:28.985-01:00",""
+  ""    "ilpPacket": base64(xxx),""
+  ""    "condition": base64(xxx)""
+  ""  },""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++: ""**POST /authorizations**""
+Mojaloop <-- Server: ""202 Accepted""
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("transactions")""
+  ""  .where("transactionRequestId", "==", "777")""
+  ""  .update({""
+  ""    authentication: {""
+  ""      type: "U2F"""
+  ""    },""
+  ""    transactionId: "888",""
+  ""    quote: ..., // as given by Mojaloop""
+  ""    status: "AUTHORIZATION_REQUIRED"""
+  ""  })""
+end rnote
+
+Server -> Firebase: Update transaction document
+return ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "transactions/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App: Notify update on transaction document
+return ""200 OK""
+
+App -> Alice: Would you like to\nauthorize this transaction?
+
+...
+
+note over Alice, Mojaloop
+  User checks the transaction info as described in the quote.
+  PISP app can prompt the user for authorization. For example, ask user for their fingerprint.
+end note
+
+...
+
+@enduml

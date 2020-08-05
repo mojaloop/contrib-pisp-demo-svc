@@ -24,6 +24,6 @@
  ******/
 
 import ServiceServer from './server'
-import Config from './shared/config'
+import Config from './lib/config'
 
 ServiceServer.run(Config)
