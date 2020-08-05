@@ -27,7 +27,7 @@ import {
   AmountType,
   Money,
   TransactionType,
-  Party
+  Party,
 } from '../core'
 
 export interface ThirdPartyTransactionRequest {

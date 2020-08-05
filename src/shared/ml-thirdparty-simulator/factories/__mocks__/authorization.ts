@@ -28,9 +28,7 @@ import {
   AuthorizationsPostRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
-import {
-  AuthenticationType
-} from '~/shared/ml-thirdparty-client/models/core'
+import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
 
 export class AuthorizationFactory {
   public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
