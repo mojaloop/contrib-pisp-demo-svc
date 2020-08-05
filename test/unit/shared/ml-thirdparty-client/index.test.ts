@@ -67,7 +67,7 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionType: {
     scenario: 'TRANSFER',
     initiator: 'PAYER',
-    intiiatorType: 'CONSUMER',
+    initiatorType: 'CONSUMER',
   },
   expiration: (new Date(100)).toISOString(),
 }
