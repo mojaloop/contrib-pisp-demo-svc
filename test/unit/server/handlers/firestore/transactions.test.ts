@@ -57,8 +57,8 @@ jest.mock('~/lib/utils', () => ({
   }),
 }))
 
-// Define mock data to perform transaction request
-function mockTransactionRequestData(): Transaction {
+// Create stub data to perform transaction request
+function createStubTransactionRequestData(): Transaction {
   return {
     id: '111',
     transactionRequestId: '888',
@@ -86,8 +86,8 @@ function mockTransactionRequestData(): Transaction {
   }
 }
 
-// Define mock consent data related to the transaction
-function mockConsentData(): Consent {
+// Create stub consent data related to the transaction
+function createStubConsentData(): Consent {
   return {
     id: '123',
     consentId: '222',
@@ -178,10 +178,10 @@ describe('Handlers for transaction documents in Firebase', () => {
       .mockImplementation()
 
     // Mock transaction data given by Firebase
-    const transactionRequestData = mockTransactionRequestData()
+    const transactionRequestData = createStubTransactionRequestData()
 
     // Mock consent data that would be retrieved from Firebase
-    const consentData = mockConsentData()
+    const consentData = createStubConsentData()
 
     const consentRepositorySpy = jest
       .spyOn(consentRepository, 'getByConsentId')
