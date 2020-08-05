@@ -53,10 +53,10 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("transactions")""
   ""  .doc("abc123")""
-  ""  .set({""
+  ""  .update({""
   ""    transactionRequestId: "777",""
   ""    status: "PENDING_PARTY_LOOKUP",""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 Server -> Firebase++: Update transaction document
@@ -106,7 +106,7 @@ rnote left of Server #Light
   ""  .where("payee.partyIdInfo.partyIdType", "==", "MSISDN")""
   ""  .where("payee.partyIdInfo.partyIdentifier", "==", "+1-222-222-2222")""
   ""  .where("status", "==", "PENDING_PARTY_LOOKUP")""
-  ""  .set({""
+  ""  .update({""
   ""    payee: {""
   ""      name: "Alice Alpaca",""
   ""      partyIdInfo: {""
@@ -116,7 +116,7 @@ rnote left of Server #Light
   ""      }""
   ""    },""
   ""    status: "PENDING_PAYEE_CONFIRMATION",""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 Server -> Firebase ++: Update transaction status
