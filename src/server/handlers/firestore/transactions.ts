@@ -48,7 +48,7 @@ async function handleNewTransaction(_: Server, transaction: Transaction) {
 }
 
 async function handlePartyLookup(server: Server, transaction: Transaction) {
-  // Check whether the transaction document has all the necessary properties 
+  // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (validator.isValidPartyLookup(transaction)) {
     // Payee is guaranteed to be non-null by the validator.
@@ -62,7 +62,10 @@ async function handlePartyLookup(server: Server, transaction: Transaction) {
   }
 }
 
-async function handlePartyConfirmation(server: Server, transaction: Transaction) {
+async function handlePartyConfirmation(
+  server: Server,
+  transaction: Transaction
+) {
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
   // in the Firebase. However, we can just ignore all updates by the server
@@ -73,12 +76,13 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
     // If the update contains all the necessary fields, process document
     // to the next step by sending a transaction request to Mojaloop.
 
-
     try {
       // The optional values are guaranteed to exist by the validator.
       // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      let consent = await consentRepository.getByConsentId(transaction.consentId!)
+      const consent = await consentRepository.getByConsentId(
+        transaction.consentId!
+      )
 
       server.app.mojaloopClient.postTransactions({
         transactionRequestId: transaction.transactionRequestId!,
@@ -91,9 +95,9 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
         transactionType: {
           scenario: 'TRANSFER',
           initiator: 'PAYER',
-          intiiatorType: 'CONSUMER',
+          initiatorType: 'CONSUMER',
         },
-        expiration: utils.getTomorrowsDate().toISOString()
+        expiration: utils.getTomorrowsDate().toISOString(),
       })
 
       // eslint-enable @typescript-eslint/no-non-null-assertion
@@ -103,35 +107,39 @@ async function handlePartyConfirmation(server: Server, transaction: Transaction)
   }
 }
 
-export const onCreate: TransactionHandler =
-  async (server: Server, transaction: Transaction): Promise<void> => {
-    if (transaction.status) {
-      // Skip transaction that has been processed previously.
-      // We need this because when the server starts for the first time, 
-      // all existing documents in the Firebase will be treated as a new
-      // document.
-      return
-    }
-
-    await handleNewTransaction(server, transaction)
+export const onCreate: TransactionHandler = async (
+  server: Server,
+  transaction: Transaction
+): Promise<void> => {
+  if (transaction.status) {
+    // Skip transaction that has been processed previously.
+    // We need this because when the server starts for the first time,
+    // all existing documents in the Firebase will be treated as a new
+    // document.
+    return
   }
 
-export const onUpdate: TransactionHandler =
-  async (server: Server, transaction: Transaction): Promise<void> => {
-    if (!transaction.status) {
-      // Status is expected to be null only when the document is created for the first
-      // time by the user.
-      logger.error('Invalid transaction update, undefined status.')
-      return
-    }
+  await handleNewTransaction(server, transaction)
+}
 
-    switch (transaction.status) {
-      case Status.PENDING_PARTY_LOOKUP:
-        await handlePartyLookup(server, transaction)
-        break
-
-      case Status.PENDING_PAYEE_CONFIRMATION:
-        await handlePartyConfirmation(server, transaction)
-        break
-    }
+export const onUpdate: TransactionHandler = async (
+  server: Server,
+  transaction: Transaction
+): Promise<void> => {
+  if (!transaction.status) {
+    // Status is expected to be null only when the document is created for the first
+    // time by the user.
+    logger.error('Invalid transaction update, undefined status.')
+    return
   }
+
+  switch (transaction.status) {
+    case Status.PENDING_PARTY_LOOKUP:
+      await handlePartyLookup(server, transaction)
+      break
+
+    case Status.PENDING_PAYEE_CONFIRMATION:
+      await handlePartyConfirmation(server, transaction)
+      break
+  }
+}

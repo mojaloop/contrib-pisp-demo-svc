@@ -23,31 +23,31 @@
  --------------
  ******/
 
-import { ExtensionList } from './extension';
+import { ExtensionList } from './extension'
 
 /**
- * Type of amount. 
+ * Type of amount.
  */
 export enum AmountType {
   /**
-   * Amount the Payer would like to send, that is, the amount 
+   * Amount the Payer would like to send, that is, the amount
    * that should be withdrawn from the Payer account including any fees.
    */
   SEND = 'SEND',
 
   /**
-   * Amount the Payer would like the Payee to receive, that is, the amount 
+   * Amount the Payer would like the Payee to receive, that is, the amount
    * that should be sent to the receiver exclusive of any fees
    */
   RECEIVE = 'RECEIVE',
 }
 
 /**
- * The currency codes defined in 
- * [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html) 
- * as three-letter alphabetic codes are used as the standard naming 
+ * The currency codes defined in
+ * [ISO 4217](https://www.iso.org/iso-4217-currency-codes.html)
+ * as three-letter alphabetic codes are used as the standard naming
  * representation for currencies.
- * 
+ *
  * The currency is temporarily trimmed to two options for prototype.
  */
 export enum Currency {
@@ -56,7 +56,7 @@ export enum Currency {
 }
 
 /**
- * Data model for the complex type GeoCode. 
+ * Data model for the complex type GeoCode.
  * Indicates the geographic location of a transaction initiation.
  */
 export interface GeoCode {
@@ -96,7 +96,7 @@ export interface Quote {
   transferAmount: Money
 
   /**
-   * The amount of Money that the Payee should receive in the end-to-end transaction. 
+   * The amount of Money that the Payee should receive in the end-to-end transaction.
    * Optional as the Payee FSP might not want to disclose any optional Payee fees.
    */
   payeeReceiveAmount?: Money
@@ -112,7 +112,7 @@ export interface Quote {
   payeeFspComission?: Money
 
   /**
-   * Date and time until when the quotation is valid and can be honored when used 
+   * Date and time until when the quotation is valid and can be honored when used
    * in the subsequent transaction.
    */
   expiration: string
@@ -154,7 +154,7 @@ export interface Refund {
 }
 
 /**
- * 
+ *
  */
 export interface TransactionType {
   /**
@@ -175,10 +175,10 @@ export interface TransactionType {
   /**
    * Consumer, agent, business, …
    */
-  intiiatorType: string
+  initiatorType: string
 
   /**
-   * Extra information specific to a refund scenario. 
+   * Extra information specific to a refund scenario.
    * Should only be populated if scenario is REFUND.
    */
   refundInfo?: Refund
