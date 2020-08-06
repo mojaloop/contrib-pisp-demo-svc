@@ -1,0 +1,58 @@
+@startuml Unlinking
+
+title: Unlinking
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Third-party\nAPI Adapter" as Adapter
+end box
+
+'start flow
+Alice -> App++: I want to unlink this bank account
+
+App -> Server ++: ""**DELETE /consents/123**""
+App <-- Server: ""202 Accepted""
+deactivate App
+
+Server -> Adapter ++: ""**DELETE /consents/123**""
+Adapter <-- Server: ""202 Accepted""
+deactivate Server
+
+Adapter -> Server++: ""**PATCH /consents/123** \n{\n status: string,\n revokedAt: string (of timestamp)\n}""
+Adapter <-- Server: ""200 OK""
+deactivate Adapter
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .set({status: "REVOKED", revokedAt: "timestamp"})""
+end rnote
+
+Server -> Firebase: The account has been unlinked.
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.set",""
+  ""  "consents/abc123"""
+  "" ({status: "REVOKED", revokedAt: "timestamp"})""
+  "")""
+end rnote
+
+Firebase -> App: Notify revoking of consent document
+Firebase <-- App: ""200 OK""
+
+App -> Alice: The bank acc has been unlinked.
+
+
+@enduml
