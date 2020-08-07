@@ -12,7 +12,7 @@ box "PISP" #Light
   participant "PISP Server" as Server
 end box
 box "Mojaloop" #Light
-  participant "Third-party\nAPI Adapter" as Adapter
+  participant "Switch" as Mojaloop
 end box
 
 'start flow
