@@ -97,6 +97,9 @@ export interface Quote {
 
   /**
    * The amount of Money that the Payee should receive in the end-to-end transaction.
+   * In general, this value is equal to the transfer amount after being adjusted by 
+   * the commissions and fees that may be given by both Payer and Payee FSPs.
+   * 
    * Optional as the Payee FSP might not want to disclose any optional Payee fees.
    */
   payeeReceiveAmount?: Money
