@@ -26,7 +26,6 @@ rnote right of App #Light
   ""  .doc("abc123")""
   ""  .set({""
   ""    authentication: {""
-  ""      type: "U2F",""
   ""      value: "base64(xxx)"""
   ""    },""
   ""    responseType: "AUTHORIZED"""
