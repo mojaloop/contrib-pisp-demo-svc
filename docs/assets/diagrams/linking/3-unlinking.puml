@@ -53,7 +53,8 @@ rnote left of Firebase #Light
 end rnote
 
 Firebase -> App: Notify revoking of consent document
-Firebase <-- App: ""200 OK""
+Firebase <-- App ++: ""200 OK""
+deactivate Firebase
 
 App -> Alice: The bank acc has been unlinked.
 
