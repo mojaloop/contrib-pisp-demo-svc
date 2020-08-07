@@ -34,7 +34,10 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
-  ""  .set({status: "REVOKED", revokedAt: "timestamp"})""
+  ""  .update({""
+  ""    revokedAt: "timestamp",""
+  ""    status: "REVOKED"""
+  ""  })""
 end rnote
 
 Server -> Firebase: The account has been unlinked.
