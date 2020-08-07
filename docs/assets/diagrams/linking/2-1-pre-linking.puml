@@ -17,11 +17,11 @@ box "Mojaloop" #Light
 end box
 
 ' start flow
-opt Update every certain time interval
-  Server -> Mojaloop: ""**GET /participants**""
-  Server <-- Mojaloop: ""**HTTP 202** (Accepted)""
+loop Daily
+  Server -> Mojaloop++: ""**GET /participants**""
+  Server <-- Mojaloop: ""202 Accepted""
 
-  Mojaloop -> Mojaloop: Lookup data in Mojaloop
+  Mojaloop -> Mojaloop: Lookup data
 
   rnote left of Mojaloop #Light
   ""{ ""
@@ -38,8 +38,9 @@ opt Update every certain time interval
   ""} ""
   end rnote
 
-  Mojaloop -> Server: ""**PUT /participants**""
-  return ""**HTTP 200** (OK)""
+  Mojaloop -> Server ++: ""**PUT /participants**""
+  Mojaloop <-- Server: ""200 OK""
+  deactivate Mojaloop
 
   rnote left of Server #Light
     ""db = firebase.firestore()""
@@ -60,7 +61,10 @@ opt Update every certain time interval
     """"
     ""batch.commit()""
   end rnote
+
   Server -> Firebase: Update list of participants atomically
+  Server <-- Firebase: ""200 OK""
+  deactivate Server
 end
 
 deactivate Mojaloop
@@ -76,22 +80,21 @@ end rnote
 App -> Firebase ++: ""Query list of participants""
 
 rnote left of Firebase #Light
-  ""result(""
-  ""  [""
-  ""    {""
-  ""      fspId: "fspa",""
-  ""      name: "FSP A"""
-  ""    },""
-  ""    {""
-  ""      fspId: "fspb",""
-  ""      name: "FSP B"""
-  ""    }""
-  ""  ]""
-  "")""
+  ""result([""
+  ""  {""
+  ""    fspId: "fspa",""
+  ""    name: "FSP A"""
+  ""  },""
+  ""  {""
+  ""    fspId: "fspb",""
+  ""    name: "FSP B"""
+  ""  }""
+  ""])""
 end rnote
 
-return ""**HTTP 200** (OK)""
+return ""200 OK""
 
 App -> Alice: Display list of available FSPs
+deactivate App
 
 @enduml

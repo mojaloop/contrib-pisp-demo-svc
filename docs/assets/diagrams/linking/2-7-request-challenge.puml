@@ -17,15 +17,12 @@ box "Mojaloop" #Light
 end box
 
 'start flow
-App -> Server ++: ""**POST /consents/123/generateChallenge**""
-App <-- Server: ""202 Accepted""
-deactivate App
-
+activate Server
 Server -> Mojaloop ++: ""**POST /consents/123/generateChallenge**""
 Server <-- Mojaloop: ""202 Accepted""
 deactivate Server
 
-Mojaloop -> Mojaloop: Generate a new challenge
+Mojaloop -> Mojaloop: Generate a\nnew challenge
 
 rnote left of Mojaloop #Light
   ""{""
@@ -34,9 +31,9 @@ rnote left of Mojaloop #Light
   ""  "participantId": "fspb",""
   ""  "scopes": [""
   ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""      actions: ["accounts.transfer"] },""
   ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""      actions: ["accounts.transfer"] }""
   ""  ],""
   ""  "credential": {""
   ""    "id": null,""
@@ -75,8 +72,8 @@ rnote left of Server #Light
   ""  })""
 end rnote
 
-Server -> Firebase: Challenge has been generated.
-return ""200 OK""
+Server -> Firebase ++: Update consent document
+Server <-- Firebase: ""200 OK""
 deactivate Server
 
 rnote left of Firebase #Light
@@ -87,10 +84,12 @@ rnote left of Firebase #Light
   "")""
 end rnote
 
-Firebase -> App: Notify update on consent status
-return ""200 OK""
+Firebase -> App ++: Notify update on consent document
+Firebase <-- App: ""200 OK""
+deactivate Firebase
 
 App -> Alice: Challenge has been generated.\nProvide your fingerprint to continue
+deactivate App
 
 ...
 

@@ -24,9 +24,9 @@ rnote left of Mojaloop #Light
   ""  "authChannels": ["OTP"],""
   ""  "scopes": [""
   ""      { accountId: "aaa.bob.fspb",""
-  ""        actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""        actions: ["accounts.transfer"] },""
   ""      { accountId: "bbb.bob.fspb",""
-  ""        actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""        actions: ["accounts.transfer"] }""
   ""  ],""
   ""  "callbackUri": "pisp-app://callback...",""
   ""  "authUri": null""
@@ -48,7 +48,7 @@ rnote left of Server #Light
   ""  })""
 end rnote
 
-Server -> Firebase: Update consent status
+Server -> Firebase ++: Update consent document
 Server <-- Firebase: ""200 OK""
 deactivate Server
 
@@ -60,9 +60,11 @@ rnote left of Firebase #Light
   "")""
 end rnote 
 
-Firebase -> App: Notify update on consent status
-return ""200 OK""
+Firebase -> App ++: Notify update on consent document
+Firebase <-- App: ""200 OK""
+deactivate Firebase
 
 App -> Alice: Prompt to input OTP
+deactivate App
 
 @enduml

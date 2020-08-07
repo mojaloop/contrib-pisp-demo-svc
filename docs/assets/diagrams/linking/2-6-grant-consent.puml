@@ -28,9 +28,9 @@ rnote left of Mojaloop #Light
   ""  "participantId": "fspb",""
   ""  "scopes": [""
   ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""      actions: ["accounts.transfer"] },""
   ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""      actions: ["accounts.transfer"] }""
   ""  ],""
   ""  "credential": null""
   ""}""
@@ -47,15 +47,20 @@ rnote left of Server #Light
   ""  .where("consentRequestId", "==", "111")""
   ""  .update({""
   ""    consentId: "123",""
-  ""    initiatorId: "pisp",""
-  ""    participantId: "fspb",""
+  ""    // save the granted scopes since it might be""
+  ""    // altered by the DFSP""
+  ""    scopes: [""
+  ""      { accountId: "aaa.bob.fspb",""
+  ""        actions: ["accounts.transfer"] },""
+  ""      { accountId: "bbb.bob.fspb",""
+  ""        actions: ["accounts.transfer"] }""
+  ""    ],""
   ""    status: "CONSENT_GRANTED"""
   ""  })""
 end rnote
 
-Server -> Firebase: Update consent status
-return ""200 (OK)""
-deactivate Server
+Server -> Firebase ++: Update consent document
+Server <-- Firebase: ""200 OK""
 
 rnote left of Firebase #Light 
   ""event(""
@@ -65,8 +70,7 @@ rnote left of Firebase #Light
   "")""
 end rnote
 
-Firebase -> App: Notify update on consent status
-
-App -> Alice: Consent has been granted.
+Firebase -> App: Notify update on consent document
+deactivate Firebase
 
 @enduml

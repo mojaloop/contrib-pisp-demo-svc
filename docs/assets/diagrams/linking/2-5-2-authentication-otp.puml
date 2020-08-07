@@ -19,24 +19,29 @@ end box
 Alice -> App ++: Here is the OTP code
 
 rnote right of App #Light
-  ""{""
-  ""  "initiatorId": "pisp",""
-  ""  "authChannels": ["OTP"],""
-  ""  "scopes": [""
-  ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
-  ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
-  ""  ],""
-  ""  "callbackUri": "pisp-app://callback...",""
-  ""  "authUri": null,""
-  ""  "authToken": <OTP>""
-  ""}""
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .doc("abc123")""
+  ""  .update({""
+  ""    authToken: <OTP>""
+  ""  })""
 end rnote
 
-App -> Server++: ""**PUT /consentRequests/111**""
-App <-- Server : ""200 OK""
+App -> Firebase ++: Update consent document
+App <-- Firebase: ""200 OK""
 deactivate App
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server++: Notify update on consent document
+Firebase <-- Server: ""200 OK""
+deactivate Firebase
 
 rnote right of Server #Light
   ""{""
@@ -44,9 +49,9 @@ rnote right of Server #Light
   ""  "authChannels": ["OTP"],""
   ""  "scopes": [""
   ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""      actions: ["accounts.transfer"] },""
   ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""      actions: ["accounts.transfer"] }""
   ""  ],""
   ""  "callbackUri": "pisp-app://callback...",""
   ""  "authUri": null,""

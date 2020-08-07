@@ -8,6 +8,7 @@ participant "PISP Server" as PISP
 
 PISP -> Firebase: ""firebase.firestore()""\n\
   "".collection("consents")""\n\
+  "".where("status", "!=", "SUCCESS")""\n\
   "".onSnapshot( ... )""
 return ""200 OK""
 

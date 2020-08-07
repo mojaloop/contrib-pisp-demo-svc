@@ -18,19 +18,24 @@ end box
 
 ' start flow
 
-Alice -> App: Choose one of the available FSPs \nand provide identifier
+Alice -> App ++: Yup, that's me and I want to link\nthe following bank account(s).
 
 rnote right of App #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .doc("abc123")""
   ""  .update({""
-  ""    authChannels: ["Web", "OTP"]""
+  ""    authChannels: ["Web", "OTP"],""
+  ""    accounts: [""
+  ""      { "id": "aaa.bob.fspb", "currency": "USD" },""
+  ""      { "id": "bbb.bob.fspb", "currency": "SGD" }""
+  ""    ],""
   ""  })""
 end rnote
 
-App -> Firebase: Create consent request in database
-return ""200 OK""
+App -> Firebase ++: Create consent request in database
+App <-- Firebase: ""200 OK""
+deactivate App
 
 rnote right of Firebase #Light
   ""event(""
@@ -42,8 +47,7 @@ end rnote
 
 Firebase -> Server++: Notify update on consents collection
 Firebase <-- Server: ""200 OK""
-
-deactivate App
+deactivate Firebase
 
 rnote right of Server #Light
   ""{""
@@ -52,9 +56,9 @@ rnote right of Server #Light
   ""  "authChannels": ["Web", "OTP"],""
   ""  "scopes": [""
   ""    { accountId: "aaa.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] },""
+  ""      actions: ["accounts.transfer"] },""
   ""    { accountId: "bbb.bob.fspb",""
-  ""      actions: ["accounts.transfer", "accounts.getBalance"] }""
+  ""      actions: ["accounts.transfer"] }""
   ""  ],""
   ""  "callbackUri": "pisp-app://callback..."""
   ""}""

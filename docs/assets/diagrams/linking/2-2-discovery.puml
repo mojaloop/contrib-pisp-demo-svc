@@ -18,7 +18,7 @@ box "Mojaloop" #Light
   participant "Switch" as Mojaloop
 end box
 
-Alice -> App: I want to link this account
+Alice -> App ++: Choose one of the FSPs and\nenter an opaque identifier.
 
 rnote right of App #Light 
   ""firebase.firestore()""
@@ -28,7 +28,8 @@ rnote right of App #Light
   ""    party: {""
   ""      partyIdInfo: {""
   ""        partyIdType: "OPAQUE",""
-  ""        partyIdentifier: "bob1234"""
+  ""        partyIdentifier: "bob1234",""
+  ""        fspId: "fspb"""
   ""      }""
   ""    }""
   ""  })""
@@ -36,6 +37,7 @@ end rnote
 
 App -> Firebase ++: Create a new consent document
 App <-- Firebase: ""200 OK""
+deactivate App
 
 rnote right of Firebase #Light
   ""event(""
@@ -53,14 +55,19 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .doc("abc123")""
-  ""  .set({""
+  ""  .update({""
   ""    consentRequestId: "111",""
   ""    status: "PENDING_PARTY_LOOKUP",""
-  ""  }, { merge: true })""
+  ""  })""
 end rnote
 
 Server -> Firebase++: Update consent document
 return ""200 OK""
+
+rnote right of Server #Light
+  ""FSPIOP-Source: pisp""
+  ""FSPIOP-Destination: fspb""
+end rnote
 
 Server -> Mojaloop ++: ""**GET /parties/OPAQUE/bob1234**""
 Server <-- Mojaloop: ""202 Accepted""
@@ -98,9 +105,9 @@ deactivate Mojaloop
 
 rnote left of Server #Light
   ""firebase.firestore()""
-  ""  .collection("transactions")""
-  ""  .where("party.partyIdInfo.partyIdType", "==", "MSISDN")""
-  ""  .where("party.partyIdInfo.partyIdentifier", "==", "+1-222-222-2222")""
+  ""  .collection("consents")""
+  ""  .where("party.partyIdInfo.partyIdType", "==", "OPAQUE")""
+  ""  .where("party.partyIdInfo.partyIdentifier", "==", "bob1234")""
   ""  .where("status", "==", "PENDING_PARTY_LOOKUP")""
   ""  .update({""
   ""    party: {""
@@ -125,7 +132,7 @@ rnote left of Server #Light
   ""  })""
 end rnote
 
-Server -> Firebase ++: Update consent status
+Server -> Firebase ++: Update consent document
 Server <-- Firebase: ""200 OK""
 deactivate Server
 
@@ -137,10 +144,11 @@ rnote left of Firebase #Light
   "")""
 end rnote
 
-Firebase -> App: Notify update on consent status
+Firebase -> App ++: Notify update on consent document
 Firebase <-- App: ""200 OK""
 deactivate Firebase
 
 App -> Alice: Display party information
+deactivate App
 
 @enduml
