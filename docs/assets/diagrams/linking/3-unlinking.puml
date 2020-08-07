@@ -57,6 +57,6 @@ Firebase <-- App ++: ""200 OK""
 deactivate Firebase
 
 App -> Alice: The bank acc has been unlinked.
-
+deactivate App
 
 @enduml
