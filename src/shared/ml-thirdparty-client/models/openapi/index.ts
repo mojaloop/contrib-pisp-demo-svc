@@ -23,4 +23,6 @@
  --------------
  ******/
 
+export * from './authorizations'
 export * from './parties'
+export * from './transactions'

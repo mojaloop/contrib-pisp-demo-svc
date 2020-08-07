@@ -25,9 +25,29 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
 
-export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
+import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+
+import { transactionRepository } from '~/repositories/transaction'
+import { Status } from '~/models/transaction'
+
+export const post: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  let body = context.request.body as AuthorizationsPostRequest
+
+  transactionRepository.update(
+    {
+      transactionRequestId: body.transactionRequestId,
+      status: Status.PENDING_PAYEE_CONFIRMATION,
+    },
+    {
+      authentication: {
+        type: body.authenticationType,
+      },
+      transactionId: body.transactionId,
+      quote: body.quote,
+      status: Status.AUTHORIZATION_REQUIRED,
+    }
+  )
+
   return h.response().code(202)
 }

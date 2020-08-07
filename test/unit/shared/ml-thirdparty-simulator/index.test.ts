@@ -28,8 +28,11 @@ import { Server } from '@hapi/hapi'
 import config from '~/lib/config'
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
+import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
 
 jest.useFakeTimers()
 
@@ -41,12 +44,33 @@ const partyLookupParams = {
   id: '+1-111-111-1111'
 }
 
+/**
+ * Mock data for transaction request.
+ */
+const transactionRequestData = {
+  transactionRequestId: '222',
+  sourceAccountId: '123',
+  consentId: '333',
+  amountType: AmountType.RECEIVE,
+  amount: {
+    amount: '20',
+    currency: Currency.USD,
+  },
+  transactionType: {
+    scenario: 'TRANSFER',
+    initiator: 'PAYER',
+    initiatorType: 'CONSUMER',
+  },
+  expiration: '12345'
+}
+
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
 
 // Mock the factories to consistently return the hardcoded values.
 jest.mock('~/shared/ml-thirdparty-simulator/factories/participant')
 jest.mock('~/shared/ml-thirdparty-simulator/factories/party')
+jest.mock('~/shared/ml-thirdparty-simulator/factories/authorization')
 
 describe('Mojaloop third-party simulator', () => {
   let simulator: Simulator
@@ -81,6 +105,35 @@ describe('Mojaloop third-party simulator', () => {
     expect(server.inject).toBeCalledTimes(1)
     expect(server.inject).toBeCalledWith({
       method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: 'mojaloop.' + config.get('hostname'),
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  })
+
+  it('Should inject server with the authorization prompt', async () => {
+    const targetUrl = '/authorizations'
+    const payerInfo = PartyFactory.createPutPartiesRequest(PartyIdType.MSISDN, '+1-222-222-2222')
+    const payeeInfo = PartyFactory.createPutPartiesRequest(PartyIdType.MSISDN, '+1-111-111-1111')
+    const request: ThirdPartyTransactionRequest = {
+      payer: payerInfo.party,
+      payee: payeeInfo.party,
+      ...transactionRequestData,
+    }
+
+    // this is a workaround to handle the delay before injecting response to the server
+    Promise.resolve().then(() => jest.advanceTimersByTime(100))
+    await simulator.postTransactions(request)
+
+    const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
+
+    expect(server.inject).toBeCalledTimes(1)
+    expect(server.inject).toBeCalledWith({
+      method: 'POST',
       url: targetUrl,
       headers: {
         host: 'mojaloop.' + config.get('hostname'),

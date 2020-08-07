@@ -103,13 +103,13 @@ components:
       type: object
       properties:
         amount:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Amount.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         authenticationType:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AuthenticationType.yaml'
         quote:
           $ref: '#/components/schemas/Quote'
         retriesLeft:
-          type: integer
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Integer.yaml'
         transactionRequestId:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'
         transactionId:

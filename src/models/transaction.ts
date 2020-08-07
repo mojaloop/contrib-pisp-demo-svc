@@ -23,7 +23,12 @@
  --------------
  ******/
 
-import { Party } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  AuthenticationType,
+  Party,
+  Money,
+  Quote,
+} from '~/shared/ml-thirdparty-client/models/core'
 
 export enum Status {
   /**
@@ -66,9 +71,55 @@ export interface Transaction {
   payee?: Party
 
   /**
+   * Information about the payer in the proposed financial transaction.
+   */
+  payer?: Party
+
+  /**
+   * DFSP specific account identifier to identify the source account used by
+   * the payer for the proposed financial transaction.
+   */
+  sourceAccountId?: string
+
+  /**
+   * Common ID between the PISP and FSP for the Consent object. This tells
+   * DFSP and auth-service which constent allows the PISP to initiate transaction.
+   */
+  consentId?: string
+
+  /**
+   * Requested amount to be transferred from the Payer to Payee.
+   */
+  amount?: Money
+
+  /**
+   * The authentication info that may be entered by the payer to authorize a
+   * proposed financial transaction.
+   */
+  authentication?: {
+    /**
+     * The type of authentication that is required to authorize the proposed
+     * financial transaction.
+     */
+    type?: AuthenticationType
+  }
+
+  /**
    * Common ID (decided by the PISP) to identify a transaction request.
    */
   transactionRequestId?: string
+
+  /**
+   * Common ID (decided by the Payer FSP) between the FSPs for the future transaction
+   * object. The actual transaction will be created as part of a successful transfer
+   * process.
+   */
+  transactionId?: string
+
+  /**
+   * A quote object that contains more detailed information about the transaction.
+   */
+  quote?: Quote
 
   /**
    * Status of the proposed financial transaction.

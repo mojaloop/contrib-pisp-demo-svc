@@ -23,37 +23,41 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-/**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return (
-    transaction.payee != null &&
-    transaction.payee.partyIdInfo != null &&
-    transaction.payee.partyIdInfo.partyIdType != null &&
-    transaction.payee.partyIdInfo.partyIdentifier != null
-  )
+import firebase from '~/lib/firebase'
+import { Consent } from '~/models/consent'
+import { logger } from '~/shared/logger'
+
+export interface IConsentRepository {
+  /**
+   * Retrieves a consent document based on its consent ID.
+   *
+   * @param id    Consent ID of the document that needs to be retrieved.
+   */
+  getByConsentId(id: string): Promise<Consent>
 }
 
-/**
- * Checks whether a transaction document has all the necessary fields to be
- * processed as a transaction request.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  return (
-    transaction.transactionRequestId != null &&
-    transaction.consentId != null &&
-    transaction.sourceAccountId != null &&
-    transaction.amount != null &&
-    transaction.payee != null
-  )
+export class FirebaseConsentRepository implements IConsentRepository {
+  async getByConsentId(id: string): Promise<Consent> {
+    return new Promise((resolve, reject) => {
+      firebase
+        .firestore()
+        .collection('consents')
+        .where('consentId', '==', id)
+        .get()
+        .then((response) => {
+          if (response.empty) {
+            return reject(new Error('Consent not found'))
+          } else {
+            return resolve(response.docs[0].data() as Consent)
+          }
+        })
+        .catch((err) => {
+          logger.error(err)
+        })
+    })
+  }
 }
+
+export const consentRepository: IConsentRepository = new FirebaseConsentRepository()

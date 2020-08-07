@@ -26,9 +26,11 @@
 import { Server } from '@hapi/hapi'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
+import { AuthorizationFactory } from './factories/authorization'
 
 namespace Simulator {
   /**
@@ -97,6 +99,34 @@ export class Simulator {
     // from Mojaloop.
     this.server.inject({
       method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.opts.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Simulates a transaction initiation in Mojaloop by third-party application,
+   * without the need of sending `POST /thirdpartyRequests/transactions` request.
+   * 
+   * @param request a transaction request object as defined by the Mojaloop API.
+   */
+  public async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+    const targetUrl = '/authorizations'
+    const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
+
+    if (this.opts.delay) {
+      // Delay operations to simulate network latency in real communication
+      // with Mojaloop.
+      await this.delay(this.opts.delay)
+    }
+
+    this.server.inject({
+      method: 'POST',
       url: targetUrl,
       headers: {
         host: this.opts.host ?? '',

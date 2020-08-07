@@ -23,37 +23,43 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
+import { AuthenticationType, Money, Quote } from '../core'
 
-/**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return (
-    transaction.payee != null &&
-    transaction.payee.partyIdInfo != null &&
-    transaction.payee.partyIdInfo.partyIdType != null &&
-    transaction.payee.partyIdInfo.partyIdentifier != null
-  )
-}
+export interface AuthorizationsPostRequest {
+  /**
+   * This value is a valid authentication type from the enumeration 
+   * AuthenticationType (OTP or QR Code or U2F).
+   */
+  authenticationType: AuthenticationType
 
-/**
- * Checks whether a transaction document has all the necessary fields to be
- * processed as a transaction request.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  return (
-    transaction.transactionRequestId != null &&
-    transaction.consentId != null &&
-    transaction.sourceAccountId != null &&
-    transaction.amount != null &&
-    transaction.payee != null
-  )
+  /**
+   * RetriesLeft is the number of retries left before the financial transaction 
+   * is rejected. It must be expressed in the form of the data type Integer. 
+   * retriesLeft=1 means that this is the last retry before the financial 
+   * transaction is rejected.
+   */
+  retriesLeft: string
+
+  /**
+   * This is the transaction amount that will be withdrawn from the Payer’s account.
+   */
+  amount: Money
+
+  /**
+   * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 
+   * object. The actual transaction will be created as part of a successful transfer 
+   * process.
+   */
+  transactionId: string
+
+  /**
+   * The transactionRequestID, received from the POST /transactionRequests service 
+   * earlier in the process.
+   */
+  transactionRequestId: string
+
+  /**
+   * A quote object that contains more detailed information about the transaction.
+   */
+  quote: Quote
 }

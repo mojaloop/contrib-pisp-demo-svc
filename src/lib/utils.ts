@@ -23,37 +23,7 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
-
-/**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return (
-    transaction.payee != null &&
-    transaction.payee.partyIdInfo != null &&
-    transaction.payee.partyIdInfo.partyIdType != null &&
-    transaction.payee.partyIdInfo.partyIdentifier != null
-  )
-}
-
-/**
- * Checks whether a transaction document has all the necessary fields to be
- * processed as a transaction request.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
- */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  return (
-    transaction.transactionRequestId != null &&
-    transaction.consentId != null &&
-    transaction.sourceAccountId != null &&
-    transaction.amount != null &&
-    transaction.payee != null
-  )
+export function getTomorrowsDate(): Date {
+  const currentDate = new Date()
+  return new Date(currentDate.getDate() + 1)
 }

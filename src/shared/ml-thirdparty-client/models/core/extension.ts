@@ -23,37 +23,28 @@
  --------------
  ******/
 
-import { Transaction } from '~/models/transaction'
-
 /**
- * Checks whether a transaction document has all the necessary fields to perform
- * a party lookup.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
+ * Data model for the complex type ExtensionList. 
+ * An optional list of extensions, specific to deployment.
  */
-export const isValidPartyLookup = (transaction: Transaction): boolean => {
-  return (
-    transaction.payee != null &&
-    transaction.payee.partyIdInfo != null &&
-    transaction.payee.partyIdInfo.partyIdType != null &&
-    transaction.payee.partyIdInfo.partyIdentifier != null
-  )
+export interface ExtensionList {
+  /**
+   * Extension elements.
+   */
+  extension: [Extension]
 }
 
 /**
- * Checks whether a transaction document has all the necessary fields to be
- * processed as a transaction request.
- *
- * @param transaction the object representation of a transaction that is stored
- *                    on Firebase.
+ * Data model for the complex type Extension.
  */
-export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
-  return (
-    transaction.transactionRequestId != null &&
-    transaction.consentId != null &&
-    transaction.sourceAccountId != null &&
-    transaction.amount != null &&
-    transaction.payee != null
-  )
+export interface Extension {
+  /**
+   * Extension key.
+   */
+  key: string
+
+  /**
+   * Extension value.
+   */
+  value: string
 }
