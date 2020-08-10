@@ -52,7 +52,7 @@ rnote left of Firebase #Light
   "")""
 end rnote
 
-Firebase -> App: Notify revoking of consent document
+Firebase -> App: Notify update on consent document
 Firebase <-- App ++: ""200 OK""
 deactivate Firebase
 
