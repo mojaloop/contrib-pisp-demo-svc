@@ -40,7 +40,7 @@ rnote left of Server #Light
   ""  })""
 end rnote
 
-Server -> Firebase: The account has been unlinked.
+Server -> Firebase ++: Update consent document
 Server <-- Firebase: ""200 OK""
 deactivate Server
 
