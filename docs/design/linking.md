@@ -65,7 +65,3 @@
 ### 2.8. Sign Challenge
 
 ![Sign Challenge](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/linking-sequence-diagram/docs/assets/diagrams/linking/2-8-sign-challenge.puml)
-
-## 3. Unlinking
-
-![Unlinking](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/linking-sequence-diagram/docs/assets/diagrams/linking/3-unlinking.puml)
