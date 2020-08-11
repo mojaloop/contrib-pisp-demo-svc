@@ -64,7 +64,7 @@ const transactionRequestData = {
   transactionType: {
     scenario: 'TRANSFER',
     initiator: 'PAYER',
-    intiiatorType: 'CONSUMER',
+    initiatorType: 'CONSUMER',
   },
   expiration: '12345'
 }

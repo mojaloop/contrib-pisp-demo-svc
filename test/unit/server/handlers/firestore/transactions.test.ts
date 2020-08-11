@@ -184,7 +184,7 @@ describe('Handlers for transaction documents in Firebase', () => {
       transactionType: {
         scenario: 'TRANSFER',
         initiator: 'PAYER',
-        intiiatorType: 'CONSUMER',
+        initiatorType: 'CONSUMER',
       },
       expiration: utils.getTomorrowsDate().toISOString(),
     }

@@ -98,7 +98,7 @@ async function handlePartyConfirmation(
         transactionType: {
           scenario: 'TRANSFER',
           initiator: 'PAYER',
-          intiiatorType: 'CONSUMER',
+          initiatorType: 'CONSUMER',
         },
         expiration: utils.getTomorrowsDate().toISOString(),
       })

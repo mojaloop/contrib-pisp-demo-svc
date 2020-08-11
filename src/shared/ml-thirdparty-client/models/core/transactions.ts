@@ -175,7 +175,7 @@ export interface TransactionType {
   /**
    * Consumer, agent, business, …
    */
-  intiiatorType: string
+  initiatorType: string
 
   /**
    * Extra information specific to a refund scenario. 
