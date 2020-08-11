@@ -32,7 +32,13 @@ import { transactionRepository } from '~/repositories/transaction'
 import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
-import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  AmountType,
+  AuthenticationType,
+  AuthenticationResponseType,
+  Currency,
+  PartyIdType,
+} from '~/shared/ml-thirdparty-client/models/core'
 import { Status, Transaction, ResponseType } from '~/models/transaction'
 import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { consentRepository } from '~/repositories/consent'
@@ -50,7 +56,7 @@ jest.mock('uuid', () => ({
 jest.mock('~/lib/utils', () => ({
   getTomorrowsDate: jest.fn().mockImplementation(() => {
     return new Date(100)
-  })
+  }),
 }))
 
 // Create stub data to perform transaction request
@@ -100,7 +106,7 @@ function createStubConsentData(): Consent {
           lastName: 'Beaver',
         },
       },
-    }
+    },
   }
 }
 
