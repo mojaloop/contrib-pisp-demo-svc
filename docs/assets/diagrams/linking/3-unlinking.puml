@@ -26,7 +26,14 @@ Server -> Adapter ++: ""**DELETE /consents/123**""
 Adapter <-- Server: ""202 Accepted""
 deactivate Server
 
-Adapter -> Server++: ""**PATCH /consents/123** \n{\n status: "REVOKED",\n revokedAt: "2011-10-05T14:48:00.000Z"\n}""
+rnote left of Adapter #Light
+  ""**PATCH /consents/123**""
+  ""{""
+  ""  status: "REVOKED",""
+  ""  revokedAt: "2011-10-05T14:48:00.000Z"""
+  ""}""
+end rnote
+Adapter -> Server++: ""**PATCH /consents/123**""
 Adapter <-- Server: ""200 OK""
 deactivate Adapter
 
