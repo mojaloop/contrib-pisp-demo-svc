@@ -14,7 +14,6 @@
   * [2.7. Grant Consent](#2-6-grant-consent)
   * [2.7. Request Challenge](#2-7-request-challenge)
   * [2.8. Sign Challenge](#2-8-sign-challenge)
-* [3. Unlinking](#3-unlinking)
 
 ## 1. Create Listener
 
