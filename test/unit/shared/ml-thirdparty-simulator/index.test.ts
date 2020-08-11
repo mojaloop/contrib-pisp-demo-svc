@@ -29,10 +29,17 @@ import * as faker from 'faker'
 import config from '~/lib/config'
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { PartyIdType, Currency, AmountType, AuthenticationType, AuthenticationResponseType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  PartyIdType,
+  Currency,
+  AmountType,
+  AuthenticationType,
+  AuthenticationResponseType,
+} from '~/shared/ml-thirdparty-client/models/core'
+
 import {
   ThirdPartyTransactionRequest,
-  AuthorizationsPutIdRequest
+  AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'

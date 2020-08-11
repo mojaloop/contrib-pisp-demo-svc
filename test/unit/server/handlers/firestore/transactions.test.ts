@@ -43,7 +43,7 @@ jest.mock('~/lib/firebase')
 
 // Mock uuid to consistently return the provided value.
 jest.mock('uuid', () => ({
-  v4: jest.fn().mockImplementation(() => '12345')
+  v4: jest.fn().mockImplementation(() => '12345'),
 }))
 
 // Mock utils to consistently return the provided value.
@@ -53,8 +53,8 @@ jest.mock('~/lib/utils', () => ({
   })
 }))
 
-// Define mock data to perform transaction request
-function mockTransactionRequestData(): Transaction {
+// Create stub data to perform transaction request
+function createStubTransactionRequestData(): Transaction {
   return {
     id: '111',
     transactionRequestId: '888',
@@ -82,8 +82,8 @@ function mockTransactionRequestData(): Transaction {
   }
 }
 
-// Define mock consent data related to the transaction
-function mockConsentData(): Consent {
+// Create stub consent data related to the transaction
+function createStubConsentData(): Consent {
   return {
     id: '123',
     consentId: '222',
@@ -97,7 +97,7 @@ function mockConsentData(): Consent {
       personalInfo: {
         complexName: {
           firstName: 'Bob',
-          lastName: 'Beaver'
+          lastName: 'Beaver',
         },
       },
     }
@@ -120,7 +120,10 @@ describe('Handlers for transaction documents in Firebase', () => {
   })
 
   it('Should set status and transactionRequestId for new transaction', () => {
-    const transactionRepositorySpy = jest.spyOn(transactionRepository, 'updateById')
+    const transactionRepositorySpy = jest.spyOn(
+      transactionRepository,
+      'updateById'
+    )
     const documentId = '111'
 
     transactionsHandler.onCreate(server, {
@@ -129,9 +132,9 @@ describe('Handlers for transaction documents in Firebase', () => {
       payee: {
         partyIdInfo: {
           partyIdType: PartyIdType.MSISDN,
-          partyIdentifier: "+1-111-111-1111",
-        }
-      }
+          partyIdentifier: '+1-111-111-1111',
+        },
+      },
     })
 
     expect(transactionRepositorySpy).toBeCalledWith(documentId, {
@@ -142,7 +145,9 @@ describe('Handlers for transaction documents in Firebase', () => {
 
   it('Should perform party lookup when all necessary fields are set', async () => {
     const documentId = '111'
-    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'getParties').mockImplementation()
+    const mojaloopClientSpy = jest
+      .spyOn(server.app.mojaloopClient, 'getParties')
+      .mockImplementation()
 
     await transactionsHandler.onUpdate(server, {
       id: documentId,
@@ -151,25 +156,31 @@ describe('Handlers for transaction documents in Firebase', () => {
         partyIdInfo: {
           partyIdType: PartyIdType.MSISDN,
           partyIdentifier: '+1-111-111-1111',
-        }
+        },
       },
       transactionRequestId: '12345',
       status: Status.PENDING_PARTY_LOOKUP,
     })
 
-    expect(mojaloopClientSpy).toBeCalledWith(PartyIdType.MSISDN, "+1-111-111-1111")
+    expect(mojaloopClientSpy).toBeCalledWith(
+      PartyIdType.MSISDN,
+      '+1-111-111-1111'
+    )
   })
 
   it('Should initiate transaction request when all necessary fields are set', async () => {
-    const mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'postTransactions').mockImplementation()
+    const mojaloopClientSpy = jest
+      .spyOn(server.app.mojaloopClient, 'postTransactions')
+      .mockImplementation()
 
     // Mock transaction data given by Firebase
-    const transactionRequestData = mockTransactionRequestData()
+    const transactionRequestData = createStubTransactionRequestData()
 
     // Mock consent data that would be retrieved from Firebase
-    const consentData = mockConsentData()
+    const consentData = createStubConsentData()
 
-    let consentRepositorySpy = jest.spyOn(consentRepository, 'getByConsentId')
+    const consentRepositorySpy = jest
+      .spyOn(consentRepository, 'getByConsentId')
       .mockImplementation(() => new Promise((resolve) => resolve(consentData)))
 
     // Mock the expected transaction request being sent.

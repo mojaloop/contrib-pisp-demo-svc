@@ -45,8 +45,8 @@ jest.mock('~/shared/ml-thirdparty-simulator/factories/authorization')
 // Mock logger to prevent handlers from logging incoming request
 jest.mock('~/shared/logger', () => ({
   logger: {
-    logRequest: jest.fn().mockImplementation()
-  }
+    logRequest: jest.fn().mockImplementation(),
+  },
 }))
 
 // Mock firebase to prevent transaction repository from opening the connection.
@@ -82,7 +82,7 @@ const transactionData = {
     initiator: 'PAYER',
     initiatorType: 'CONSUMER',
   },
-  expiration: '12345'
+  expiration: '12345',
 }
 
 describe('/authorizations', () => {
@@ -92,17 +92,25 @@ describe('/authorizations', () => {
   })
 
   describe('POST operation', () => {
-    const payerInfo = PartyFactory.createPutPartiesRequest(PartyIdType.MSISDN, '+1-222-222-2222')
-    const payeeInfo = PartyFactory.createPutPartiesRequest(PartyIdType.MSISDN, '+1-111-111-1111')
+    const payerInfo = PartyFactory.createPutPartiesRequest(
+      PartyIdType.MSISDN,
+      '+1-222-222-2222'
+    )
+    const payeeInfo = PartyFactory.createPutPartiesRequest(
+      PartyIdType.MSISDN,
+      '+1-111-111-1111'
+    )
     const transactionRequest: ThirdPartyTransactionRequest = {
       payer: payerInfo.party,
       payee: payeeInfo.party,
       ...transactionData,
     }
 
-    let requestBody = AuthorizationFactory.createPostAuthorizationsRequest(transactionRequest)
+    const requestBody = AuthorizationFactory.createPostAuthorizationsRequest(
+      transactionRequest
+    )
 
-    let context = {
+    const context = {
       request: {
         headers: {
           host: 'mojaloop.' + config.get('hostname'),
@@ -117,10 +125,16 @@ describe('/authorizations', () => {
       }
     } as unknown as Context
 
-    let transactionRepositorySpy = jest.spyOn(transactionRepository, 'update').mockImplementation()
+    const transactionRepositorySpy = jest
+      .spyOn(transactionRepository, 'update')
+      .mockImplementation()
 
     it('Should return 200 and update data in Firebase', async () => {
-      let response = await Authorizations.post(context, mockRequest, mockResponseToolkit)
+      const response = await Authorizations.post(
+        context,
+        mockRequest,
+        mockResponseToolkit
+      )
 
       expect(transactionRepositorySpy).toBeCalledWith(
         {

@@ -25,7 +25,7 @@
 
 import {
   AuthorizationsPutIdRequest,
-  TransferIDPutRequest
+  TransferIDPutRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi';
 
 import { TransferState } from '~/shared/ml-thirdparty-client/models/core';
