@@ -104,7 +104,7 @@ rnote left of Mojaloop #Light
   ""}""
 end rnote
 
-Mojaloop -> Server ++: ""**PUT /consents/{ID}**""
+Mojaloop -> Server ++: ""**PUT /consents/123**""
 
 Mojaloop <-- Server: ""200 OK""
 
