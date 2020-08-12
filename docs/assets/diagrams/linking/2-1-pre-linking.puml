@@ -42,28 +42,8 @@ loop Daily
   Mojaloop <-- Server: ""200 OK""
   deactivate Mojaloop
 
-  rnote left of Server #Light
-    ""db = firebase.firestore()""
-    ""batch = db.batch()""
-    ""docRef = db.collections("participants")""
-    """"
-    ""db.collection().get().then(querySnapshot => {""
-    ""  querySnapshot.forEach(doc => {""
-    ""    batch.delete(doc.ref)""
-    ""  })""
-    ""})""
-    """"
-    ""req.payload.participants.forEach(entry => {""
-    ""  batch.add(docRef,""
-    ""    { fspId: entry.fspId, name: entry.name }""
-    ""  )""
-    ""})""
-    """"
-    ""batch.commit()""
-  end rnote
-
-  Server -> Firebase: Update list of participants atomically
-  Server <-- Firebase: ""200 OK""
+  Server -> Firebase ++: Update list of participants atomically
+  return ""200 OK""
   deactivate Server
 end
 
