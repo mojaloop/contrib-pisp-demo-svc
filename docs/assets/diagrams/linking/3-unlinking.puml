@@ -22,26 +22,28 @@ App -> Server ++: ""**DELETE /consents/123**""
 App <-- Server: ""202 Accepted""
 deactivate App
 
-Server -> Adapter ++: ""**DELETE /consents/123**""
-Adapter <-- Server: ""202 Accepted""
+Server -> Mojaloop ++: ""**DELETE /consents/123**""
+Mojaloop <-- Server: ""202 Accepted""
 deactivate Server
 
-rnote left of Adapter #Light
-  ""**PATCH /consents/123**""
+rnote left of Mojaloop #Light
   ""{""
   ""  status: "REVOKED",""
   ""  revokedAt: "2011-10-05T14:48:00.000Z"""
   ""}""
 end rnote
-Adapter -> Server++: ""**PATCH /consents/123**""
-Adapter <-- Server: ""200 OK""
-deactivate Adapter
+Mojaloop -> Server++: ""**PATCH /consents/123**""
+Mojaloop <-- Server: ""200 OK""
+deactivate Mojaloop
 
 rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
-  ""  .update(<snapshot object>)""
+  ""  .update(""
+  ""    revokedTimestamp: "2011-10-05T14:48:00.000Z",""
+  ""    status: "REVOKED"""
+  ""  })""
 end rnote
 
 Server -> Firebase ++: Update consent document
@@ -52,7 +54,7 @@ rnote left of Firebase #Light
   ""event(""
   ""  "document.set",""
   ""  "consents/abc123"""
-  "" (<snapshot object>)""
+  "" <snapshot object>""
   "")""
 end rnote
 
@@ -60,7 +62,7 @@ Firebase -> App: Notify update on consent document
 Firebase <-- App ++: ""200 OK""
 deactivate Firebase
 
-App -> Alice: The bank acc has been unlinked.
+App -> Alice: The bank account has been unlinked.
 deactivate App
 
 @enduml
