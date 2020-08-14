@@ -10,9 +10,9 @@ introduce a complex process of synchronization between each pair of FSPs. Meanwh
 Figure 2, each participant could focus to ensure that it maintains a proper communication with 
 Mojaloop to be able to talk with other participants in the RTP network.
 
-![Figure 1](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-01-traditional-method.puml)
+![Figure 1](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/stevenwjy/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-01-traditional-method.puml)
 
-![Figure 2](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-02-mojaloop-rtp.puml)
+![Figure 2](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/stevenwjy/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-02-mojaloop-rtp.puml)
 
 As RTP system like Mojaloop grows in popularity, the use of third-party services who do not manage 
 its own ledger but exist for the purpose of initiating transactions has also come into attention.
@@ -21,7 +21,7 @@ APIs to communicate with each FSP but only a single API that follows Mojaloop's 
 shows how a PISP could simultaneously setup communication with multiple FSPs by integrating to the
 Mojaloop's RTP network.
 
-![Figure 3](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-03-pisp-mojaloop.puml)
+![Figure 3](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/stevenwjy/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-03-pisp-mojaloop.puml)
 
 In order to communicate with Mojaloop, below are the necessary setup required for a PISP:
 1. [Certificate Registration](#certificate-registration)
