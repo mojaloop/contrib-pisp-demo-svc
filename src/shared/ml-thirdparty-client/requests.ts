@@ -28,7 +28,7 @@
  --------------
  ******/
 
-import config from './config'
+import clientConfig from './config'
 import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
@@ -36,7 +36,7 @@ import Logger, {
 
 // Config file to instantiate ThirdPartyRequest object
 const configRequest = {
-  dfspId: config.PARTICIPANT_ID,
+  dfspId: clientConfig.get('REQUEST.PARTICIPANT_ID'),
   logger: Logger,
   // TODO: Fix TLS and jwsSigningKey
   jwsSign: false,
@@ -47,16 +47,20 @@ const configRequest = {
       },
     },
   },
-  peerEndpoint: config.PEER_ENDPOINT,
-  alsEndpoint: config.ALS_ENDPOINT,
-  thirdpartyRequestsEndpoint: config.THIRDPARTY_REQUEST_ENDPOINT,
-  transactionRequestsEndpoint: config.TRANSACTION_REQUEST_ENDPOINT,
+  peerEndpoint: clientConfig.get('REQUEST.PEER_ENDPOINT'),
+  alsEndpoint: clientConfig.get('REQUEST.ALS_ENDPOINT'),
+  thirdpartyRequestsEndpoint: clientConfig.get(
+    'REQUEST.THIRDPARTY_REQUEST_ENDPOINT'
+  ),
+  transactionRequestsEndpoint: clientConfig.get(
+    'REQUEST. TRANSACTION_REQUEST_ENDPOINT'
+  ),
 }
 
-export const thirdPartyRequest: ThirdpartyRequests = new ThirdpartyRequests(
+export const thirdpartyRequests: ThirdpartyRequests = new ThirdpartyRequests(
   configRequest
 )
 
-export const mojaloopRequest: MojaloopRequests = new MojaloopRequests(
+export const mojaloopRequests: MojaloopRequests = new MojaloopRequests(
   configRequest
 )

@@ -23,12 +23,64 @@
  --------------
  ******/
 
-const config = {
-  PARTICIPANT_ID: 'pisp',
-  ALS_ENDPOINT: 'account-lookup-service:4002',
-  THIRDPARTY_REQUEST_ENDPOINT: 'thirdparty-api-adapter:3008',
-  TRANSACTION_REQUEST_ENDPOINT: 'transaction-request-service:4003',
-  PEER_ENDPOINT: '172.17.0.2:3001',
+// namespace Client {
+/**
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
+ */
+
+import Convict from 'convict'
+
+export interface clientConfigModel {
+  MOJALOOP_URL: string
+  REQUEST: {
+    PARTICIPANT_ID: string
+    ALS_ENDPOINT: string
+    THIRDPARTY_REQUEST_ENDPOINT: string
+    TRANSACTION_REQUEST_ENDPOINT: string
+    PEER_ENDPOINT: string
+  }
 }
 
-export default config
+// Declare configuration schema, default values and
+// bindings to environment variables
+const clientConfig = Convict<clientConfigModel>({
+  MOJALOOP_URL: {
+    doc: 'Mojaloop URL for the client to communicate with',
+    format: '*',
+    default: '',
+  },
+  REQUEST: {
+    PARTICIPANT_ID: {
+      doc: 'The name of the service',
+      format: String,
+      default: 'pisp',
+    },
+    ALS_ENDPOINT: {
+      doc: 'ALS endpoint for Mojaloop requests',
+      format: String,
+      default: 'account-lookup-service:4002',
+    },
+    THIRDPARTY_REQUEST_ENDPOINT: {
+      doc: 'Third party request endpoint for Mojaloop requests',
+      format: String,
+      default: 'thirdparty-api-adapter:3008',
+    },
+    TRANSACTION_REQUEST_ENDPOINT: {
+      doc: 'Transaction request endpoint for Mojaloop requests',
+      format: String,
+      default: 'transaction-request-service:4003',
+    },
+    PEER_ENDPOINT: {
+      doc: 'Default Mojaloop endpoint',
+      format: String,
+      default: '172.17.0.2:3001',
+    },
+  },
+})
+
+// Default config properties for now
+// Load correct JSON config based on env: test/prod
+clientConfig.load({})
+
+export default clientConfig
