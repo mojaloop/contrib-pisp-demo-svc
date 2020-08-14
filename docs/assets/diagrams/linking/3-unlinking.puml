@@ -58,11 +58,11 @@ rnote left of Firebase #Light
   "")""
 end rnote
 
-Firebase -> App: Notify update on consent document
-Firebase <-- App ++: ""200 OK""
+Firebase -> App ++: Notify update on consent document
+Firebase <-- App: ""200 OK""
 deactivate Firebase
 
-App -> Alice: The bank account has been unlinked.
+App -> Alice: The bank account has been unlinked
 deactivate App
 
 @enduml
