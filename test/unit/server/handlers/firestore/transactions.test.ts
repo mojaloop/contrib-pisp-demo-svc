@@ -33,12 +33,14 @@ import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
 import {
-  PartyIdType,
-  Currency,
   AmountType,
+  AuthenticationType,
+  AuthenticationResponseType,
+  Currency,
+  PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
-import { Status, Transaction } from '~/models/transaction'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { Status, Transaction, ResponseType } from '~/models/transaction'
+import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { consentRepository } from '~/repositories/consent'
 import { Consent } from '~/models/consent'
 
@@ -208,5 +210,39 @@ describe('Handlers for transaction documents in Firebase', () => {
 
     expect(consentRepositorySpy).toBeCalled()
     expect(mojaloopClientSpy).toBeCalledWith(transactionRequest)
+  })
+
+  it('Should send authorization when all necessary fields are set', () => {
+    const documentId = '111'
+    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'putAuthorizations').mockImplementation()
+
+    // Mock transaction data given by Firebase
+    const transactionData: Transaction = {
+      id: documentId,
+      userId: 'bob123',
+      transactionRequestId: '111',
+      transactionId: '222',
+      authentication: {
+        type: AuthenticationType.U2F,
+        value: '12345'
+      },
+      responseType: ResponseType.AUTHORIZED,
+      status: Status.AUTHORIZATION_REQUIRED,
+    }
+
+    // Mock the expected authorization being sent.
+    const authorization: AuthorizationsPutIdRequest = {
+      authenticationInfo: {
+        authentication: AuthenticationType.U2F,
+        authenticationValue: '12345'
+      },
+      responseType: AuthenticationResponseType.ENTERED,
+    }
+
+    transactionsHandler.onUpdate(server, transactionData)
+
+    expect(mojaloopClientSpy).toBeCalledWith(
+      transactionData.transactionRequestId!, authorization, transactionData.transactionId
+    )
   })
 })

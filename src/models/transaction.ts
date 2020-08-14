@@ -25,8 +25,9 @@
 
 import {
   AuthenticationType,
-  Party,
+  AuthenticationValue,
   Money,
+  Party,
   Quote,
 } from '~/shared/ml-thirdparty-client/models/core'
 
@@ -51,6 +52,18 @@ export enum Status {
    * The transaction is successful.
    */
   SUCCESS = 'SUCCESS',
+}
+
+export enum ResponseType {
+  /**
+   * The user authorized the transaction.
+   */
+  AUTHORIZED = 'AUTHORIZED',
+
+  /**
+   * The user rejected the transaction.
+   */
+  REJECTED = 'REJECTED',
 }
 
 export interface Transaction {
@@ -102,7 +115,18 @@ export interface Transaction {
      * financial transaction.
      */
     type?: AuthenticationType
+
+    /**
+     * The value of authentication that is provided by payer to authorize the
+     * proposed financial transaction.
+     */
+    value?: AuthenticationValue
   }
+
+  /**
+   * Payer's response after being prompted to authorize a proposed financial transaction.
+   */
+  responseType?: ResponseType
 
   /**
    * Common ID (decided by the PISP) to identify a transaction request.

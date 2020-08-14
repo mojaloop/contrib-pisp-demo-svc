@@ -26,27 +26,23 @@
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Context } from 'openapi-backend'
 
-import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
+import { AuthenticationResponseType, AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
+import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 
-import * as Authorizations from '~/server/handlers/openapi/mojaloop/authorizations'
+import * as TransfersById from '~/server/handlers/openapi/mojaloop/transfers/{ID}'
 import { transactionRepository } from '~/repositories/transaction'
 import { Status } from '~/models/transaction'
 import config from '~/lib/config'
 
-import { AmountType, Currency, PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
-
 // Mock the factories to consistently return the hardcoded values.
-jest.mock('~/shared/ml-thirdparty-simulator/factories/participant')
-jest.mock('~/shared/ml-thirdparty-simulator/factories/party')
-jest.mock('~/shared/ml-thirdparty-simulator/factories/authorization')
+jest.mock('~/shared/ml-thirdparty-simulator/factories/transfer')
 
 // Mock logger to prevent handlers from logging incoming request
 jest.mock('~/shared/logger', () => ({
   logger: {
-    logRequest: jest.fn().mockImplementation(),
-  },
+    logRequest: jest.fn().mockImplementation()
+  }
 }))
 
 // Mock firebase to prevent transaction repository from opening the connection.
@@ -64,53 +60,24 @@ const mockResponseToolkit = {
   }
 } as unknown as ResponseToolkit
 
-/**
- * Mock data for transaction request.
- */
-const transactionData = {
-  transactionId: '111',
-  transactionRequestId: '222',
-  sourceAccountId: '123',
-  consentId: '333',
-  amountType: AmountType.RECEIVE,
-  amount: {
-    amount: '20',
-    currency: Currency.USD,
-  },
-  transactionType: {
-    scenario: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-  },
-  expiration: '12345',
-}
-
-describe('/authorizations', () => {
+describe('/transfers/{ID}', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
 
-  describe('POST operation', () => {
-    const payerInfo = PartyFactory.createPutPartiesRequest(
-      PartyIdType.MSISDN,
-      '+1-222-222-2222'
-    )
-    const payeeInfo = PartyFactory.createPutPartiesRequest(
-      PartyIdType.MSISDN,
-      '+1-111-111-1111'
-    )
-    const transactionRequest: ThirdPartyTransactionRequest = {
-      payer: payerInfo.party,
-      payee: payeeInfo.party,
-      ...transactionData,
+  describe('PUT operation', () => {
+    const authorization: AuthorizationsPutIdRequest = {
+      authenticationInfo: {
+        authentication: AuthenticationType.U2F,
+        authenticationValue: '12345',
+      },
+      responseType: AuthenticationResponseType.ENTERED
     }
 
-    const requestBody = AuthorizationFactory.createPostAuthorizationsRequest(
-      transactionRequest
-    )
+    let requestBody = TransferFactory.createTransferIdPutRequest('111', authorization, '222')
 
-    const context = {
+    let context = {
       request: {
         headers: {
           host: 'mojaloop.' + config.get('hostname'),
@@ -118,40 +85,29 @@ describe('/authorizations', () => {
           'content-length': JSON.stringify(requestBody).length,
         },
         params: {
-          Type: PartyIdType.MSISDN,
-          ID: '+1-111-111-1111',
+          ID: '222',
         },
         body: requestBody,
       }
     } as unknown as Context
 
-    const transactionRepositorySpy = jest
-      .spyOn(transactionRepository, 'update')
-      .mockImplementation()
+    let transactionRepositorySpy = jest.spyOn(transactionRepository, 'update').mockImplementation()
 
     it('Should return 200 and update data in Firebase', async () => {
-      const response = await Authorizations.post(
-        context,
-        mockRequest,
-        mockResponseToolkit
-      )
+      let response = await TransfersById.put(context, mockRequest, mockResponseToolkit)
 
       expect(transactionRepositorySpy).toBeCalledWith(
         {
-          transactionRequestId: requestBody.transactionRequestId,
-          status: Status.PENDING_PAYEE_CONFIRMATION,
+          transactionId: requestBody.transactionId,
+          status: Status.AUTHORIZATION_REQUIRED,
         },
         {
-          authentication: {
-            type: requestBody.authenticationType,
-          },
-          transactionId: requestBody.transactionId,
-          quote: requestBody.quote,
-          status: Status.AUTHORIZATION_REQUIRED,
+          completedTimestamp: requestBody.completedTimestamp,
+          status: Status.SUCCESS,
         }
       )
 
-      expect(response).toBe(202)
+      expect(response).toBe(200)
     })
   })
 })

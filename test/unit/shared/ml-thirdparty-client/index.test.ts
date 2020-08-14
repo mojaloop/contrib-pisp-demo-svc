@@ -30,8 +30,18 @@ import config from '~/lib/config'
 import { Client } from '~/shared/ml-thirdparty-client'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
-import { PartyIdType, Currency, AmountType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import {
+  AmountType,
+  AuthenticationResponseType,
+  AuthenticationType,
+  Currency,
+  PartyIdType,
+} from '~/shared/ml-thirdparty-client/models/core'
+
+import {
+  AuthorizationsPutIdRequest,
+  ThirdPartyTransactionRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
 
 const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionRequestId: '888',
@@ -72,6 +82,14 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
   expiration: (new Date(100)).toISOString(),
 }
 
+const authorizationData: AuthorizationsPutIdRequest = {
+  authenticationInfo: {
+    authentication: AuthenticationType.U2F,
+    authenticationValue: 'key12345',
+  },
+  responseType: AuthenticationResponseType.ENTERED,
+}
+
 describe('Mojaloop third-party client', () => {
   let client: Client
   let simulator: Simulator
@@ -105,5 +123,14 @@ describe('Mojaloop third-party client', () => {
     client.postTransactions(transactionRequestData)
 
     expect(simulatorSpy).toBeCalledWith(transactionRequestData)
+  })
+
+  it('Should use simulator to perform authorization when it is provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest.spyOn(simulator, 'putAuthorizations').mockImplementation()
+
+    client.putAuthorizations('111', authorizationData, '222')
+
+    expect(simulatorSpy).toBeCalledWith('111', authorizationData, '222')
   })
 })

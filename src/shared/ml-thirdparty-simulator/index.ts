@@ -24,13 +24,18 @@
  ******/
 
 import { Server } from '@hapi/hapi'
+import * as faker from 'faker'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import {
+  ThirdPartyTransactionRequest,
+  AuthorizationsPutIdRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
+import { TransferFactory } from './factories/transfer'
 
 namespace Simulator {
   /**
@@ -127,6 +132,23 @@ export class Simulator {
 
     this.server.inject({
       method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.opts.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  public async putAuthorizations(id: string,
+    request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
+    const targetUrl = '/transfers/' + faker.random.uuid()
+    const payload = TransferFactory.createTransferIdPutRequest(id, request, transactionId)
+
+    this.server.inject({
+      method: 'PUT',
       url: targetUrl,
       headers: {
         host: this.opts.host ?? '',

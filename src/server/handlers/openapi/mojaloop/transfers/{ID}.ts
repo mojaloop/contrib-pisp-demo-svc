@@ -23,7 +23,27 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './parties'
-export * from './transactions'
-export * from './transfers'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
+
+import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+
+import { Status } from '~/models/transaction'
+import { transactionRepository } from '~/repositories/transaction'
+
+export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  let body = context.request.body as TransferIDPutRequest
+
+  transactionRepository.update(
+    {
+      transactionId: body.transactionId,
+      status: Status.AUTHORIZATION_REQUIRED,
+    },
+    {
+      completedTimestamp: body.completedTimestamp,
+      status: Status.SUCCESS,
+    }
+  )
+
+  return h.response().code(200)
+}

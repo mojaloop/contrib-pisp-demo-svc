@@ -28,10 +28,13 @@ import { Server } from '@hapi/hapi'
 
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
-import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  AmountType,
+  AuthenticationResponseType,
+} from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
-import { Transaction, Status } from '~/models/transaction'
+import { Transaction, Status, ResponseType } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
@@ -107,6 +110,44 @@ async function handlePartyConfirmation(
   }
 }
 
+function toMojaloopResponseType(
+  type: ResponseType
+): AuthenticationResponseType {
+  switch (type) {
+    case ResponseType.AUTHORIZED:
+      return AuthenticationResponseType.ENTERED
+    case ResponseType.REJECTED:
+      return AuthenticationResponseType.REJECTED
+  }
+}
+
+async function handleAuthorization(server: Server, transaction: Transaction) {
+  if (validator.isValidAuthorization(transaction)) {
+    // If the update contains all the necessary fields, process document
+    // to the next step by sending an authorization to Mojaloop.
+
+    // Convert to a response type that is understood by Mojaloop.
+    const mojaloopResponseType = toMojaloopResponseType(
+      transaction.responseType!
+    )
+
+    // The optional values are guaranteed to exist by the validator.
+    // eslint-disable @typescript-eslint/no-non-null-assertion
+    server.app.mojaloopClient.putAuthorizations(
+      transaction.transactionRequestId!,
+      {
+        responseType: mojaloopResponseType,
+        authenticationInfo: {
+          authentication: transaction.authentication!.type!,
+          authenticationValue: transaction.authentication!.value!,
+        },
+      },
+      transaction.transactionId
+    )
+    // eslint-enable @typescript-eslint/no-non-null-assertion
+  }
+}
+
 export const onCreate: TransactionHandler = async (
   server: Server,
   transaction: Transaction
@@ -140,6 +181,10 @@ export const onUpdate: TransactionHandler = async (
 
     case Status.PENDING_PAYEE_CONFIRMATION:
       await handlePartyConfirmation(server, transaction)
+      break
+
+    case Status.AUTHORIZATION_REQUIRED:
+      await handleAuthorization(server, transaction)
       break
   }
 }

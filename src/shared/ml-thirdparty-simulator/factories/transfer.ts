@@ -23,7 +23,31 @@
  --------------
  ******/
 
-export * from './authorizations'
-export * from './parties'
-export * from './transactions'
-export * from './transfers'
+import * as faker from 'faker'
+
+import {
+  AuthorizationsPutIdRequest,
+  TransferIDPutRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi';
+
+import { TransferState } from '~/shared/ml-thirdparty-client/models/core';
+
+export class TransferFactory {
+  /**
+   * Creates a `PUT /transfers/{ID}` request body that is normally sent
+   * by Mojaloop as a callback to inform about the transfer result.
+   * 
+   * @param _               transaction request id of the corresponsing authorization.
+   * @param __              an authorization object as defined by the Mojaloop API.
+   * @param transactionId   transaction id to be associated with the transfer object.
+   */
+  public static createTransferIdPutRequest(_: string,
+    __: AuthorizationsPutIdRequest, transactionId: string): TransferIDPutRequest {
+    return {
+      transactionId,
+      fulfilment: faker.random.alphaNumeric(43),
+      completedTimestamp: faker.date.recent().toISOString(),
+      transferState: TransferState.COMMITTED,
+    }
+  }
+}
