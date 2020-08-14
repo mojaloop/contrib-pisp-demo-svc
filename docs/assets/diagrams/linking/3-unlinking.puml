@@ -52,7 +52,7 @@ deactivate Server
 
 rnote left of Firebase #Light
   ""event(""
-  ""  "document.set",""
+  ""  "document.update",""
   ""  "consents/abc123"""
   "" <snapshot object>""
   "")""
