@@ -40,7 +40,7 @@ rnote left of Server #Light
   ""firebase.firestore()""
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
-  ""  .update(""
+  ""  .update({""
   ""    revokedTimestamp: "2011-10-05T14:48:00.000Z",""
   ""    status: "REVOKED"""
   ""  })""
