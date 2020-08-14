@@ -54,7 +54,7 @@ rnote left of Firebase #Light
   ""event(""
   ""  "document.update",""
   ""  "consents/abc123"""
-  "" <snapshot object>""
+  ""  <snapshot object>""
   "")""
 end rnote
 
