@@ -1,0 +1,68 @@
+@startuml Unlinking
+
+title: Unlinking
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+'start flow
+Alice -> App++: I want to unlink this bank account
+
+App -> Server ++: ""**DELETE /consents/123**""
+App <-- Server: ""202 Accepted""
+deactivate App
+
+Server -> Mojaloop ++: ""**POST /consents/123/revoke**""
+Mojaloop <-- Server: ""202 Accepted""
+deactivate Server
+
+rnote left of Mojaloop #Light
+  ""{""
+  ""  status: "REVOKED",""
+  ""  revokedAt: "2011-10-05T14:48:00.000Z"""
+  ""}""
+end rnote
+Mojaloop -> Server++: ""**PATCH /consents/123**""
+Mojaloop <-- Server: ""200 OK""
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentId", "==", "123")""
+  ""  .update({""
+  ""    revokedTimestamp: "2011-10-05T14:48:00.000Z",""
+  ""    status: "REVOKED"""
+  ""  })""
+end rnote
+
+Server -> Firebase ++: Update consent document
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123"""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> App ++: Notify update on consent document
+Firebase <-- App: ""200 OK""
+deactivate Firebase
+
+App -> Alice: The bank account has been unlinked
+deactivate App
+
+@enduml
