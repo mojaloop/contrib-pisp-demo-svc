@@ -22,7 +22,7 @@ App -> Server ++: ""**DELETE /consents/123**""
 App <-- Server: ""202 Accepted""
 deactivate App
 
-Server -> Mojaloop ++: ""**DELETE /consents/123**""
+Server -> Mojaloop ++: ""**POST /consents/123/revoke**""
 Mojaloop <-- Server: ""202 Accepted""
 deactivate Server
 
