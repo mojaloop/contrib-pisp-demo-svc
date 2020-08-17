@@ -41,32 +41,32 @@ import Logger, {
  * when it wants to perform a certain operation.
  */
 
-namespace Client {
-  /**
-   * An interface definition for the configuration needed to setup the
-   * Mojaloop client.
-   */
-  export interface Config {
-    mojaloopUrl: string
-    participantId: string
-    alsEndpoint: string
-    thirdpartyRequestsEndpoint: string
-    transactionRequestsEndpoint: string
-    peerEndpoint: string
-  }
+// namespace Client {
+/**
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
+ */
+export interface ClientConfig {
+  mojaloopUrl: string
+  participantId: string
+  alsEndpoint: string
+  thirdpartyRequestsEndpoint: string
+  transactionRequestsEndpoint: string
+  peerEndpoint: string
 }
+// }
 
 export class Client {
-  config: Client.Config
+  config: ClientConfig
   simulator?: Simulator
   thirdparty: ThirdpartyRequests
   mojaloop: MojaloopRequests
 
-  public constructor(config: Client.Config) {
+  public constructor(config: ClientConfig) {
     this.config = config
 
     const configRequest = {
-      dfspId: config.participantId,
+      dfspId: this.config.participantId,
       logger: Logger,
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
@@ -77,10 +77,10 @@ export class Client {
           },
         },
       },
-      peerEndpoint: config.peerEndpoint,
-      alsEndpoint: config.alsEndpoint,
-      thirdpartyRequestsEndpoint: config.thirdpartyRequestsEndpoint,
-      transactionRequestsEndpoint: config.transactionRequestsEndpoint,
+      peerEndpoint: this.config.peerEndpoint,
+      alsEndpoint: this.config.alsEndpoint,
+      thirdpartyRequestsEndpoint: this.config.thirdpartyRequestsEndpoint,
+      transactionRequestsEndpoint: this.config.transactionRequestsEndpoint,
     }
 
     this.thirdparty = new ThirdpartyRequests(configRequest)
