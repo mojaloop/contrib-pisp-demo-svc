@@ -23,9 +23,9 @@ Mojaloop's RTP network.
 
 ![Figure 3](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/stevenwjy/pisp-demo-server/mojaloop-integration-docs/docs/assets/diagrams/mojaloop/fig-03-pisp-mojaloop.puml)
 
-In order to communicate with Mojaloop, below are the necessary setup required for a PISP:
+In order to join a Mojaloop network, a PISP must complete the following steps:
 1. [Certificate Registration](#certificate-registration)
-2. [URLs Registration](#url-registration)
+2. [URL Registration](#url-registration)
 
 In general, all of the signing, encryption, and other setup required to make requests to Mojaloop 
 are expected to be handled by the [`sdk-standard-components`](https://github.com/mojaloop/sdk-standard-components)
@@ -47,7 +47,7 @@ integrity and confidentiality between platforms. More information could be found
 PISP has to register its certificate manually, by telling the operator of Mojaloop the PISP's public
 key and have it digitally signed by the centrallized CA.
 
-## URLs Registration
+## URL Registration
 
 As Mojaloop's architecture follows the asynchronous request/response design pattern, PISP demo server 
 also interacts with Mojaloop using that pattern to avoid long-running connections. When making a 
