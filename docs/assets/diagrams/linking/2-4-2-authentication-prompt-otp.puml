@@ -34,7 +34,7 @@ rnote left of Mojaloop #Light
 end rnote
 
 Mojaloop -> Server ++:  ""**PUT /consentRequests/111**""
-Mojaloop <-- Server: ""**HTTP 200** (OK)""
+Mojaloop <-- Server: ""200 OK""
 deactivate Mojaloop
 
 rnote left of Server #Light
@@ -44,7 +44,7 @@ rnote left of Server #Light
   ""  .update({""
   ""    authChannels: ["OTP"],""
   ""    authUri: null,""
-  ""    status: "AUTH_REQUIRED"""
+  ""    status: "AUTHENTICATION_REQUIRED"""
   ""  })""
 end rnote
 

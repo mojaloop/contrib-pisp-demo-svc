@@ -100,7 +100,7 @@ rnote left of Mojaloop #Light
   ""    },""
   ""    "payload": base64(...)""
   ""  },""
-  ""  status: "SUCCESS" // TBC""
+  ""  status: "ACTIVE"""
   ""}""
 end rnote
 
@@ -113,7 +113,7 @@ rnote left of Server #Light
   ""  .collection("consents")""
   ""  .where("consentId", "==", "123")""
   ""  .update({""
-  ""    status: "CREDENTIAL_REGISTERED"""
+  ""    status: "ACTIVE"""
   ""  })""
 end rnote
 

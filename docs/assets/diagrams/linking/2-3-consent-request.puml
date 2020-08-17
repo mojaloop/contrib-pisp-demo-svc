@@ -26,6 +26,8 @@ rnote right of App #Light
   ""  .doc("abc123")""
   ""  .update({""
   ""    authChannels: ["Web", "OTP"],""
+  ""    // the user may not want to link all of the""
+  ""    // accounts received from the party lookup""
   ""    accounts: [""
   ""      { "id": "aaa.bob.fspb", "currency": "USD" },""
   ""      { "id": "bbb.bob.fspb", "currency": "SGD" }""
