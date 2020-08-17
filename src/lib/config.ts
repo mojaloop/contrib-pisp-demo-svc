@@ -108,6 +108,33 @@ const config = convict({
       env: 'MOJALOOP_URL',
     },
   },
+  request: {
+    participantId: {
+      doc: 'The name of the service',
+      format: String,
+      default: 'pisp',
+    },
+    alsEndpoint: {
+      doc: 'ALS endpoint for Mojaloop requests',
+      format: String,
+      default: 'account-lookup-service:4002',
+    },
+    thirdpartyRequestsEndpoint: {
+      doc: 'Third party request endpoint for Mojaloop requests',
+      format: String,
+      default: 'thirdparty-api-adapter:3008',
+    },
+    transactionRequestsEndpoint: {
+      doc: 'Transaction request endpoint for Mojaloop requests',
+      format: String,
+      default: 'transaction-request-service:4003',
+    },
+    peerEndpoint: {
+      doc: 'Default Mojaloop endpoint',
+      format: String,
+      default: '172.17.0.2:3001',
+    },
+  },
 })
 
 config.load({

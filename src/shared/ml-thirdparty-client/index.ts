@@ -27,8 +27,7 @@
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
 import { ThirdPartyTransactionRequest } from './models/openapi'
-import { thirdpartyRequests, mojaloopRequests } from './requests'
-import {
+import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
@@ -41,21 +40,51 @@ import {
  * config upon initialization and relevant information in the function parameters
  * when it wants to perform a certain operation.
  */
+
+namespace Client {
+  /**
+   * An interface definition for the configuration needed to setup the
+   * Mojaloop client.
+   */
+  export interface Config {
+    mojaloopUrl: string
+    participantId: string
+    alsEndpoint: string
+    thirdpartyRequestsEndpoint: string
+    transactionRequestsEndpoint: string
+    peerEndpoint: string
+  }
+}
+
 export class Client {
-  // config: Client.Config
+  config: Client.Config
   simulator?: Simulator
   thirdparty: ThirdpartyRequests
   mojaloop: MojaloopRequests
 
-  public constructor() {
-    // if (config) {
-    //   this.config = { ...defaultConfig, ...config }
-    // } else {
-    //   this.config = defaultConfig
-    // }
+  public constructor(config: Client.Config) {
+    this.config = config
 
-    this.thirdparty = thirdpartyRequests
-    this.mojaloop = mojaloopRequests
+    const configRequest = {
+      dfspId: config.participantId,
+      logger: Logger,
+      // TODO: Fix TLS and jwsSigningKey
+      jwsSign: false,
+      tls: {
+        outbound: {
+          mutualTLS: {
+            enabled: false,
+          },
+        },
+      },
+      peerEndpoint: config.peerEndpoint,
+      alsEndpoint: config.alsEndpoint,
+      thirdpartyRequestsEndpoint: config.thirdpartyRequestsEndpoint,
+      transactionRequestsEndpoint: config.transactionRequestsEndpoint,
+    }
+
+    this.thirdparty = new ThirdpartyRequests(configRequest)
+    this.mojaloop = new MojaloopRequests(configRequest)
   }
 
   /**

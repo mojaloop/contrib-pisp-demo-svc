@@ -32,7 +32,11 @@ import config from '~/lib/config'
 
 // Import necessary files to setup openapi
 import { OpenApi, OpenApiOpts } from './internal/openapi'
-import { extHandlers, appApiHandlers, mojaloopApiHandlers } from '~/server/handlers/openapi'
+import {
+  extHandlers,
+  appApiHandlers,
+  mojaloopApiHandlers,
+} from '~/server/handlers/openapi'
 
 // Import necessary files to setup firestore
 import { Firestore, FirestoreOpts } from './internal/firestore'
@@ -42,7 +46,10 @@ import firestoreHandlers from '~/server/handlers/firestore'
 import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
 
 // Import necessary files to setup mojaloop simulator
-import { MojaloopSimulator, MojaloopSimulatorOpts } from './internal/mojaloopSimulator'
+import {
+  MojaloopSimulator,
+  MojaloopSimulatorOpts,
+} from './internal/mojaloopSimulator'
 
 // Config for openapi
 const openApiOpts: OpenApiOpts = {
@@ -56,20 +63,27 @@ const openApiOpts: OpenApiOpts = {
   handlers: {
     api: {
       app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers
+      mojaloop: mojaloopApiHandlers,
     },
     ext: extHandlers,
-  }
+  },
 }
 
 // Config for firestore
 const firestoreOpts: FirestoreOpts = {
-  handlers: firestoreHandlers
+  handlers: firestoreHandlers,
 }
 
 // Config for mojaloop client
 const mojaloopClientOpts: MojaloopClientOpts = {
   mojaloopUrl: config.get('mojaloop.url'),
+  participantId: config.get('request.participantId'),
+  alsEndpoint: config.get('request.alsEndpoint'),
+  thirdpartyRequestsEndpoint: config.get('request.thirdpartyRequestsEndpoint'),
+  transactionRequestsEndpoint: config.get(
+    'request.transactionRequestsEndpoint'
+  ),
+  peerEndpoint: config.get('request.peerEndpoint'),
 }
 
 // Config for mojaloop simulator
