@@ -26,7 +26,10 @@
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
-import { ThirdPartyTransactionRequest } from './models/openapi'
+import {
+  AuthorizationsPutIdRequest,
+  ThirdPartyTransactionRequest,
+} from './models/openapi'
 import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
