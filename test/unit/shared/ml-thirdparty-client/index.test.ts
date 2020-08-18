@@ -29,7 +29,6 @@ import config from '~/lib/config'
 
 import { Client } from '~/shared/ml-thirdparty-client'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { mojaloopClientOpts } from '~/server/plugins'
 
 import {
   AmountType,
@@ -91,13 +90,22 @@ const authorizationData: AuthorizationsPutIdRequest = {
   responseType: AuthenticationResponseType.ENTERED,
 }
 
+const clientConfig = {
+  mojaloopUrl: 'http://mojaloop.io',
+  participantId: 'http://pisp.io',
+  alsEndpoint: 'http://als.mojaloop.io',
+  thirdpartyRequestsEndpoint: 'http://thirdpartyRequestsEndpoint.mojaloop.io',
+  transactionRequestsEndpoint: 'http://transaction.mojaloop.io',
+  peerEndpoint: 'http://test.mojaloop.io',
+}
+
 describe('Mojaloop third-party client', () => {
   let client: Client
   let simulator: Simulator
 
   beforeAll(async () => {
     // Setup client and simulator
-    client = new Client(mojaloopClientOpts)
+    client = new Client(clientConfig)
 
     // Use jest function for the purpose of dependency injection
     simulator = new Simulator((jest.fn() as unknown) as Server, {
