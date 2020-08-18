@@ -30,3 +30,19 @@ declare module '@hapi/hapi' {
     mojaloopClient: Client
   }
 }
+
+declare module '@mojaloop/sdk-standard-components' {
+  interface response {
+    statusCode: number
+    headers: Record<string, string>
+    data: Record<string, unknown>
+  }
+
+  export class MojaloopRequests extends BaseRequests {
+    getParties(
+      idType: string,
+      idValue: string,
+      idSubValue: string
+    ): Promise<response>
+  }
+}

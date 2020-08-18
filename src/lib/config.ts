@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
@@ -106,6 +107,38 @@ const config = convict({
       format: '*',
       default: '',
       env: 'MOJALOOP_URL',
+    },
+  },
+  request: {
+    participantId: {
+      doc: 'The name of the service',
+      format: String,
+      default: 'pisp',
+      env: 'PARTICIPANT_ID',
+    },
+    alsEndpoint: {
+      doc: 'ALS endpoint for Mojaloop requests',
+      format: String,
+      default: 'account-lookup-service:4002',
+      env: 'ALS_ENDPOINT',
+    },
+    thirdpartyRequestsEndpoint: {
+      doc: 'Third party request endpoint for Mojaloop requests',
+      format: String,
+      default: 'thirdparty-api-adapter:3008',
+      env: 'THIRDPARTY_REQUESTS_ENDPOINT',
+    },
+    transactionRequestsEndpoint: {
+      doc: 'Transaction request endpoint for Mojaloop requests',
+      format: String,
+      default: 'transaction-request-service:4003',
+      env: 'TRANSACTION_REQUESTS_ENDPOINT',
+    },
+    peerEndpoint: {
+      doc: 'Default Mojaloop endpoint',
+      format: String,
+      default: '172.17.0.2:3001',
+      env: 'PEER_ENDPOINT',
     },
   },
 })

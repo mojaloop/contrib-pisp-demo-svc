@@ -20,56 +20,78 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
-import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from './models/openapi'
-
-namespace Client {
-  /**
-   * An interface definition for the configuration needed to setup the 
-   * Mojaloop client.
-   */
-  export interface Config {
-    /**
-     * Mojaloop URL for the client to communicate with.
-     */
-    mojaloopUrl: string
-  }
-}
-
-/**
- * Default configurations for the mojaloop client libary.
- */
-const defaultConfig: Client.Config = {
-  mojaloopUrl: '',
-}
+import {
+  AuthorizationsPutIdRequest,
+  ThirdPartyTransactionRequest,
+} from './models/openapi'
+import Logger, {
+  ThirdpartyRequests,
+  MojaloopRequests,
+} from '@mojaloop/sdk-standard-components'
 
 /**
  * A client object that abstracts out operations that could be performed in
- * Mojaloop. With this, a service does not need to directly specify the request 
- * endpoint, body, params, and headers that are required to talk with the 
+ * Mojaloop. With this, a service does not need to directly specify the request
+ * endpoint, body, params, and headers that are required to talk with the
  * Mojaloop APIs. Instead, the service implementation could just pass the necessary
  * config upon initialization and relevant information in the function parameters
  * when it wants to perform a certain operation.
  */
-export class Client {
-  config: Client.Config
-  simulator?: Simulator
 
-  public constructor(config?: Client.Config) {
-    if (config) {
-      this.config = { ...defaultConfig, ...config }
-    } else {
-      this.config = defaultConfig
+// namespace Client {
+/**
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
+ */
+export interface ClientConfig {
+  mojaloopUrl: string
+  participantId: string
+  alsEndpoint: string
+  thirdpartyRequestsEndpoint: string
+  transactionRequestsEndpoint: string
+  peerEndpoint: string
+}
+
+export class Client {
+  config: ClientConfig
+  simulator?: Simulator
+  thirdparty: ThirdpartyRequests
+  mojaloop: MojaloopRequests
+
+  public constructor(config: ClientConfig) {
+    this.config = config
+
+    const configRequest = {
+      dfspId: this.config.participantId,
+      logger: Logger,
+      // TODO: Fix TLS and jwsSigningKey
+      jwsSign: false,
+      tls: {
+        outbound: {
+          mutualTLS: {
+            enabled: false,
+          },
+        },
+      },
+      peerEndpoint: this.config.peerEndpoint,
+      alsEndpoint: this.config.alsEndpoint,
+      thirdpartyRequestsEndpoint: this.config.thirdpartyRequestsEndpoint,
+      transactionRequestsEndpoint: this.config.transactionRequestsEndpoint,
     }
+
+    this.thirdparty = new ThirdpartyRequests(configRequest)
+    this.mojaloop = new MojaloopRequests(configRequest)
   }
 
   /**
    * Performs a lookup for a party with the given identifier.
-   * 
+   *
    * @param type  the type of party identifier
    * @param id    the party identifier
    */
@@ -79,7 +101,6 @@ export class Client {
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
       this.simulator.getParties(type, id)
-      return
     }
 
     // TODO: Implement communication with Mojaloop.
@@ -87,7 +108,7 @@ export class Client {
 
   /**
    * Performs a transaction initiation with the given transaction request object.
-   * 
+   *
    * @param requestBody a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
@@ -103,23 +124,23 @@ export class Client {
 
   /**
    * Performs a transaction authorization with the given authorization object.
-   * 
-   * @param id              a transaction request id that corresponds with the 
+   *
+   * @param id              a transaction request id that corresponds with the
    *                        authorization.
    * @param requestBody     an authorization object as defined by the Mojaloop API.
    * @param transactionId   an optional field that needs to be passed in order for
-   *                        the mojaloop simulator to generate a callback. If the 
-   *                        value is not provided, the Mojaloop client will not be 
+   *                        the mojaloop simulator to generate a callback. If the
+   *                        value is not provided, the Mojaloop client will not be
    *                        able to use a simulator.
    */
   public async putAuthorizations(
     id: string,
     requestBody: AuthorizationsPutIdRequest,
-    transactionId?: string,
+    transactionId?: string
   ) {
     if (transactionId && this.simulator) {
-      // If a transaction id is provided and the client is configured with a 
-      // simulator, then it will not communicate with Mojaloop directly. Instead, 
+      // If a transaction id is provided and the client is configured with a
+      // simulator, then it will not communicate with Mojaloop directly. Instead,
       // it will only generate a random response that is injected to the internal routes.
       return this.simulator.putAuthorizations(id, requestBody, transactionId)
     }

@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
@@ -31,17 +32,22 @@ import { Plugin, Server } from '@hapi/hapi'
  */
 export interface MojaloopClientOpts {
   mojaloopUrl: string
+  participantId: string
+  alsEndpoint: string
+  thirdpartyRequestsEndpoint: string
+  transactionRequestsEndpoint: string
+  peerEndpoint: string
 }
 
 /**
  * A plugin to setup a mojaloop client in the PISP demo server.
- * Note that the client object that could be used to perform various operations 
- * in Mojaloop is stored in the application state. 
+ * Note that the client object that could be used to perform various operations
+ * in Mojaloop is stored in the application state.
  */
 export const MojaloopClient: Plugin<MojaloopClientOpts> = {
   name: 'MojaloopClient',
   version: '1.0.0',
   register: (server: Server, opts: MojaloopClientOpts) => {
     server.app.mojaloopClient = new Client({ ...opts })
-  }
+  },
 }
