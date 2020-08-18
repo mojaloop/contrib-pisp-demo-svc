@@ -29,6 +29,7 @@ import config from '~/lib/config'
 
 import { Client } from '~/shared/ml-thirdparty-client'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
+import { mojaloopClientOpts } from '~/server/plugins'
 
 import {
   AmountType,
@@ -65,7 +66,7 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
     personalInfo: {
       complexName: {
         firstName: 'Bob',
-        lastName: 'Beaver'
+        lastName: 'Beaver',
       },
     },
   },
@@ -79,7 +80,7 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
     initiator: 'PAYER',
     initiatorType: 'CONSUMER',
   },
-  expiration: (new Date(100)).toISOString(),
+  expiration: new Date(100).toISOString(),
 }
 
 const authorizationData: AuthorizationsPutIdRequest = {
@@ -96,10 +97,10 @@ describe('Mojaloop third-party client', () => {
 
   beforeAll(async () => {
     // Setup client and simulator
-    client = new Client()
+    client = new Client(mojaloopClientOpts)
 
     // Use jest function for the purpose of dependency injection
-    simulator = new Simulator(jest.fn() as unknown as Server, {
+    simulator = new Simulator((jest.fn() as unknown) as Server, {
       host: 'mojaloop.' + config.get('hostname'),
       delay: 100,
     })
@@ -107,18 +108,22 @@ describe('Mojaloop third-party client', () => {
 
   it('Should use simulator to perform party lookup when it is provided', (): void => {
     client.simulator = simulator
-    const simulatorSpy = jest.spyOn(simulator, 'getParties').mockImplementation()
+    const simulatorSpy = jest
+      .spyOn(simulator, 'getParties')
+      .mockImplementation()
 
     const type = PartyIdType.MSISDN
-    const identifier = "+1-111-111-1111"
-    client.getParties(PartyIdType.MSISDN, "+1-111-111-1111")
+    const identifier = '+1-111-111-1111'
+    client.getParties(PartyIdType.MSISDN, '+1-111-111-1111')
 
     expect(simulatorSpy).toBeCalledWith(type, identifier)
   })
 
   it('Should use simulator to perform transaction request when it is provided', (): void => {
     client.simulator = simulator
-    const simulatorSpy = jest.spyOn(simulator, 'postTransactions').mockImplementation()
+    const simulatorSpy = jest
+      .spyOn(simulator, 'postTransactions')
+      .mockImplementation()
 
     client.postTransactions(transactionRequestData)
 
@@ -127,7 +132,9 @@ describe('Mojaloop third-party client', () => {
 
   it('Should use simulator to perform authorization when it is provided', (): void => {
     client.simulator = simulator
-    const simulatorSpy = jest.spyOn(simulator, 'putAuthorizations').mockImplementation()
+    const simulatorSpy = jest
+      .spyOn(simulator, 'putAuthorizations')
+      .mockImplementation()
 
     client.putAuthorizations('111', authorizationData, '222')
 

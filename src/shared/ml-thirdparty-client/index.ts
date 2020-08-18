@@ -54,7 +54,6 @@ export interface ClientConfig {
   transactionRequestsEndpoint: string
   peerEndpoint: string
 }
-// }
 
 export class Client {
   config: ClientConfig

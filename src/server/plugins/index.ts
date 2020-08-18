@@ -76,7 +76,7 @@ const firestoreOpts: FirestoreOpts = {
 }
 
 // Config for mojaloop client
-const mojaloopClientOpts: MojaloopClientOpts = {
+export const mojaloopClientOpts: MojaloopClientOpts = {
   mojaloopUrl: config.get('mojaloop.url'),
   participantId: config.get('request.participantId'),
   alsEndpoint: config.get('request.alsEndpoint'),
