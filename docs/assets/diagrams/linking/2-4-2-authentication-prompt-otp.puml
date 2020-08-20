@@ -1,0 +1,70 @@
+@startuml
+
+title: Authentication Prompt (OTP)
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+activate Mojaloop
+
+rnote left of Mojaloop #Light
+  ""{""
+  ""  "initiatorId": "pisp",""
+  ""  "authChannels": ["OTP"],""
+  ""  "scopes": [""
+  ""      { accountId: "aaa.bob.fspb",""
+  ""        actions: ["accounts.transfer"] },""
+  ""      { accountId: "bbb.bob.fspb",""
+  ""        actions: ["accounts.transfer"] }""
+  ""  ],""
+  ""  "callbackUri": "pisp-app://callback...",""
+  ""  "authUri": null""
+  ""}""
+end rnote
+
+Mojaloop -> Server ++:  ""**PUT /consentRequests/111**""
+Mojaloop <-- Server: ""200 OK""
+deactivate Mojaloop
+
+rnote left of Server #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .where("consentRequestId", "==", "111")""
+  ""  .update({""
+  ""    authChannels: ["OTP"],""
+  ""    authUri: null,""
+  ""    status: "AUTHENTICATION_REQUIRED"""
+  ""  })""
+end rnote
+
+Server -> Firebase ++: Update consent document
+Server <-- Firebase: ""200 OK""
+deactivate Server
+
+rnote left of Firebase #Light
+  ""event(""
+  ""  "document.update",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote 
+
+Firebase -> App ++: Notify update on consent document
+Firebase <-- App: ""200 OK""
+deactivate Firebase
+
+App -> Alice: Prompt to input OTP
+deactivate App
+
+@enduml

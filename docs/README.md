@@ -8,6 +8,7 @@ Documentation for the PISP demo server
 
 Below are the scenarios that are supported by the PISP Demo server:
 - [Transfer](./design/transfer.md)
+- [Linking](./design/linking.md)
 
 ## BDD
 

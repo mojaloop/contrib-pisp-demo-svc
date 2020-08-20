@@ -1,0 +1,66 @@
+@startuml
+
+title: Authentication (OTP)
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+Alice -> App ++: Here is the OTP code
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("consents")""
+  ""  .doc("abc123")""
+  ""  .update({""
+  ""    authToken: <OTP>""
+  ""  })""
+end rnote
+
+App -> Firebase ++: Update consent document
+App <-- Firebase: ""200 OK""
+deactivate App
+
+rnote right of Firebase #Light
+  ""event(""
+  ""  "document.create",""
+  ""  "consents/abc123",""
+  ""  <snapshot object>""
+  "")""
+end rnote
+
+Firebase -> Server++: Notify update on consent document
+Firebase <-- Server: ""200 OK""
+deactivate Firebase
+
+rnote right of Server #Light
+  ""{""
+  ""  "initiatorId": "pisp",""
+  ""  "authChannels": ["OTP"],""
+  ""  "scopes": [""
+  ""    { accountId: "aaa.bob.fspb",""
+  ""      actions: ["accounts.transfer"] },""
+  ""    { accountId: "bbb.bob.fspb",""
+  ""      actions: ["accounts.transfer"] }""
+  ""  ],""
+  ""  "callbackUri": "pisp-app://callback...",""
+  ""  "authUri": null,""
+  ""  "authToken": <OTP>""
+  ""}""
+end rnote
+Server -> Mojaloop ++: ""**PUT /consentRequests/111**""
+
+Server <-- Mojaloop: ""200 OK""
+deactivate Server
+
+@enduml

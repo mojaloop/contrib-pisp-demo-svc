@@ -1,0 +1,80 @@
+@startuml
+
+title: Discovery 
+
+hide footbox
+
+box "Mobile Device" #Light
+  actor Alice
+  participant "PISP App" as App
+end box
+box "PISP" #Light
+  participant "Firebase" as Firebase
+  participant "PISP Server" as Server
+end box
+box "Mojaloop" #Light
+  participant "Switch" as Mojaloop
+end box
+
+' start flow
+loop Daily
+  Server -> Mojaloop++: ""**GET /participants**""
+  Server <-- Mojaloop: ""202 Accepted""
+
+  Mojaloop -> Mojaloop: Lookup data
+
+  rnote left of Mojaloop #Light
+  ""{ ""
+  ""  participants: [""
+  ""    {""
+  ""      "fspId": "fspa",""
+  ""      "name": "FSP A"""
+  ""    },""
+  ""    {""
+  ""      "fspId": "fspb",""
+  ""      "name": "FSP B"""
+  ""    }""
+  ""  ] ""
+  ""} ""
+  end rnote
+
+  Mojaloop -> Server ++: ""**PUT /participants**""
+  Mojaloop <-- Server: ""200 OK""
+  deactivate Mojaloop
+
+  Server -> Firebase ++: Update list of participants atomically
+  return ""200 OK""
+  deactivate Server
+end
+
+deactivate Mojaloop
+
+Alice -> App ++: Open account linking screen
+
+rnote right of App #Light
+  ""firebase.firestore()""
+  ""  .collection("participants")""
+  ""  .get()""
+end rnote
+
+App -> Firebase ++: ""Query list of participants""
+
+rnote left of Firebase #Light
+  ""result([""
+  ""  {""
+  ""    fspId: "fspa",""
+  ""    name: "FSP A"""
+  ""  },""
+  ""  {""
+  ""    fspId: "fspb",""
+  ""    name: "FSP B"""
+  ""  }""
+  ""])""
+end rnote
+
+return ""200 OK""
+
+App -> Alice: Display list of available FSPs
+deactivate App
+
+@enduml
