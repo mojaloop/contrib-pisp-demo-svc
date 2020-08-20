@@ -32,7 +32,7 @@ import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 import config from '~/lib/config'
 
 // Import necessary files to setup openapi
-import { OpenApi, OpenApiOpts } from './internal/openapi'
+import { OpenApi, Options as OpenApiOptions } from './internal/openapi'
 import {
   extHandlers,
   appApiHandlers,
@@ -56,21 +56,28 @@ import {
 } from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi
-const openApiOpts: OpenApiOpts = {
-  baseHost: config.get('hostname'),
-  definition: {
-    app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
+const openApiOpts: OpenApiOptions = {
+  shared: {
+    baseHost: config.get('hostname'),
+    quick: false,
+    strict: true,
   },
-  quick: false,
-  strict: true,
-  handlers: {
-    api: {
-      app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers,
+  app: {
+    definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
+    subdomain: 'app',
+    handlers: {
+      api: appApiHandlers,
+      ext: extHandlers,
     },
-    ext: extHandlers,
   },
+  mojaloop: {
+    definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
+    subdomain: 'mojaloop',
+    handlers: {
+      api: mojaloopApiHandlers,
+      ext: extHandlers,
+    },
+  }
 }
 
 // Config for firestore
