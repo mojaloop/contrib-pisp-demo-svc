@@ -61,11 +61,15 @@ callback from Mojaloop following a previous request of `GET /parties/{Type}/{ID}
 The following are the callback URLs that need to be registered by the PISP demo server:
 - `PUT /participants`
 - `PUT /parties/{Type}/{ID}`
+- `PUT /parties/{Type}/{ID}/error`
 - `PUT /consentRequests/{ID}`
+- `PUT /consentRequests/{ID}/error`
 - `POST /consents`
 - `PUT /consents/{ID}`
-- `PUT /authorizations/{ID}`
+- `PUT /consents/{ID}/error`
+- `POST /authorizations`
 - `PUT /transfers/{ID}`
+- `PUT /transfers/{ID}/error`
 
 For each callback endpoint, PISP demo server needs to register the URL to Mojaloop's switch by
 sending a request with the following format:
@@ -110,22 +114,43 @@ to register this endpoint:
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
                     Example: `https://pisp-demo-server.local/parties/{{partyIdType}}/{{partyIdentifier}}`.
 
+### `PUT /parties/{Type}/{ID}/error`
+
+This endpoint is used by the PISP demo server in both the linking and transfer processes to receive error
+information for party lookup operations, if any. Below are the values for some specific variables to register 
+this endpoint:
+
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
+- `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR`
+- `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
+                    Example: `https://pisp-demo-server.local/parties/{{partyIdType}}/{{partyIdentifier}}`.
+
 ### `PUT /consentRequests/{ID}`
 
 This endpoint is used by the PISP demo server in the linking process to receive an authentication prompt
 from FSPs. Below are the values for some specific variables to register this endpoint:
 
-- `HOST_URL`      : URL of the central authentication service in Mojaloop. Example: `https://central-auth.local`. 
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
 - `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_CONSENT_REQUEST_PUT`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
                     Example: `https://pisp-demo-server.local/consentRequests/{{consentId}}`.
+
+### `PUT /consentRequests/{ID}/error`
+
+This endpoint is used by the PISP demo server in the linking process to receive error information for consent 
+request operations, if any. Below are the values for some specific variables to register this endpoint:
+
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
+- `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_CONSENT_REQUEST_PUT_ERROR`
+- `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
+                    Example: `https://pisp-demo-server.local/consentRequests/{{consentId}}/error`.
 
 ### `POST /consents`
 
 This endpoint is used by the PISP demo server in the linking process to receive the result of a consent
 request. Below are the values for some specific variables to register this endpoint:
 
-- `HOST_URL`      : URL of the central authentication service in Mojaloop. Example: `https://central-auth.local`.
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
 - `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_CONSENT_POST`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. Example: `https://pisp-demo-server.local/consents`.
 
@@ -134,20 +159,30 @@ request. Below are the values for some specific variables to register this endpo
 This endpoint is used by the PISP demo server in the linking process to get a challenge and the result
 of FIDO registration. Below are the values for some specific variables to register this endpoint:
 
-- `HOST_URL`      : URL of the central authentication service in Mojaloop. Example: `https://central-auth.local`.
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
 - `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_CONSENT_PUT`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
                     Example: `https://pisp-demo-server.local/consents/{{consentId}}`.
 
-### `PUT /authorizations/{ID}`
+### `PUT /consents/{ID}/error`
+
+This endpoint is used by the PISP demo server in the linking process to get error information when
+performing FIDO registration. Below are the values for some specific variables to register this endpoint:
+
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
+- `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_CONSENT_PUT_ERROR`
+- `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
+                    Example: `https://pisp-demo-server.local/consents/{{consentId}}/error`.
+
+### `POST /authorizations`
 
 This endpoint is used by the PISP demo server in the transfer process to get an authorization prompt
 for a transaction request. Below are the values for some specific variables to register this endpoint:
 
-- `HOST_URL`      : URL of the central authentication service in Mojaloop. Example: `https://central-auth.local`.
-- `TYPE_ENUM`     : `THIRDPARTY_CALLBACK_URL_TRANSACTION_REQUEST_AUTHORIZATIONS_PUT`
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
+- `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_TRX_REQ_SERVICE`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
-                    Example: `https://pisp-demo-server.local/authorizations/{{transactionRequestId}}`.
+                    Example: `https://pisp-demo-server.local/authorizations`.
 
 ### `PUT /transfers/{ID}`
 
@@ -158,3 +193,13 @@ Below are the values for some specific variables to register this endpoint:
 - `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_TRANSFER_PUT`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
                     Example: `https://pisp-demo-server.local/transfers/{{transferId}}`.
+
+### `PUT /transfers/{ID}/error`
+
+This endpoint is used by the PISP demo server in the transfer process to get error information when trying
+to perform a transaction. Below are the values for some specific variables to register this endpoint:
+
+- `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
+- `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_TRANSFER_PUT_ERROR`
+- `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
+                    Example: `https://pisp-demo-server.local/transfers/{{transferId}}/error`.
