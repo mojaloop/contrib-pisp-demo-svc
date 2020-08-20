@@ -36,34 +36,7 @@ import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
-
-namespace Simulator {
-  /**
-   * An interface definition for config options that could be passed
-   * to the simulator.
-   */
-  export interface Options {
-    /**
-     * An optional field to set the host value in the request header. 
-     * This is useful for a service that handles Mojaloop callback using
-     * a virtual host, because it will require the host field in the request
-     * header to determine the routing.
-     */
-    host?: string
-
-    /**
-     * A fixed delay time before injecting a response to the server.
-     * This is useful to simulate network latency that may happen when 
-     * communicating with the real Mojaloop services.
-     */
-    delay?: number
-
-    /**
-     * Number of DFSP participants that the simulator will generate.
-     */
-    numOfParticipants?: number
-  }
-}
+import { Config } from './config'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -71,15 +44,28 @@ namespace Simulator {
  * Mojaloop is not deployed.
  */
 export class Simulator {
+  /**
+   * A server object to be used to inject the fake Mojaloop callbacks.
+   */
   server: Server
-  opts: Simulator.Options
 
-  constructor(server: Server, opts?: Simulator.Options) {
+  /**
+   * An object that keeps the configuration for the simulator.
+   */
+  config: Config
+
+  /**
+   * Constructor for the Mojaloop simulator.
+   * 
+   * @param server a server object to be used to inject the fake Mojaloop callbacks.
+   * @param config a configuration object for the simulator.
+   */
+  constructor(server: Server, config?: Config) {
     this.server = server
-    this.opts = opts ?? {}
+    this.config = config ?? {}
 
-    if (this.opts.numOfParticipants) {
-      ParticipantFactory.numOfParticipants = this.opts.numOfParticipants
+    if (this.config.numOfParticipants) {
+      ParticipantFactory.numOfParticipants = this.config.numOfParticipants
     }
   }
 
@@ -94,10 +80,10 @@ export class Simulator {
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
-    if (this.opts.delay) {
+    if (this.config.delay) {
       // Delay operations to simulate network latency in real communication
       // with Mojaloop.
-      await this.delay(this.opts.delay)
+      await this.delay(this.config.delay)
     }
 
     // Inject a request to the server as if it receives an inbound request
@@ -106,7 +92,7 @@ export class Simulator {
       method: 'PUT',
       url: targetUrl,
       headers: {
-        host: this.opts.host ?? '',
+        host: this.config.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
@@ -124,17 +110,17 @@ export class Simulator {
     const targetUrl = '/authorizations'
     const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
 
-    if (this.opts.delay) {
+    if (this.config.delay) {
       // Delay operations to simulate network latency in real communication
       // with Mojaloop.
-      await this.delay(this.opts.delay)
+      await this.delay(this.config.delay)
     }
 
     this.server.inject({
       method: 'POST',
       url: targetUrl,
       headers: {
-        host: this.opts.host ?? '',
+        host: this.config.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
@@ -142,6 +128,17 @@ export class Simulator {
     })
   }
 
+  /**
+   * Simulates a transaction authorization in Mojaloop by third-party application,
+   * without the need of sending `PUT /authorizations/{ID}` request.
+   * 
+   * @param id            the transaction request ID that is used to identify the
+   *                      authorization.
+   * @param request       a transaction authorization object as defined by the Mojaloop API.
+   * @param transactionId the transaction ID that is associated with the request. This
+   *                      value is required by the simulator as it will be contained in the
+   *                      response object.
+   */
   public async putAuthorizations(id: string,
     request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
     const targetUrl = '/transfers/' + faker.random.uuid()
@@ -151,7 +148,7 @@ export class Simulator {
       method: 'PUT',
       url: targetUrl,
       headers: {
-        host: this.opts.host ?? '',
+        host: this.config.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },

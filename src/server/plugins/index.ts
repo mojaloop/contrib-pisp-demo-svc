@@ -44,13 +44,16 @@ import { Firestore, FirestoreOpts } from './internal/firestore'
 import firestoreHandlers from '~/server/handlers/firestore'
 
 // Import necessary files to setup mojaloop client
-import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
+import {
+  MojaloopClient,
+  Config as MojaloopClientOpts,
+} from '~/shared/ml-thirdparty-client/hapi-plugin'
 
 // Import necessary files to setup mojaloop simulator
 import {
   MojaloopSimulator,
-  MojaloopSimulatorOpts,
-} from './internal/mojaloopSimulator'
+  Config as MojaloopSimulatorOpts,
+} from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi
 const openApiOpts: OpenApiOpts = {
@@ -75,19 +78,15 @@ const firestoreOpts: FirestoreOpts = {
   handlers: firestoreHandlers,
 }
 
-// Config for mojaloop client
+// Config for Mojaloop client
 export const mojaloopClientOpts: MojaloopClientOpts = {
-  mojaloopUrl: config.get('mojaloop.url'),
-  participantId: config.get('request.participantId'),
-  alsEndpoint: config.get('request.alsEndpoint'),
-  thirdpartyRequestsEndpoint: config.get('request.thirdpartyRequestsEndpoint'),
-  transactionRequestsEndpoint: config.get(
-    'request.transactionRequestsEndpoint'
-  ),
-  peerEndpoint: config.get('request.peerEndpoint'),
+  participantId: config.get('mojaloop.participantId'),
+  endpoints: {
+    default: config.get('mojaloop.endpoints.default'),
+  },
 }
 
-// Config for mojaloop simulator
+// Config for Mojaloop simulator
 const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
   host: 'mojaloop.' + config.get('hostname'),
   delay: config.get('experimental.delay'),

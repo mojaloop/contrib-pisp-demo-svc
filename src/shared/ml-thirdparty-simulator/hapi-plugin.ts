@@ -20,34 +20,33 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
- - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
 import { Plugin, Server } from '@hapi/hapi'
+import { Simulator } from '~/shared/ml-thirdparty-simulator'
+import { Config } from './config'
 
 /**
- * An interface definition for options that need to be specfied to use this plugin.
+ * Re-export the config schema.
  */
-export interface MojaloopClientOpts {
-  mojaloopUrl: string
-  participantId: string
-  alsEndpoint: string
-  thirdpartyRequestsEndpoint: string
-  transactionRequestsEndpoint: string
-  peerEndpoint: string
-}
+export { Config }
 
 /**
- * A plugin to setup a mojaloop client in the PISP demo server.
- * Note that the client object that could be used to perform various operations
- * in Mojaloop is stored in the application state.
+ * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
+ * In fact, the server only talks with a simulator that generates a random data 
+ * and inject callbacks to the internal routes.
+ * 
+ * The 'MojaloopClient' plugin must be registered before trying to 
+ * register this function as it will try to intercept the 
  */
-export const MojaloopClient: Plugin<MojaloopClientOpts> = {
-  name: 'MojaloopClient',
+export const MojaloopSimulator: Plugin<Config> = {
+  name: 'MojaloopSimulator',
   version: '1.0.0',
-  register: (server: Server, opts: MojaloopClientOpts) => {
-    server.app.mojaloopClient = new Client({ ...opts })
-  },
+  register: (server: Server, config: Config) => {
+    server.app.mojaloopClient.simulator = new Simulator(
+      server,
+      { ...config },
+    )
+  }
 }
