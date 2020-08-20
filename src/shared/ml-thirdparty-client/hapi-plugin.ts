@@ -26,22 +26,22 @@
 
 import { Client } from '~/shared/ml-thirdparty-client'
 import { Plugin, Server } from '@hapi/hapi'
-import { Config } from './config'
+import { Options } from './options'
 
 /**
  * Re-export the config schema.
  */
-export { Config }
+export { Options }
 
 /**
  * A plugin to setup a mojaloop client in the PISP demo server.
  * Note that the client object that could be used to perform various operations
  * in Mojaloop is stored in the application state.
  */
-export const MojaloopClient: Plugin<Config> = {
+export const MojaloopClient: Plugin<Options> = {
   name: 'MojaloopClient',
   version: '1.0.0',
-  register: (server: Server, config: Config) => {
+  register: (server: Server, config: Options) => {
     server.app.mojaloopClient = new Client({ ...config })
   },
 }

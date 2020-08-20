@@ -26,7 +26,7 @@
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
-import { Config } from './config'
+import { Options } from './options'
 
 import {
   AuthorizationsPutIdRequest,
@@ -70,18 +70,18 @@ export class Client {
   /**
    * An object that keeps the configuration for the client.
    */
-  private config: Config
+  private options: Options
 
   /**
    * Constructor for the Mojaloop client.
    * 
-   * @param config a configuration object for the client.
+   * @param options a configuration object for the client.
    */
-  public constructor(config: Config) {
-    this.config = config
+  public constructor(options: Options) {
+    this.options = options
 
     const configRequest = {
-      dfspId: this.config.participantId,
+      dfspId: this.options.participantId,
       logger: Logger,
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
@@ -92,7 +92,7 @@ export class Client {
           },
         },
       },
-      peerEndpoint: this.config.endpoints.default,
+      peerEndpoint: this.options.endpoints.default,
     }
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)

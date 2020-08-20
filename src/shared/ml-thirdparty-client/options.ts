@@ -20,30 +20,38 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
 /**
- * An interface definition for options that need to be specfied to use this plugin.
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
  */
-export interface Config {
+export interface Options {
   /**
-   * An optional field to set the host value in the request header. 
-   * This is useful for a service that handles Mojaloop callback using
-   * a virtual host, because it will require the host field in the request
-   * header to determine the routing.
+   * A unique participant ID that is registered in Mojaloop. This value 
+   * will also be used to verify the JWS that is attached in the request
+   * header when enabling the mutual TLS.
    */
-  host?: string
+  participantId: string
 
   /**
-   * A fixed delay time before injecting a response to the server.
-   * This is useful to simulate network latency that may happen when 
-   * communicating with the real Mojaloop services.
+   * Configuration for the host endpoints that will be used to communicate
+   * with the Mojaloop services.
    */
-  delay?: number
+  endpoints: EndpointOptions
+}
 
+export interface EndpointOptions {
   /**
-   * Number of DFSP participants that the simulator will generate.
+   * Host endpoint for the mojaloop. By default, this value will be used
+   * to perform all API calls to Mojaloop unless there are other endpoints
+   * specified for some particular paths.
+   * 
+   * The value of this host endpoint does not need to include the transport 
+   * scheme since it will be automatically configured based on the config of 
+   * using mutual TLS or not. Example value: `api.mojaloop.io`.
    */
-  numOfParticipants?: number
+  default: string
 }

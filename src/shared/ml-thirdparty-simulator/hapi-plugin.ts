@@ -25,12 +25,12 @@
 
 import { Plugin, Server } from '@hapi/hapi'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { Config } from './config'
+import { Options } from './options'
 
 /**
  * Re-export the config schema.
  */
-export { Config }
+export { Options }
 
 /**
  * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
@@ -40,10 +40,10 @@ export { Config }
  * The 'MojaloopClient' plugin must be registered before trying to 
  * register this function as it will try to intercept the 
  */
-export const MojaloopSimulator: Plugin<Config> = {
+export const MojaloopSimulator: Plugin<Options> = {
   name: 'MojaloopSimulator',
   version: '1.0.0',
-  register: (server: Server, config: Config) => {
+  register: (server: Server, config: Options) => {
     server.app.mojaloopClient.simulator = new Simulator(
       server,
       { ...config },

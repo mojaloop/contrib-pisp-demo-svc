@@ -46,13 +46,13 @@ import firestoreHandlers from '~/server/handlers/firestore'
 // Import necessary files to setup mojaloop client
 import {
   MojaloopClient,
-  Config as MojaloopClientOpts,
+  Options as MojaloopClientOpts,
 } from '~/shared/ml-thirdparty-client/hapi-plugin'
 
 // Import necessary files to setup mojaloop simulator
 import {
   MojaloopSimulator,
-  Config as MojaloopSimulatorOpts,
+  Options as MojaloopSimulatorOpts,
 } from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi

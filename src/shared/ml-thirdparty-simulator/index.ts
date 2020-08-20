@@ -36,7 +36,7 @@ import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
-import { Config } from './config'
+import { Options } from './options'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -47,25 +47,25 @@ export class Simulator {
   /**
    * A server object to be used to inject the fake Mojaloop callbacks.
    */
-  server: Server
+  private server: Server
 
   /**
    * An object that keeps the configuration for the simulator.
    */
-  config: Config
+  private options: Options
 
   /**
    * Constructor for the Mojaloop simulator.
    * 
    * @param server a server object to be used to inject the fake Mojaloop callbacks.
-   * @param config a configuration object for the simulator.
+   * @param options a configuration object for the simulator.
    */
-  constructor(server: Server, config?: Config) {
+  constructor(server: Server, options?: Options) {
     this.server = server
-    this.config = config ?? {}
+    this.options = options ?? {}
 
-    if (this.config.numOfParticipants) {
-      ParticipantFactory.numOfParticipants = this.config.numOfParticipants
+    if (this.options.numOfParticipants) {
+      ParticipantFactory.numOfParticipants = this.options.numOfParticipants
     }
   }
 
@@ -80,10 +80,10 @@ export class Simulator {
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
-    if (this.config.delay) {
+    if (this.options.delay) {
       // Delay operations to simulate network latency in real communication
       // with Mojaloop.
-      await this.delay(this.config.delay)
+      await this.delay(this.options.delay)
     }
 
     // Inject a request to the server as if it receives an inbound request
@@ -92,7 +92,7 @@ export class Simulator {
       method: 'PUT',
       url: targetUrl,
       headers: {
-        host: this.config.host ?? '',
+        host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
@@ -110,17 +110,17 @@ export class Simulator {
     const targetUrl = '/authorizations'
     const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
 
-    if (this.config.delay) {
+    if (this.options.delay) {
       // Delay operations to simulate network latency in real communication
       // with Mojaloop.
-      await this.delay(this.config.delay)
+      await this.delay(this.options.delay)
     }
 
     this.server.inject({
       method: 'POST',
       url: targetUrl,
       headers: {
-        host: this.config.host ?? '',
+        host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
@@ -148,7 +148,7 @@ export class Simulator {
       method: 'PUT',
       url: targetUrl,
       headers: {
-        host: this.config.host ?? '',
+        host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
       },
