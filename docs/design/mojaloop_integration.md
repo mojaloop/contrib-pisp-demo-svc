@@ -16,7 +16,7 @@ Mojaloop to be able to talk with other participants in the RTP network.
 
 As RTP system like Mojaloop grows in popularity, the use of third-party services who do not manage 
 its own ledger but exist for the purpose of initiating transactions has also come into attention.
-With mojaloop, a PISP also enjoys the benefit of the FSPs where it does not need to mantain multiple
+With Mojaloop, a PISP also enjoys the benefit of the FSPs where it does not need to mantain multiple
 APIs to communicate with each FSP but only a single API that follows Mojaloop's standard. Figure 3
 shows how a PISP could simultaneously setup communication with multiple FSPs by integrating to the
 Mojaloop's RTP network.
@@ -29,13 +29,13 @@ In order to join a Mojaloop network, a PISP must complete the following steps:
 
 In general, all of the signing, encryption, and other setup required to make requests to Mojaloop 
 are expected to be handled by the [`sdk-standard-components`](https://github.com/mojaloop/sdk-standard-components)
-libary. Hence, PISP demo server only needs to set the proper configuration such as path to the 
+libary. Hence, PISP demo server only needs to set the proper configuration such as the path to the 
 issued certificate, Mojaloop's URL, PISP identifier, transport scheme, and various other options
 which could be found [here](https://github.com/mojaloop/sdk-standard-components/blob/master/src/lib/requests/baseRequests.js).
 
 ## Certificate Registration
 
-In the Mojaloop's network for FSP Interoperability, every participant must be registered and have a
+In the Mojaloop RTP Network, every participant must be registered and have a
 signed certificate by the centralized Certificate Authority (CA). According to the 
 [PKI Best Practices](https://docs.mojaloop.io/mojaloop-specification/documents/PKI%20Best%20Practices.html),
 the CA itself will have a self-signed root certificate for signing the participants' certificates. 
@@ -45,7 +45,7 @@ integrity and confidentiality between platforms. More information could be found
 [Mojaloop Specifications](https://docs.mojaloop.io/mojaloop-specification/).
 
 PISP has to register its certificate manually, by telling the operator of Mojaloop the PISP's public
-key and have it digitally signed by the centrallized CA.
+key and getting the certificate digitally signed by the centralized CA.
 
 ## URL Registration
 
@@ -55,8 +55,8 @@ request to Mojaloop, it may take some time to receive the response as everything
 asynchronously. Even though it takes only several seconds on average, we still need to prepare for the 
 indefinite time characteristic of asynchronous messages. As a result, PISP demo server needs to register 
 its URL so that Mojaloop knows where to make the callback once the reply is ready. For example, 
-Mojaloop needs to know the endpoint of the PISP server that is ready to handle `PUT /parties/{Type}/{ID}` 
-callback from Mojaloop following a previous request of `GET /parties/{Type}/{ID}` to perform a party lookup.
+Mojaloop needs to know the endpoint that is ready to handle `PUT /parties/{Type}/{ID}` callback from Mojaloop 
+following a previous request of `GET /parties/{Type}/{ID}` by the PISP server to perform a party lookup.
 
 The following are the callback URLs that need to be registered by the PISP demo server:
 - `PUT /participants`
