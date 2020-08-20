@@ -25,8 +25,6 @@
 
 import { Plugin, Server } from '@hapi/hapi'
 
-import { logger } from '~/shared/logger'
-
 import firebase from '~/lib/firebase'
 import { Transaction } from '~/models/transaction'
 
@@ -35,11 +33,12 @@ export type TransactionHandler = (server: Server, transaction: Transaction) => P
 /**
  * An interface definition for options that need to be specfied to use this plugin.
  */
-export interface FirestoreOpts {
+export interface FirestoreOptions {
   handlers: {
     transactions: {
-      onCreate: TransactionHandler
-      onUpdate: TransactionHandler
+      onCreate?: TransactionHandler
+      onUpdate?: TransactionHandler
+      onRemove?: TransactionHandler
     }
   }
 }
@@ -55,30 +54,22 @@ export interface FirestoreOpts {
  * @param opts a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToTransactions = (server: Server, opts: FirestoreOpts): (() => void) => {
+const listenToTransactions = (server: Server, opts: FirestoreOptions): (() => void) => {
+  const transactionHandlers = opts.handlers.transactions
+
   return firebase
     .firestore()
     .collection('transactions')
     .onSnapshot((querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          opts.handlers.transactions.onCreate(
-            server,
-            {
-              id: change.doc.id,
-              ...change.doc.data()
-            }
-          )
-        } else if (change.type === 'modified') {
-          opts.handlers.transactions.onUpdate(
-            server,
-            {
-              id: change.doc.id,
-              ...change.doc.data()
-            }
-          )
-        } else {
-          logger.error('Unhandled transaction operation')
+        if (change.type === 'added' && transactionHandlers.onCreate) {
+          transactionHandlers.onCreate(server, { id: change.doc.id, ...change.doc.data() })
+
+        } else if (change.type === 'modified' && transactionHandlers.onUpdate) {
+          transactionHandlers.onUpdate(server, { id: change.doc.id, ...change.doc.data() })
+
+        } else if (change.type === 'removed' && transactionHandlers.onRemove) {
+          transactionHandlers.onRemove(server, { id: change.doc.id, ...change.doc.data() })
         }
       })
     })
@@ -88,10 +79,10 @@ const listenToTransactions = (server: Server, opts: FirestoreOpts): (() => void)
  * A plugin that enables the hapi server to listen to changes in the Firestore
  * collections that are relevant for the PISP demo.
  */
-export const Firestore: Plugin<FirestoreOpts> = {
+export const Firestore: Plugin<FirestoreOptions> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
-  register: async (server: Server, opts: FirestoreOpts) => {
+  register: async (server: Server, opts: FirestoreOptions) => {
     const unsubscribeTransactions = listenToTransactions(server, opts)
 
     // Unsubscribe to the changes in Firebase when the server stops running.

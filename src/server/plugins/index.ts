@@ -40,7 +40,7 @@ import {
 } from '~/server/handlers/openapi'
 
 // Import necessary files to setup firestore
-import { Firestore, FirestoreOpts } from './internal/firestore'
+import { Firestore, FirestoreOptions } from './internal/firestore'
 import firestoreHandlers from '~/server/handlers/firestore'
 
 // Import necessary files to setup mojaloop client
@@ -74,7 +74,7 @@ const openApiOpts: OpenApiOpts = {
 }
 
 // Config for firestore
-const firestoreOpts: FirestoreOpts = {
+const firestoreOpts: FirestoreOptions = {
   handlers: firestoreHandlers,
 }
 
