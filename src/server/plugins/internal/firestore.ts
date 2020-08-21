@@ -33,7 +33,7 @@ export type TransactionHandler = (server: Server, transaction: Transaction) => P
 /**
  * An interface definition for options that need to be specfied to use this plugin.
  */
-export interface FirestoreOptions {
+export interface Options {
   handlers: {
     transactions: {
       onCreate?: TransactionHandler
@@ -51,11 +51,11 @@ export interface FirestoreOptions {
  * realtime or because it has persisted in the database when the server starts.
  *
  * @param server a server object as defined in the hapi library.
- * @param opts a configuration object for the plugin.
+ * @param options a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToTransactions = (server: Server, opts: FirestoreOptions): (() => void) => {
-  const transactionHandlers = opts.handlers.transactions
+const listenToTransactions = (server: Server, options: Options): (() => void) => {
+  const transactionHandlers = options.handlers.transactions
 
   return firebase
     .firestore()
@@ -79,11 +79,11 @@ const listenToTransactions = (server: Server, opts: FirestoreOptions): (() => vo
  * A plugin that enables the hapi server to listen to changes in the Firestore
  * collections that are relevant for the PISP demo.
  */
-export const Firestore: Plugin<FirestoreOptions> = {
+export const Firestore: Plugin<Options> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
-  register: async (server: Server, opts: FirestoreOptions) => {
-    const unsubscribeTransactions = listenToTransactions(server, opts)
+  register: async (server: Server, options: Options) => {
+    const unsubscribeTransactions = listenToTransactions(server, options)
 
     // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {

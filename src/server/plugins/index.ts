@@ -40,7 +40,7 @@ import {
 } from '~/server/handlers/openapi'
 
 // Import necessary files to setup firestore
-import { Firestore, FirestoreOptions } from './internal/firestore'
+import { Firestore, Options as FirestoreOptions } from './internal/firestore'
 import firestoreHandlers from '~/server/handlers/firestore'
 
 // Import necessary files to setup mojaloop client
