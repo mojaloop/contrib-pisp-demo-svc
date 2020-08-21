@@ -16,7 +16,7 @@
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
  * Mojaloop Foundation
- - Name Surname <name.surname@gatesfoundation.com>
+ - Name Surname <name.surname@mojaloop.io>
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
