@@ -114,7 +114,7 @@ const config = convict({
         format: '*',
         default: '172.17.0.2:3001',
         env: 'MOJALOOP_ENDPOINT_DEFAULT',
-      }
+      },
     },
   },
 })

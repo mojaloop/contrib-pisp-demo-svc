@@ -89,7 +89,11 @@ export interface VirtualHostOptions {
 
 export interface SharedOptions {
   /**
-   * Base host name for the open API backend.
+   * Base host name for the open API backend. The subdomain for each virtual
+   * host will be appended in the beginning of this value. For example, if
+   * the base host is `api.mojaloop.io` and the subdomain for a virtual host
+   * is `app`, then the resulting address for the virtual host will be
+   * `app.api.mojaloop.io`.
    */
   baseHost: string
 
@@ -113,9 +117,10 @@ export interface SharedOptions {
 
 export interface Options {
   /**
-   * Shared config between backends that will be registered by this
-   * plugin. In the future updates, the config specified in this shared
-   * config may act as default values that could be overwritten by 
+   * Shared options between backends that will be registered by this
+   * plugin. In the future updates, the values specified in this object
+   * may act as default values that could be overwritten by the options
+   * for the respective virtual host. 
    */
   shared: SharedOptions
 
