@@ -23,7 +23,7 @@
  --------------
  ******/
 
-import { OpenApiExtHandlers } from '../../plugins/internal/openapi'
+import { ExtHandlers } from '../../plugins/internal/openapi'
 import { Context } from 'openapi-backend'
 import { Request, ResponseToolkit } from '@hapi/hapi'
 
@@ -40,7 +40,7 @@ export const apiHandlers = {
   ...mojaloopApiHandlers
 }
 
-export const extHandlers: OpenApiExtHandlers = {
+export const extHandlers: ExtHandlers = {
   notFound: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(404)
   },
