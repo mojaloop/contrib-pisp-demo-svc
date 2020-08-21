@@ -43,10 +43,10 @@ export { Options }
 export const MojaloopSimulator: Plugin<Options> = {
   name: 'MojaloopSimulator',
   version: '1.0.0',
-  register: (server: Server, config: Options) => {
+  register: (server: Server, options: Options) => {
     server.app.mojaloopClient.simulator = new Simulator(
       server,
-      { ...config },
+      { ...options },
     )
   }
 }

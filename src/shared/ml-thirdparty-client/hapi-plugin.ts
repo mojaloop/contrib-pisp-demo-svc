@@ -41,7 +41,7 @@ export { Options }
 export const MojaloopClient: Plugin<Options> = {
   name: 'MojaloopClient',
   version: '1.0.0',
-  register: (server: Server, config: Options) => {
-    server.app.mojaloopClient = new Client({ ...config })
+  register: (server: Server, options: Options) => {
+    server.app.mojaloopClient = new Client({ ...options })
   },
 }
