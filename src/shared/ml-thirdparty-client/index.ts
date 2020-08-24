@@ -94,8 +94,13 @@ export class Client {
    *
    * @param type  the type of party identifier
    * @param id    the party identifier
+   * @param idSubValue    the party identifier subvalue (default: empty)
    */
-  public async getParties(type: PartyIdType, id: string): Promise<void> {
+  public async getParties(
+    type: PartyIdType,
+    id: string,
+    idSubValue = ''
+  ): Promise<void> {
     if (this.simulator) {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
@@ -103,7 +108,8 @@ export class Client {
       this.simulator.getParties(type, id)
     }
 
-    // TODO: Implement communication with Mojaloop.
+    // TODO: Check if we pass in a subvalue?
+    this.mojaloop.getParties(type, id, idSubValue)
   }
 
   /**
@@ -111,7 +117,9 @@ export class Client {
    *
    * @param requestBody a transaction request object as defined by the Mojaloop API.
    */
-  public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
+  public async postTransactions(
+    requestBody: ThirdPartyTransactionRequest
+  ): Promise<void> {
     if (this.simulator) {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
@@ -119,7 +127,10 @@ export class Client {
       return this.simulator.postTransactions(requestBody)
     }
 
-    // TODO: Implement communication with Mojaloop.
+    this.thirdparty.postThirdpartyRequestsTransactions(
+      requestBody,
+      this.config.participantId
+    )
   }
 
   /**
@@ -137,7 +148,7 @@ export class Client {
     id: string,
     requestBody: AuthorizationsPutIdRequest,
     transactionId?: string
-  ) {
+  ): Promise<void> {
     if (transactionId && this.simulator) {
       // If a transaction id is provided and the client is configured with a
       // simulator, then it will not communicate with Mojaloop directly. Instead,
@@ -145,6 +156,10 @@ export class Client {
       return this.simulator.putAuthorizations(id, requestBody, transactionId)
     }
 
-    // TODO: Implement communication with Mojaloop.
+    this.thirdparty.putThirdpartyRequestsTransactionsAuthorizations(
+      requestBody,
+      id,
+      this.config.participantId
+    )
   }
 }
