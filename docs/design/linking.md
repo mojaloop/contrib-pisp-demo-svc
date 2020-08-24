@@ -41,10 +41,10 @@ the events will be notified and could proceed to do necessary operations, such a
 requests to Mojaloop. Likewise, when Mojaloop makes a callback to the server, it can update the
 data in Firebase, which will notify the mobile app for the relevant user.
 
-The diagram below shows how both the server and mobile app could start listening to the transaction
-documents. For the server, it will listen to all of the transaction documents from all users.
-Meanwhile, each user is only allowed to listen to their transactions. Firebase rules will also help
-to prevent a user from looking at other users' transactions.
+The diagram below shows how both the server and mobile app could start listening to the consent
+documents. For the server, it will listen to all of the consent documents from all users.
+Meanwhile, each user is only allowed to listen to their consents. Firebase rules will also help
+to prevent a user from looking at other users' consents.
 
 ![Create Listener](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/mojaloop/pisp-demo-server/master/docs/assets/diagrams/linking/1-create-listener.puml)
 
