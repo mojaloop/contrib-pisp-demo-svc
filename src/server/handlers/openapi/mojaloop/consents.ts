@@ -26,8 +26,24 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
+import { consentRepository } from '~/repositories/consent'
 
-export const post: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+export const post: Handler = async (
+  context: Context,
+  request: Request,
+  h: ResponseToolkit
+) => {
   logger.logRequest(context, request, h)
+
+  const { id, initiatorId, participantId, scopes } = context.request.body
+
+  consentRepository.updateConsentById(id, {
+    initiatorId,
+    participantId,
+    scopes,
+    // TODO: check how consent status field is being used
+    // TODO: Shift this to enum - if the field is required
+    status: 'CONSENT_GRANTED',
+  })
   return h.response().code(202)
 }
