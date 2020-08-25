@@ -19,7 +19,7 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -57,6 +57,10 @@ export class FirebaseConsentRepository implements IConsentRepository {
           logger.error(err)
         })
     })
+  }
+
+  async updateConsentById(id: string, data: Consent): Promise<void> {
+    await firebase.firestore().collection('consents').doc(id).update(data)
   }
 }
 
