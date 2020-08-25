@@ -23,36 +23,30 @@
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-
-import { HealthCheck, HealthResponseCode, HealthCheckResult, ServiceStatus } from '~/shared/health'
-import Config from '~/lib/config'
-import { logger } from '~/shared/logger'
-
-const pakcageInfo = {
-  name: Config.get('package.name'),
-  version: Config.get('package.version')
-}
-
-const healthCheck = new HealthCheck(pakcageInfo, [])
+import { Plugin, Server } from '@hapi/hapi'
+import { Simulator } from '~/shared/ml-thirdparty-simulator'
+import { Options } from './options'
 
 /**
- * Operations on /health
+ * Re-export the config schema.
  */
-export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let healthCheckResult: HealthCheckResult | null = null;
-  try {
-    healthCheckResult = await healthCheck.getHealth()
-  } catch (err) {
-    logger.error(err.message)
-  }
+export { Options }
 
-  if (healthCheckResult == null || healthCheckResult.status == ServiceStatus.Down) {
-    logger.logRequest(context, request, h)
-    return h.response({}).code(HealthResponseCode.GatewayTimeout)
-  } else {
-    return h.response(healthCheckResult).code(HealthResponseCode.Success)
+/**
+ * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
+ * In fact, the server only talks with a simulator that generates a random data 
+ * and inject callbacks to the internal routes.
+ * 
+ * The 'MojaloopClient' plugin must be registered before trying to 
+ * register this function as it will try to intercept the 
+ */
+export const MojaloopSimulator: Plugin<Options> = {
+  name: 'MojaloopSimulator',
+  version: '1.0.0',
+  register: (server: Server, options: Options) => {
+    server.app.mojaloopClient.simulator = new Simulator(
+      server,
+      { ...options },
+    )
   }
 }

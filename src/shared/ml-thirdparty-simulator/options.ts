@@ -12,53 +12,38 @@
  should be listed with a '*' in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
- Gates Foundation organization for an example). Those individuals should have
+ Mojaloop Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
  --------------
  ******/
 
-import { Plugin, Server } from '@hapi/hapi'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
-
 /**
  * An interface definition for options that need to be specfied to use this plugin.
  */
-export interface MojaloopSimulatorOpts {
+export interface Options {
   /**
-   * Host of the server. This will tell the simulator to add a `host` header in the 
-   * injected requests with the given value.
+   * An optional field to set the host value in the request header. 
+   * This is useful for a service that handles Mojaloop callback using
+   * a virtual host, because it will require the host field in the request
+   * header to determine the routing.
    */
   host?: string
 
   /**
-   * The delay in milisecond before the simulator injects a response back to the server.
-   * This could be used to simulate the network latency that may appear when communicating
-   * with the real Mojaloop services.
+   * A fixed delay time before injecting a response to the server.
+   * This is useful to simulate network latency that may happen when 
+   * communicating with the real Mojaloop services.
    */
   delay?: number
-}
 
-/**
- * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
- * In fact, the server only talks with a simulator that generates a random data 
- * and inject callbacks to the internal routes.
- * 
- * The 'MojaloopClient' plugin must be registered before trying to 
- * register this function as it will try to intercept the 
- */
-export const MojaloopSimulator: Plugin<MojaloopSimulatorOpts> = {
-  name: 'MojaloopSimulator',
-  version: '1.0.0',
-  register: (server: Server, opts: MojaloopSimulatorOpts) => {
-    server.app.mojaloopClient.simulator = new Simulator(
-      server,
-      { ...opts },
-    )
-  }
+  /**
+   * Number of DFSP participants that the simulator will generate.
+   */
+  numOfParticipants?: number
 }

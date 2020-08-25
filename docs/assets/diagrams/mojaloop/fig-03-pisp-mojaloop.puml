@@ -1,0 +1,50 @@
+@startuml Figure 1
+
+<style>
+
+root {
+  Margin 0 10 10 10
+}
+
+title {
+  Margin 10 10 10 10
+}
+
+</style>
+
+skinparam shadowing false
+
+title Figure 3: Integrating PISP to Mojaloop
+
+rectangle "Mojaloop RTP Network" {
+  node "PISP A" as pispa
+  node "PISP B" as pispb
+
+  rectangle "Mojaloop FSP Interoperability" {
+    node "FSP A" as fspa
+    node "FSP B" as fspb
+    node "FSP C" as fspc 
+    node "FSP D" as fspd 
+    cloud {
+      [Mojaloop]
+    }
+  }
+}
+
+Mojaloop -[hidden]up- fspb
+Mojaloop -[hidden]up- fspa
+
+Mojaloop -[hidden]down- fspc
+Mojaloop -[hidden]down- fspd
+
+pispa -[hidden]down- pispb
+
+fspa <-> Mojaloop
+fspb <-> Mojaloop
+fspc <-> Mojaloop 
+fspd <-> Mojaloop
+
+pispa <-> Mojaloop
+pispb <-> Mojaloop
+
+@enduml
