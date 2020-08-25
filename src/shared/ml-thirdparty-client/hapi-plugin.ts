@@ -20,39 +20,28 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
-import { Request, ResponseToolkit } from '@hapi/hapi'
-import { Handler, Context } from 'openapi-backend'
-
-import { HealthCheck, HealthResponseCode, HealthCheckResult, ServiceStatus } from '~/shared/health'
-import Config from '~/lib/config'
-import { logger } from '~/shared/logger'
-
-const pakcageInfo = {
-  name: Config.get('package.name'),
-  version: Config.get('package.version')
-}
-
-const healthCheck = new HealthCheck(pakcageInfo, [])
+import { Client } from '~/shared/ml-thirdparty-client'
+import { Plugin, Server } from '@hapi/hapi'
+import { Options } from './options'
 
 /**
- * Operations on /health
+ * Re-export the config schema.
  */
-export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
-  let healthCheckResult: HealthCheckResult | null = null;
-  try {
-    healthCheckResult = await healthCheck.getHealth()
-  } catch (err) {
-    logger.error(err.message)
-  }
+export { Options }
 
-  if (healthCheckResult == null || healthCheckResult.status == ServiceStatus.Down) {
-    logger.logRequest(context, request, h)
-    return h.response({}).code(HealthResponseCode.GatewayTimeout)
-  } else {
-    return h.response(healthCheckResult).code(HealthResponseCode.Success)
-  }
+/**
+ * A plugin to setup a mojaloop client in the PISP demo server.
+ * Note that the client object that could be used to perform various operations
+ * in Mojaloop is stored in the application state.
+ */
+export const MojaloopClient: Plugin<Options> = {
+  name: 'MojaloopClient',
+  version: '1.0.0',
+  register: (server: Server, options: Options) => {
+    server.app.mojaloopClient = new Client({ ...options })
+  },
 }

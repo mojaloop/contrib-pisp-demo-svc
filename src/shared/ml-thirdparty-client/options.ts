@@ -12,11 +12,11 @@
  should be listed with a '*' in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
- Gates Foundation organization for an example). Those individuals should have
+ Mojaloop Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
@@ -24,30 +24,34 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
-import { Plugin, Server } from '@hapi/hapi'
-
 /**
- * An interface definition for options that need to be specfied to use this plugin.
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
  */
-export interface MojaloopClientOpts {
-  mojaloopUrl: string
+export interface Options {
+  /**
+   * A unique participant ID that is registered in Mojaloop. This value 
+   * will also be used to verify the JWS that is attached in the request
+   * header when enabling the mutual TLS.
+   */
   participantId: string
-  alsEndpoint: string
-  thirdpartyRequestsEndpoint: string
-  transactionRequestsEndpoint: string
-  peerEndpoint: string
+
+  /**
+   * Configuration for the host endpoints that will be used to communicate
+   * with the Mojaloop services.
+   */
+  endpoints: EndpointOptions
 }
 
-/**
- * A plugin to setup a mojaloop client in the PISP demo server.
- * Note that the client object that could be used to perform various operations
- * in Mojaloop is stored in the application state.
- */
-export const MojaloopClient: Plugin<MojaloopClientOpts> = {
-  name: 'MojaloopClient',
-  version: '1.0.0',
-  register: (server: Server, opts: MojaloopClientOpts) => {
-    server.app.mojaloopClient = new Client({ ...opts })
-  },
+export interface EndpointOptions {
+  /**
+   * Host endpoint for the mojaloop. By default, this value will be used
+   * to perform all API calls to Mojaloop unless there are other endpoints
+   * specified for some particular paths.
+   * 
+   * The value of this host endpoint does not need to include the transport 
+   * scheme since it will be automatically configured based on the config of 
+   * using mutual TLS or not. Example value: `api.mojaloop.io`.
+   */
+  default: string
 }

@@ -12,11 +12,11 @@
  should be listed with a '*' in the first column. People who have
  contributed from an organization can be listed under the organization
  that actually holds the copyright for their contributions (see the
- Gates Foundation organization for an example). Those individuals should have
+ Mojaloop Foundation organization for an example). Those individuals should have
  their names indented and be marked with a '-'. Email address can be added
  optionally within square brackets <email>.
- * Gates Foundation
- - Name Surname <name.surname@gatesfoundation.com>
+ * Mojaloop Foundation
+ - Name Surname <name.surname@mojaloop.io>
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
@@ -102,43 +102,19 @@ const config = convict({
     },
   },
   mojaloop: {
-    url: {
-      doc: 'URL of the API gateway for Mojaloop',
-      format: '*',
-      default: '',
-      env: 'MOJALOOP_URL',
-    },
-  },
-  request: {
     participantId: {
-      doc: 'The name of the service',
+      doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
       format: String,
       default: 'pisp',
-      env: 'PARTICIPANT_ID',
+      env: 'MOJALOOP_PARTICIPANT_ID',
     },
-    alsEndpoint: {
-      doc: 'ALS endpoint for Mojaloop requests',
-      format: String,
-      default: 'account-lookup-service:4002',
-      env: 'ALS_ENDPOINT',
-    },
-    thirdpartyRequestsEndpoint: {
-      doc: 'Third party request endpoint for Mojaloop requests',
-      format: String,
-      default: 'thirdparty-api-adapter:3008',
-      env: 'THIRDPARTY_REQUESTS_ENDPOINT',
-    },
-    transactionRequestsEndpoint: {
-      doc: 'Transaction request endpoint for Mojaloop requests',
-      format: String,
-      default: 'transaction-request-service:4003',
-      env: 'TRANSACTION_REQUESTS_ENDPOINT',
-    },
-    peerEndpoint: {
-      doc: 'Default Mojaloop endpoint',
-      format: String,
-      default: '172.17.0.2:3001',
-      env: 'PEER_ENDPOINT',
+    endpoints: {
+      default: {
+        doc: 'Default endpoint to communicate with Mojaloop',
+        format: '*',
+        default: '172.17.0.2:3001',
+        env: 'MOJALOOP_ENDPOINT_DEFAULT',
+      },
     },
   },
 })
