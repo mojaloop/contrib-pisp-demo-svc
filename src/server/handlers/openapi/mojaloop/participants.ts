@@ -36,9 +36,9 @@ export const put: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
   // @ts-ignore
-  const participants = request.payload.participants
+  const participants = context.request.body.participants
 
-  // TODO: Implement this function
-  updateFirebaseParticipants(participants)
+  participantsRepository.update(participants)
+
   return h.response().code(200)
 }
