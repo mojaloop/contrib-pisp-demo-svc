@@ -40,7 +40,6 @@ const healthCheck = new HealthCheck(pakcageInfo, [])
 /**
  * Operations on /health
  */
-
 export const get: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
   let healthCheckResult: HealthCheckResult | null = null;

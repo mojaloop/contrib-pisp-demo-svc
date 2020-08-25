@@ -20,45 +20,38 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Raman Mangla <ramanmangla@google.com>
  --------------
  ******/
 
-import { Plugin, Server } from '@hapi/hapi'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
-
 /**
- * An interface definition for options that need to be specfied to use this plugin.
+ * An interface definition for the configuration needed to setup the
+ * Mojaloop client.
  */
-export interface MojaloopSimulatorOpts {
+export interface Options {
   /**
-   * Host of the server. This will tell the simulator to add a `host` header in the 
-   * injected requests with the given value.
+   * A unique participant ID that is registered in Mojaloop. This value 
+   * will also be used to verify the JWS that is attached in the request
+   * header when enabling the mutual TLS.
    */
-  host?: string
+  participantId: string
 
   /**
-   * The delay in milisecond before the simulator injects a response back to the server.
-   * This could be used to simulate the network latency that may appear when communicating
-   * with the real Mojaloop services.
+   * Configuration for the host endpoints that will be used to communicate
+   * with the Mojaloop services.
    */
-  delay?: number
+  endpoints: EndpointOptions
 }
 
-/**
- * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
- * In fact, the server only talks with a simulator that generates a random data 
- * and inject callbacks to the internal routes.
- * 
- * The 'MojaloopClient' plugin must be registered before trying to 
- * register this function as it will try to intercept the 
- */
-export const MojaloopSimulator: Plugin<MojaloopSimulatorOpts> = {
-  name: 'MojaloopSimulator',
-  version: '1.0.0',
-  register: (server: Server, opts: MojaloopSimulatorOpts) => {
-    server.app.mojaloopClient.simulator = new Simulator(
-      server,
-      { ...opts },
-    )
-  }
+export interface EndpointOptions {
+  /**
+   * Host endpoint for the mojaloop. By default, this value will be used
+   * to perform all API calls to Mojaloop unless there are other endpoints
+   * specified for some particular paths.
+   * 
+   * The value of this host endpoint does not need to include the transport 
+   * scheme since it will be automatically configured based on the config of 
+   * using mutual TLS or not. Example value: `api.mojaloop.io`.
+   */
+  default: string
 }

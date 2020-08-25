@@ -32,7 +32,7 @@ import { Server, ServerRegisterPluginObject } from '@hapi/hapi'
 import config from '~/lib/config'
 
 // Import necessary files to setup openapi
-import { OpenApi, OpenApiOpts } from './internal/openapi'
+import { OpenApi, Options as OpenApiOptions } from './internal/openapi'
 import {
   extHandlers,
   appApiHandlers,
@@ -40,54 +40,60 @@ import {
 } from '~/server/handlers/openapi'
 
 // Import necessary files to setup firestore
-import { Firestore, FirestoreOpts } from './internal/firestore'
+import { Firestore, Options as FirestoreOptions } from './internal/firestore'
 import firestoreHandlers from '~/server/handlers/firestore'
 
 // Import necessary files to setup mojaloop client
-import { MojaloopClient, MojaloopClientOpts } from './internal/mojaloopClient'
+import {
+  MojaloopClient,
+  Options as MojaloopClientOpts,
+} from '~/shared/ml-thirdparty-client/hapi-plugin'
 
 // Import necessary files to setup mojaloop simulator
 import {
   MojaloopSimulator,
-  MojaloopSimulatorOpts,
-} from './internal/mojaloopSimulator'
+  Options as MojaloopSimulatorOpts,
+} from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi
-const openApiOpts: OpenApiOpts = {
-  baseHost: config.get('hostname'),
-  definition: {
-    app: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    mojaloop: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
+const openApiOpts: OpenApiOptions = {
+  shared: {
+    baseHost: config.get('hostname'),
+    quick: false,
+    strict: true,
   },
-  quick: false,
-  strict: true,
-  handlers: {
-    api: {
-      app: appApiHandlers,
-      mojaloop: mojaloopApiHandlers,
+  app: {
+    definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
+    subdomain: 'app',
+    handlers: {
+      api: appApiHandlers,
+      ext: extHandlers,
     },
-    ext: extHandlers,
   },
+  mojaloop: {
+    definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
+    subdomain: 'mojaloop',
+    handlers: {
+      api: mojaloopApiHandlers,
+      ext: extHandlers,
+    },
+  }
 }
 
 // Config for firestore
-const firestoreOpts: FirestoreOpts = {
+const firestoreOpts: FirestoreOptions = {
   handlers: firestoreHandlers,
 }
 
-// Config for mojaloop client
+// Config for Mojaloop client
 export const mojaloopClientOpts: MojaloopClientOpts = {
-  mojaloopUrl: config.get('mojaloop.url'),
-  participantId: config.get('request.participantId'),
-  alsEndpoint: config.get('request.alsEndpoint'),
-  thirdpartyRequestsEndpoint: config.get('request.thirdpartyRequestsEndpoint'),
-  transactionRequestsEndpoint: config.get(
-    'request.transactionRequestsEndpoint'
-  ),
-  peerEndpoint: config.get('request.peerEndpoint'),
+  participantId: config.get('mojaloop.participantId'),
+  endpoints: {
+    default: config.get('mojaloop.endpoints.default'),
+  },
 }
 
-// Config for mojaloop simulator
+// Config for Mojaloop simulator
 const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
   host: 'mojaloop.' + config.get('hostname'),
   delay: config.get('experimental.delay'),

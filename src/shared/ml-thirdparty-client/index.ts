@@ -26,10 +26,13 @@
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
+import { Options } from './options'
+
 import {
   AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from './models/openapi'
+
 import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
@@ -44,31 +47,41 @@ import Logger, {
  * when it wants to perform a certain operation.
  */
 
-// namespace Client {
-/**
- * An interface definition for the configuration needed to setup the
- * Mojaloop client.
- */
-export interface ClientConfig {
-  mojaloopUrl: string
-  participantId: string
-  alsEndpoint: string
-  thirdpartyRequestsEndpoint: string
-  transactionRequestsEndpoint: string
-  peerEndpoint: string
-}
 
 export class Client {
-  config: ClientConfig
+  /**
+   * An optional simulator that is expected to be passed when using the 
+   * simulator plugin.
+   */
   simulator?: Simulator
-  thirdparty: ThirdpartyRequests
-  mojaloop: MojaloopRequests
 
-  public constructor(config: ClientConfig) {
-    this.config = config
+  /**
+   * An object that is provided by the Mojaloop SDK to handle all
+   * of the necessary setup to make API calls to the admin API of Mojaloop.
+   */
+  mojaloopRequests: MojaloopRequests
+
+  /**
+   * An object that is provided by the Mojaloop SDK to handle all
+   * of the necessary setup to make API calls to the third-party API of Mojaloop.
+   */
+  thirdpartyRequests: ThirdpartyRequests
+
+  /**
+   * An object that keeps the configuration for the client.
+   */
+  private options: Options
+
+  /**
+   * Constructor for the Mojaloop client.
+   * 
+   * @param options a configuration object for the client.
+   */
+  public constructor(options: Options) {
+    this.options = options
 
     const configRequest = {
-      dfspId: this.config.participantId,
+      dfspId: this.options.participantId,
       logger: Logger,
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
@@ -79,14 +92,11 @@ export class Client {
           },
         },
       },
-      peerEndpoint: this.config.peerEndpoint,
-      alsEndpoint: this.config.alsEndpoint,
-      thirdpartyRequestsEndpoint: this.config.thirdpartyRequestsEndpoint,
-      transactionRequestsEndpoint: this.config.transactionRequestsEndpoint,
+      peerEndpoint: this.options.endpoints.default,
     }
 
-    this.thirdparty = new ThirdpartyRequests(configRequest)
-    this.mojaloop = new MojaloopRequests(configRequest)
+    this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
+    this.mojaloopRequests = new MojaloopRequests(configRequest)
   }
 
   /**

@@ -26,52 +26,140 @@
 import OpenApiBackend, { Handler } from 'openapi-backend'
 import { Plugin, Server, Request, ResponseToolkit } from '@hapi/hapi'
 
-export interface OpenApiExtHandlers {
+export interface ExtHandlers {
+  /**
+   * Handler when someone tries to access an endpoint that is not defined
+   * in the open API specification file.
+   */
   notFound: Handler
+
+  /**
+   * Handler when someone tries to access an endpoint that is defined in the 
+   * open API specification file, but with different method. For example, there
+   * is only `GET` method available for `/health`. If someone tries to perform
+   * `POST /health` request, then this handler will be called.
+   */
   methodNotAllowed: Handler
+
+  /**
+   * Handler for endpoints that are defined in the open API specification file,
+   * but not implemented on the server side.
+   */
   notImplemented: Handler
+
+  /**
+   * Handler when someone tries to access a valid endpoint, but the request headers,
+   * params, queries, and/or body do not pass the validation check (e.g., invalid format).
+   */
   validationFail: Handler
 }
 
-export interface OpenApiOpts {
-  baseHost: string
-  definition: {
-    app: string
-    mojaloop: string
-  }
-  quick: boolean
-  strict: boolean
+export interface ApiHandlers {
+  [operationId: string]: Handler
+}
+
+export interface VirtualHostOptions {
+  /**
+   * Subdomain for the virtual host. This value will be joined with the
+   * `baseHost` with a dot character as a separator.
+   */
+  subdomain: string,
+
+  /**
+   * Path to the definition file for the open API.
+   */
+  definition: string,
+
+  /**
+   * Handlers for the open API endpoints.
+   */
   handlers: {
-    api: {
-      app: {
-        [operationId: string]: Handler
-      }
-      mojaloop: {
-        [operationId: string]: Handler
-      }
-    }
-    ext: OpenApiExtHandlers
+    /**
+     * Handle the API endpoints that are defined in the specification file.
+     */
+    api: ApiHandlers,
+
+    /**
+     * Handle extra cases that may happen such as calling undefined endpoints,
+     * validation fail, etc.
+     */
+    ext: ExtHandlers,
   }
 }
 
-const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
+export interface SharedOptions {
+  /**
+   * Base host name for the open API backend. The subdomain for each virtual
+   * host will be appended in the beginning of this value. For example, if
+   * the base host is `api.mojaloop.io` and the subdomain for a virtual host
+   * is `app`, then the resulting address for the virtual host will be
+   * `app.api.mojaloop.io`.
+   */
+  baseHost: string
+
+  /**
+   * In the quick mode, the backend will try to optimize startup by not waiting 
+   * for the OpenAPI specification file to be fully loaded and will not perform 
+   * any validation to it. This might break things if a request come before the
+   * specification is fully loaded. The default value is false, which means the 
+   * backend will wait for the document to be loaded and try to perform validation
+   * upon initialization.
+   */
+  quick?: boolean
+
+  /**
+   * In the strict mode, the open API backend will try to validate the definition 
+   * file and could throw validation errors. The default value is false, which means 
+   * the backend will only give warnings for the errors.
+   */
+  strict?: boolean
+}
+
+export interface Options {
+  /**
+   * Shared options between backends that will be registered by this
+   * plugin. In the future updates, the values specified in this object
+   * may act as default values that could be overwritten by the options
+   * for the respective virtual host. 
+   */
+  shared: SharedOptions
+
+  /**
+   * Config for the open API backend that serves the endpoints
+   * to communicate with the PISP demo app.
+   */
+  app: VirtualHostOptions
+
+  /**
+   * Config for the open API backend that serves the endpoints
+   * to communicate with Mojaloop.
+   */
+  mojaloop: VirtualHostOptions
+}
+
+
+function registerBackend(server: Server, vhostOpts: VirtualHostOptions, sharedOpts: SharedOptions) {
+  // Create the backend object
   const api = new OpenApiBackend({
-    definition: opts.definition.app,
-    quick: opts.quick,
-    strict: opts.strict,
+    definition: vhostOpts.definition,
+    quick: sharedOpts.quick,
+    strict: sharedOpts.strict,
   })
 
+  // Register the endpoints that need to be served by the backend
   api.register({
-    ...opts.handlers.api.app,
-    ...opts.handlers.ext,
+    ...vhostOpts.handlers.api,
+    ...vhostOpts.handlers.ext,
   })
 
   api.init()
 
+  // route all traffic going to the specified virtual host to be passed
+  // to the open API backend.
   server.route({
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     path: '/{path*}',
-    vhost: 'app.' + opts.baseHost,
+    vhost: [vhostOpts.subdomain, sharedOpts.baseHost].join('.'),
     handler: (request: Request, h: ResponseToolkit) =>
       api.handleRequest(
         {
@@ -87,44 +175,20 @@ const registerAppBackend = (server: Server, opts: OpenApiOpts) => {
   })
 }
 
-const registerMojaloopBackend = (server: Server, opts: OpenApiOpts) => {
-  const api = new OpenApiBackend({
-    definition: opts.definition.mojaloop,
-    quick: opts.quick,
-    strict: opts.strict,
-  })
-
-  api.register({
-    ...opts.handlers.api.mojaloop,
-    ...opts.handlers.ext,
-  })
-
-  api.init()
-
-  server.route({
-    method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    path: '/{path*}',
-    vhost: 'mojaloop.' + opts.baseHost,
-    handler: (request: Request, h: ResponseToolkit) =>
-      api.handleRequest(
-        {
-          method: request.method,
-          path: request.path,
-          query: request.query,
-          body: request.payload,
-          headers: request.headers,
-        },
-        request,
-        h
-      ),
-  })
-}
-
-export const OpenApi: Plugin<OpenApiOpts> = {
+/**
+ * Plugin to setup the open API backend that handles the communication
+ * with the mobile app and Mojaloop.
+ */
+export const OpenApi: Plugin<Options> = {
   name: 'PispDemoOpenApi',
   version: '1.0.0',
-  register: async (server: Server, opts: OpenApiOpts) => {
-    registerAppBackend(server, opts)
-    registerMojaloopBackend(server, opts)
+  register: async (server: Server, opts: Options) => {
+    // Register open API backends that serve endpoints to communicate with 
+    // the demo app and Mojaloop. Each will use a virtual host in the format 
+    // of `{subdomain}.{baseHost}`. For example, if the base host name is 
+    // `api.example.com` and the subdomain is `app`, then this plugin will 
+    // serve the APIs on `app.api.example.com`.
+    registerBackend(server, opts.app, opts.shared)
+    registerBackend(server, opts.mojaloop, opts.shared)
   },
 }

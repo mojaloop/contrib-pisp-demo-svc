@@ -25,25 +25,6 @@
 
 import * as Health from '../health'
 
-import * as AppAuthorizationsById from './authorizations/{ID}'
-import * as AppConsentRequests from './consentRequests'
-import * as AppConsentRequestsById from './consentRequests/{ID}'
-import * as AppConsentsById from './consents/{ID}'
-import * as AppConsentsByIdGenerateChallenge from './consents/{ID}/generateChallenge'
-import * as AppParticipants from './participants'
-import * as AppPartiesByTypeAndId from './parties/{Type}/{ID}'
-import * as AppThirdpartyRequestsTransactions from './thirdpartyRequests/transactions'
-
 export const apiHandlers = {
   getHealth: Health.get,
-
-  putAppAuthorizationsById: AppAuthorizationsById.put,
-  postAppConsentRequests: AppConsentRequests.post,
-  putAppConsentRequestsById: AppConsentRequestsById.put,
-  putAppConsentsById: AppConsentsById.put,
-  deleteAppConsentsById: AppConsentsById.remove,
-  postAppConsentsByIdGenerateChallenge: AppConsentsByIdGenerateChallenge.post,
-  getAppParticipants: AppParticipants.get,
-  getAppPartiesByTypeAndId: AppPartiesByTypeAndId.get,
-  postAppThirdpartyRequestsTransactions: AppThirdpartyRequestsTransactions.post,
 }
