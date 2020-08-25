@@ -27,6 +27,7 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
+import { participantRepository } from '~/repositories/participants'
 
 
 export const put: Handler = async (
@@ -38,7 +39,7 @@ export const put: Handler = async (
   // @ts-ignore
   const participants = context.request.body.participants
 
-  participantsRepository.update(participants)
+  participantRepository.update(participants)
 
   return h.response().code(200)
 }
