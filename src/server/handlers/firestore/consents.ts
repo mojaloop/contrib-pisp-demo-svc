@@ -36,7 +36,32 @@ import {
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
 import { Consent } from '~/models/consent'
+import { Status } from '~/models/transaction'
 
-import * as validator from './consents.validator'
+// import * as validator from './consents.validator'
 import { consentRepository } from '~/repositories/consent'
 
+async function handleNewConsent(_: Server, consent: Consent) {
+  // Assign a transactionRequestId to the document and set the initial
+  // status. This operation will create an event that triggers the execution
+  // of the onUpdate function.
+  consentRepository.updateConsentById(consent.id, {
+    consentRequestId: uuid.v4(),
+    status: Status.PENDING_PARTY_LOOKUP,
+  })
+}
+
+export const onCreate: ConsentHandler = async (
+  server: Server,
+  consent: Consent
+): Promise<void> => {
+//   if (transaction.status) {
+//     // Skip transaction that has been processed previously.
+//     // We need this because when the server starts for the first time,
+//     // all existing documents in the Firebase will be treated as a new
+//     // document.
+//     return
+//   }
+
+  await handleNewConsent(server, consent)
+}
