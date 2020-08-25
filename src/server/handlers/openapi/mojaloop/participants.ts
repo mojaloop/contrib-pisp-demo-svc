@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -27,7 +28,17 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+
+export const put: Handler = async (
+  context: Context,
+  request: Request,
+  h: ResponseToolkit
+) => {
   logger.logRequest(context, request, h)
+  // @ts-ignore
+  const participants = request.payload.participants
+
+  // TODO: Implement this function
+  updateFirebaseParticipants(participants)
   return h.response().code(200)
 }
