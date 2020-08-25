@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -27,8 +28,14 @@ import { Plugin, Server } from '@hapi/hapi'
 
 import firebase from '~/lib/firebase'
 import { Transaction } from '~/models/transaction'
+import { Consent } from '~/models/consent'
 
-export type TransactionHandler = (server: Server, transaction: Transaction) => Promise<void>
+export type TransactionHandler = (
+  server: Server,
+  transaction: Transaction
+) => Promise<void>
+
+export type ConsentHandler = (server: Server, consent: Consent) => Promise<void>
 
 /**
  * An interface definition for options that need to be specfied to use this plugin.
@@ -36,6 +43,11 @@ export type TransactionHandler = (server: Server, transaction: Transaction) => P
 export interface Options {
   handlers: {
     transactions: {
+      onCreate?: TransactionHandler
+      onUpdate?: TransactionHandler
+      onRemove?: TransactionHandler
+    }
+    consents: {
       onCreate?: TransactionHandler
       onUpdate?: TransactionHandler
       onRemove?: TransactionHandler
@@ -54,7 +66,10 @@ export interface Options {
  * @param options a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToTransactions = (server: Server, options: Options): (() => void) => {
+const listenToTransactions = (
+  server: Server,
+  options: Options
+): (() => void) => {
   const transactionHandlers = options.handlers.transactions
 
   return firebase
@@ -63,13 +78,59 @@ const listenToTransactions = (server: Server, options: Options): (() => void) =>
     .onSnapshot((querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === 'added' && transactionHandlers.onCreate) {
-          transactionHandlers.onCreate(server, { id: change.doc.id, ...change.doc.data() })
-
+          transactionHandlers.onCreate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         } else if (change.type === 'modified' && transactionHandlers.onUpdate) {
-          transactionHandlers.onUpdate(server, { id: change.doc.id, ...change.doc.data() })
-
+          transactionHandlers.onUpdate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         } else if (change.type === 'removed' && transactionHandlers.onRemove) {
-          transactionHandlers.onRemove(server, { id: change.doc.id, ...change.doc.data() })
+          transactionHandlers.onRemove(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        }
+      })
+    })
+}
+
+/**
+ * Listens to events that happen in the "consents" collection.
+ * Note that when the server starts running, all existing documents in Firestore
+ * will be treated as a document that is created for the first time. The handler for
+ * `onCreate` consent must be able to differentiate whether a document is created in
+ * realtime or because it has persisted in the database when the server starts.
+ *
+ * @param server a server object as defined in the hapi library.
+ * @param options a configuration object for the plugin.
+ * @returns a function to unsubscribe the listener.
+ */
+const listenToConsents = (server: Server, options: Options): (() => void) => {
+  const consentHandlers = options.handlers.consents
+
+  return firebase
+    .firestore()
+    .collection('consents')
+    .onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'added' && consentHandlers.onCreate) {
+          consentHandlers.onCreate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        } else if (change.type === 'modified' && consentHandlers.onUpdate) {
+          consentHandlers.onUpdate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        } else if (change.type === 'removed' && consentHandlers.onRemove) {
+          consentHandlers.onRemove(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         }
       })
     })
@@ -84,10 +145,12 @@ export const Firestore: Plugin<Options> = {
   version: '1.0.0',
   register: async (server: Server, options: Options) => {
     const unsubscribeTransactions = listenToTransactions(server, options)
+    const unsubscribeConsents = listenToConsents(server, options)
 
     // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {
       unsubscribeTransactions()
+      unsubscribeConsents()
     })
   },
 }
