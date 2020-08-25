@@ -35,11 +35,11 @@ export interface IConsentRepository {
    *
    * @param id    Consent ID of the document that needs to be retrieved.
    */
-  getByConsentId(id: string): Promise<Consent>
+  getConsentById(id: string): Promise<Consent>
 }
 
 export class FirebaseConsentRepository implements IConsentRepository {
-  async getByConsentId(id: string): Promise<Consent> {
+  async getConsentById(id: string): Promise<Consent> {
     return new Promise((resolve, reject) => {
       firebase
         .firestore()

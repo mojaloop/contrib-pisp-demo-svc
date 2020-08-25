@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -33,18 +34,17 @@ import {
   AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
 
-import { TransactionHandler } from '~/server/plugins/internal/firestore'
-import { Transaction, Status, ResponseType } from '~/models/transaction'
-import { transactionRepository } from '~/repositories/transaction'
+import { ConsentHandler } from '~/server/plugins/internal/firestore'
+import { Consent } from '~/models/consent'
 
-import * as validator from './transactions.validator'
+import * as validator from './consents.validator'
 import { consentRepository } from '~/repositories/consent'
 
 async function handleNewTransaction(_: Server, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
-  transactionRepository.updateById(transaction.id, {
+  consentRepository.updateById(transaction.id, {
     transactionRequestId: uuid.v4(),
     status: Status.PENDING_PARTY_LOOKUP,
   })
