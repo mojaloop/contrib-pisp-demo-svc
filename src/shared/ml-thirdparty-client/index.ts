@@ -47,10 +47,9 @@ import Logger, {
  * when it wants to perform a certain operation.
  */
 
-
 export class Client {
   /**
-   * An optional simulator that is expected to be passed when using the 
+   * An optional simulator that is expected to be passed when using the
    * simulator plugin.
    */
   simulator?: Simulator
@@ -74,7 +73,7 @@ export class Client {
 
   /**
    * Constructor for the Mojaloop client.
-   * 
+   *
    * @param options a configuration object for the client.
    */
   public constructor(options: Options) {
@@ -104,7 +103,6 @@ export class Client {
    *
    * @param type  the type of party identifier
    * @param id    the party identifier
-   * @param idSubValue    the party identifier subvalue (default: empty)
    */
   public async getParties(
     type: PartyIdType,
@@ -118,8 +116,7 @@ export class Client {
       this.simulator.getParties(type, id)
     }
 
-    // TODO: Check if we pass in a subvalue?
-    this.mojaloop.getParties(type, id, idSubValue)
+    this.mojaloopRequests.getParties(type, id, idSubValue)
   }
 
   /**
@@ -137,9 +134,10 @@ export class Client {
       return this.simulator.postTransactions(requestBody)
     }
 
-    this.thirdparty.postThirdpartyRequestsTransactions(
+    // TODO: Confirm destination id
+    this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       requestBody,
-      this.config.participantId
+      this.options.participantId
     )
   }
 
@@ -166,10 +164,11 @@ export class Client {
       return this.simulator.putAuthorizations(id, requestBody, transactionId)
     }
 
-    this.thirdparty.putThirdpartyRequestsTransactionsAuthorizations(
+    // TODO: Confirm destination id
+    this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
       requestBody,
       id,
-      this.config.participantId
+      this.options.participantId
     )
   }
 }
