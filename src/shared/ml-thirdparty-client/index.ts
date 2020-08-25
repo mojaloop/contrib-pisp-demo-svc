@@ -37,6 +37,7 @@ import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -47,10 +48,9 @@ import Logger, {
  * when it wants to perform a certain operation.
  */
 
-
 export class Client {
   /**
-   * An optional simulator that is expected to be passed when using the 
+   * An optional simulator that is expected to be passed when using the
    * simulator plugin.
    */
   simulator?: Simulator
@@ -74,7 +74,7 @@ export class Client {
 
   /**
    * Constructor for the Mojaloop client.
-   * 
+   *
    * @param options a configuration object for the client.
    */
   public constructor(options: Options) {
@@ -156,5 +156,22 @@ export class Client {
     }
 
     // TODO: Implement communication with Mojaloop.
+  }
+
+  public async postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest
+  ): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      // return this.simulator
+    }
+
+    // TODO: Check Destination id
+    this.thirdpartyRequests.postConsentRequests(
+      requestBody,
+      this.options.participantId
+    )
   }
 }
