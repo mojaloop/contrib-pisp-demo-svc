@@ -35,7 +35,13 @@ export const put: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
 
-  const { id, authChannels, authUri, status } = context.request.body
-  consentRepository.updateConsentById(id, { authChannels, authUri, status })
+  const { id, authChannels, authUri } = context.request.body
+  consentRepository.updateConsentById(id, {
+    authChannels,
+    authUri,
+    // TODO: check how consent status field is being used
+    // TODO: Shift this to enum - if the field is required
+    status: 'AUTHENTICATION_REQUIRED',
+  })
   return h.response().code(200)
 }
