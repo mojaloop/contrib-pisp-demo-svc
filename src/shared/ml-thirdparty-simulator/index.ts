@@ -37,6 +37,7 @@ import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -154,6 +155,77 @@ export class Simulator {
       },
       payload,
     })
+  }
+
+  public async postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    const targetUrl = '/consentRequests/'
+    const payload = ConsentFactory.createPostConsentRequestsRequest(requestBody, destParticipantId)
+
+    this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  public async putConsentRequests(
+    consentRequestId: string,
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    const targetUrl = '/consentRequests/' + consentRequestId
+    const payload = ConsentFactory.createPutConsentRequestsRequest(consentRequestId, requestBody, destParticipantId)
+
+    this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  public async postGenerateChallengeForConsent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _consentId: string
+  ): Promise<void> {
+    // TODO: Add once implemented in sdk-standard components
+  }
+
+  public async putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    const targetUrl = '/consents/' + consentId
+    const payload = ConsentFactory.createPutConsentRequest(consentId, requestBody, destParticipantId)
+
+    this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async postRevokeConsent(_consentId: string): Promise<void> {
+    // TODO: Add once implemented in sdk-standard components
   }
 
   /**
