@@ -23,7 +23,12 @@
  --------------
  ******/
 
-import { Party } from '~/shared/ml-thirdparty-client/models/core'
+import { Party, Account } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  TCredential,
+  TCredentialScope,
+  TAuthChannel,
+} from '@mojaloop/sdk-standard-components'
 
 export enum ConsentStatus {
   /**
@@ -61,7 +66,8 @@ export interface Consent {
 
   /**
    * Common ID between the PISP and FSP for the Consent object. This tells
-   * DFSP and auth-service which constent allows the PISP to initiate transaction.
+   * DFSP and auth-service which constent allows the PISP to initiate
+   * transaction.
    */
   consentId?: string
 
@@ -74,4 +80,56 @@ export interface Consent {
    * Information about the current status of the consent.
    */
   status?: ConsentStatus
+
+  /**
+   * User Id provided by app
+   */
+  userId?: string
+
+  /**
+   * Id required to identify a specific consent request
+   */
+  consentRequestId?: string
+
+  /**
+   * Array of accounts that exist for a given user
+   */
+  accounts?: Account[]
+
+  /**
+   * List of channels available for a user to authenticate themselves with
+   */
+  authChannels?: TAuthChannel[]
+
+  /**
+   * If authentication channel chosed is WEB, then this is the url which a user
+   * must visit to authenticate themselves
+   */
+  authUri?: string
+
+  /**
+   * Secret token generated upon authentication
+   */
+  authToken?: string
+
+  /**
+   * Id of initiation party e.g- PISP
+   */
+  initiatorId?: string
+
+  /**
+   * Id of participant PISP/DFSP/party
+   */
+  participantId?: string
+
+  /**
+   * Array of Scope objects - which inform what actions are allowed for a given
+   * user account
+   */
+  scopes?: TCredentialScope[]
+
+  /**
+   * Credential object used for authentication of consent
+   */
+  credential?: TCredential
 }
