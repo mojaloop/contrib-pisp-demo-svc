@@ -65,3 +65,8 @@ You can use any info for the partyIdentifier and names but the consentId must be
 (You can copy the example exactly and it will work)
 
 This represents the consent that the user has given to PISP app to be able to access their account information. When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection.
+
+# Starting the server
+After all of the steps are done. Type `npm run start` in the command line in the project directory.
+
+Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
