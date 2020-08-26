@@ -25,6 +25,34 @@
 
 import { Party } from '~/shared/ml-thirdparty-client/models/core'
 
+export enum ConsentStatus {
+  /**
+   * Waiting for a callback from Mojaloop to give the payee information.
+   */
+  PENDING_PARTY_LOOKUP = 'PENDING_PARTY_LOOKUP',
+
+  /**
+   * Waiting for the user to confirm payee information and provide more
+   * details about the transaction.
+   */
+  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
+
+  /**
+   * Waiting for the user to authorize the consent.
+   */
+  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
+
+  /**
+   * The consent is authorized and active.
+   */
+  ACTIVE = 'ACTIVE',
+
+    /**
+   * The consent is revoked and no longer valid.
+   */
+  REVOKED = 'REVOKED',
+}
+
 export interface Consent {
   /**
    * Internal id that is used to identify the transaction.
@@ -41,4 +69,9 @@ export interface Consent {
    * Information about the party that is associated with the consent.
    */
   party?: Party
+
+  /**
+   * Information about the current status of the consent.
+   */
+  status: ConsentStatus
 }
