@@ -158,10 +158,19 @@ export class Client {
     // TODO: Implement communication with Mojaloop.
   }
 
+  /**
+   * Gets a list of PISP/DFSP participants
+   */
   public async getParticipants(): Promise<void> {
     // TODO: Add once implemented in sdk-standard components
   }
 
+  /**
+   * Performs a request for a new consent
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest,
     destParticipantId: string
@@ -172,6 +181,13 @@ export class Client {
     )
   }
 
+  /**
+   * Performs a a put request with authenticated consent request
+   *
+   * @param consentRequestId    unique identifier of the consent request
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async putConsentRequests(
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest,
@@ -184,6 +200,11 @@ export class Client {
     )
   }
 
+  /**
+   * Performs a request to generate a challenge for FIDO registration
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _consentId: string
@@ -191,6 +212,13 @@ export class Client {
     // TODO: Add once implemented in sdk-standard components
   }
 
+  /**
+   * Performs a a put request with validated consent credential
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async putConsentId(
     consentId: string,
     requestBody: SDKStandardComponents.PutConsentsRequest,
@@ -203,6 +231,11 @@ export class Client {
     )
   }
 
+  /**
+   * Performs a request to revoke the Consent object and unlink
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(_consentId: string): Promise<void> {
     // TODO: Add once implemented in sdk-standard components
