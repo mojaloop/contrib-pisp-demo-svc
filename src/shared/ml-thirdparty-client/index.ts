@@ -37,6 +37,7 @@ import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -47,10 +48,9 @@ import Logger, {
  * when it wants to perform a certain operation.
  */
 
-
 export class Client {
   /**
-   * An optional simulator that is expected to be passed when using the 
+   * An optional simulator that is expected to be passed when using the
    * simulator plugin.
    */
   simulator?: Simulator
@@ -74,7 +74,7 @@ export class Client {
 
   /**
    * Constructor for the Mojaloop client.
-   * 
+   *
    * @param options a configuration object for the client.
    */
   public constructor(options: Options) {
@@ -156,5 +156,55 @@ export class Client {
     }
 
     // TODO: Implement communication with Mojaloop.
+  }
+
+  public async getParticipants(): Promise<void> {
+    // TODO: Add once implemented in sdk-standard components
+  }
+
+  public async postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    await this.thirdpartyRequests.postConsentRequests(
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  public async putConsentRequests(
+    consentRequestId: string,
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    await this.thirdpartyRequests.putConsentRequests(
+      consentRequestId,
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  public async postGenerateChallengeForConsent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _consentId: string
+  ): Promise<void> {
+    // TODO: Add once implemented in sdk-standard components
+  }
+
+  public async putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    await this.thirdpartyRequests.putConsents(
+      consentId,
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async postRevokeConsent(_consentId: string): Promise<void> {
+    // TODO: Add once implemented in sdk-standard components
   }
 }
