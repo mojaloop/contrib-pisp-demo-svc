@@ -33,7 +33,7 @@ deactivate App
 
 rnote right of Firebase #Light
   ""event(""
-  ""  "document.create",""
+  ""  "document.update",""
   ""  "consents/abc123",""
   ""  <snapshot object>""
   "")""
