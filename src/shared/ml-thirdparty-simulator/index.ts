@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -57,7 +58,7 @@ export class Simulator {
 
   /**
    * Constructor for the Mojaloop simulator.
-   * 
+   *
    * @param server a server object to be used to inject the fake Mojaloop callbacks.
    * @param options a configuration object for the simulator.
    */
@@ -71,9 +72,9 @@ export class Simulator {
   }
 
   /**
-   * Simulates a party lookup operation in Mojaloop, without the need of 
+   * Simulates a party lookup operation in Mojaloop, without the need of
    * sending `GET /parties/{Type}/{ID}` request.
-   * 
+   *
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
@@ -104,12 +105,16 @@ export class Simulator {
   /**
    * Simulates a transaction initiation in Mojaloop by third-party application,
    * without the need of sending `POST /thirdpartyRequests/transactions` request.
-   * 
+   *
    * @param request a transaction request object as defined by the Mojaloop API.
    */
-  public async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+  public async postTransactions(
+    request: ThirdPartyTransactionRequest
+  ): Promise<void> {
     const targetUrl = '/authorizations'
-    const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
+    const payload = AuthorizationFactory.createPostAuthorizationsRequest(
+      request
+    )
 
     if (this.options.delay) {
       // Delay operations to simulate network latency in real communication
@@ -132,7 +137,7 @@ export class Simulator {
   /**
    * Simulates a transaction authorization in Mojaloop by third-party application,
    * without the need of sending `PUT /authorizations/{ID}` request.
-   * 
+   *
    * @param id            the transaction request ID that is used to identify the
    *                      authorization.
    * @param request       a transaction authorization object as defined by the Mojaloop API.
@@ -140,10 +145,17 @@ export class Simulator {
    *                      value is required by the simulator as it will be contained in the
    *                      response object.
    */
-  public async putAuthorizations(id: string,
-    request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
+  public async putAuthorizations(
+    id: string,
+    request: AuthorizationsPutIdRequest,
+    transactionId: string
+  ): Promise<void> {
     const targetUrl = '/transfers/' + faker.random.uuid()
-    const payload = TransferFactory.createTransferIdPutRequest(id, request, transactionId)
+    const payload = TransferFactory.createTransferIdPutRequest(
+      id,
+      request,
+      transactionId
+    )
 
     this.server.inject({
       method: 'PUT',
@@ -162,7 +174,10 @@ export class Simulator {
     destParticipantId: string
   ): Promise<void> {
     const targetUrl = '/consentRequests/'
-    const payload = ConsentFactory.createPostConsentRequestsRequest(requestBody, destParticipantId)
+    const payload = ConsentFactory.createPostConsentRequestsRequest(
+      requestBody,
+      destParticipantId
+    )
 
     this.server.inject({
       method: 'POST',
@@ -182,7 +197,11 @@ export class Simulator {
     destParticipantId: string
   ): Promise<void> {
     const targetUrl = '/consentRequests/' + consentRequestId
-    const payload = ConsentFactory.createPutConsentRequestsRequest(consentRequestId, requestBody, destParticipantId)
+    const payload = ConsentFactory.createPutConsentRequestsRequest(
+      consentRequestId,
+      requestBody,
+      destParticipantId
+    )
 
     this.server.inject({
       method: 'PUT',
@@ -198,9 +217,22 @@ export class Simulator {
 
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string
+    consentId: string
   ): Promise<void> {
-    // TODO: Add once implemented in sdk-standard components
+    // TODO: Refactor once implemented in sdk-standard components
+    const targetUrl = '/consents/' + consentId + '/generateChallenge'
+    const payload = {}
+
+    this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
   }
 
   public async putConsentId(
@@ -209,7 +241,11 @@ export class Simulator {
     destParticipantId: string
   ): Promise<void> {
     const targetUrl = '/consents/' + consentId
-    const payload = ConsentFactory.createPutConsentRequest(consentId, requestBody, destParticipantId)
+    const payload = ConsentFactory.createPutConsentRequest(
+      consentId,
+      requestBody,
+      destParticipantId
+    )
 
     this.server.inject({
       method: 'PUT',
@@ -224,13 +260,26 @@ export class Simulator {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async postRevokeConsent(_consentId: string): Promise<void> {
-    // TODO: Add once implemented in sdk-standard components
+  public async postRevokeConsent(consentId: string): Promise<void> {
+    // TODO: Refactor once implemented in sdk-standard components
+    const targetUrl = '/consents/' + consentId + '/revoke'
+    const payload = {}
+
+    this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
   }
 
   /**
    * Returns a promise that will be resolved after a certain duration.
-   * 
+   *
    * @param ms the length of delay in milisecond.
    */
   private async delay(ms: number): Promise<void> {
