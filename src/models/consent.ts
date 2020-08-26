@@ -73,5 +73,5 @@ export interface Consent {
   /**
    * Information about the current status of the consent.
    */
-  status: ConsentStatus
+  status?: ConsentStatus
 }
