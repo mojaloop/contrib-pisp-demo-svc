@@ -33,7 +33,7 @@ Create a `.env` file in your local environment.
 Put these lines into that file:
 ```
 EXPERIMENTAL_MODE=on
-EXPERIMENTAL_DELAY=5000
+EXPERIMENTAL_DELAY=2000
 ```
 These will enable the Mojaloop simulator until the relevant features on the real Mojaloop network are implemented.
 To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations)).
@@ -78,4 +78,4 @@ Go to the PISP demo app and try to send money to a payee. You should see that th
 
 # Configurations
 
-Take a look at `src/lib/config` to see all the different aspects of the server that you can configure.
+Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
