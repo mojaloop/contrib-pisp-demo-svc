@@ -21,6 +21,7 @@
  * Google
  - Steven Wijaya <stevenwjy@google.com>
  - Raman Mangla <ramanmangla@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -162,6 +163,12 @@ export class Client {
    * Gets a list of PISP/DFSP participants
    */
   public async getParticipants(): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.getParticipants()
+    }
     // TODO: Add once implemented in sdk-standard components
   }
 
@@ -175,6 +182,12 @@ export class Client {
     requestBody: SDKStandardComponents.PostConsentRequestsRequest,
     destParticipantId: string
   ): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.postConsentRequests(requestBody, destParticipantId)
+    }
     await this.thirdpartyRequests.postConsentRequests(
       requestBody,
       destParticipantId
@@ -193,6 +206,16 @@ export class Client {
     requestBody: SDKStandardComponents.PutConsentRequestsRequest,
     destParticipantId: string
   ): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.putConsentRequests(
+        consentRequestId,
+        requestBody,
+        destParticipantId
+      )
+    }
     await this.thirdpartyRequests.putConsentRequests(
       consentRequestId,
       requestBody,
@@ -207,8 +230,14 @@ export class Client {
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string
+    consentId: string
   ): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.postGenerateChallengeForConsent(consentId)
+    }
     // TODO: Add once implemented in sdk-standard components
   }
 
@@ -224,6 +253,16 @@ export class Client {
     requestBody: SDKStandardComponents.PutConsentsRequest,
     destParticipantId: string
   ): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.putConsentId(
+        consentId,
+        requestBody,
+        destParticipantId
+      )
+    }
     await this.thirdpartyRequests.putConsents(
       consentId,
       requestBody,
@@ -237,7 +276,13 @@ export class Client {
    * @param consentId     identifier of consent as defined by Mojaloop API.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async postRevokeConsent(_consentId: string): Promise<void> {
+  public async postRevokeConsent(consentId: string): Promise<void> {
+    if (this.simulator) {
+      // If the client is configured with a simulator, then it will not
+      // communicate with Mojaloop directly. Instead, it will only generate
+      // a random response that is injected to the internal routes.
+      return this.simulator.postRevokeConsent(consentId)
+    }
     // TODO: Add once implemented in sdk-standard components
   }
 }
