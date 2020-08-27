@@ -9,6 +9,8 @@ A server used to communicate with the Mojaloop network to facilitate account lin
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
 Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey`.
 
+Note that this path is just the default path but can be configured (see [Configurations section](#configurations).
+
 The contents of the JSON file should look like
 ```
 {
@@ -34,6 +36,7 @@ EXPERIMENTAL_MODE=on
 EXPERIMENTAL_DELAY=5000
 ```
 These will enable the Mojaloop simulator until the relevant features on the real Mojaloop network are implemented.
+To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations).
 
 
 3. Mock Consent Objects
@@ -61,13 +64,17 @@ You need to create a collection in your Firestore named "consents" and then crea
 
 Note: The nested structure can be replicated by using the Map data type in Firestore.
 
-You can use any info for the partyIdentifier and names but the consentId must be 555 for now - this is hardcoded in the serverside code.
+You can use any info for the partyIdentifier and names but the consentId must be 555 for now - this is hardcoded in the mobile app so the consentId must match.
 
 (You can copy the example exactly and it will work)
 
-This represents the consent that the user has given to PISP app to be able to access their account information. When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection.
+This represents the consent that the user has given to PISP app to be able to access their account information. When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection from the account linking process.
 
 # Starting the server
 After all of the steps are done. Type `npm run start` in the command line in the project directory.
 
 Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
+
+# Configurations
+
+Take a look at `src/lib/config` to see all the different aspects of the server that you can configure.
