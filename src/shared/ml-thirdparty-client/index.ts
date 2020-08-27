@@ -186,7 +186,7 @@ export class Client {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
-      return this.simulator.postConsentRequests(requestBody, destParticipantId)
+      return this.simulator.postConsentRequests(requestBody)
     }
     await this.thirdpartyRequests.postConsentRequests(
       requestBody,
@@ -210,11 +210,7 @@ export class Client {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
-      return this.simulator.putConsentRequests(
-        consentRequestId,
-        requestBody,
-        destParticipantId
-      )
+      return this.simulator.putConsentRequests(consentRequestId, requestBody)
     }
     await this.thirdpartyRequests.putConsentRequests(
       consentRequestId,
@@ -257,11 +253,7 @@ export class Client {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
-      return this.simulator.putConsentId(
-        consentId,
-        requestBody,
-        destParticipantId
-      )
+      return this.simulator.putConsentId(consentId, requestBody)
     }
     await this.thirdpartyRequests.putConsents(
       consentId,
