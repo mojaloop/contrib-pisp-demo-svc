@@ -195,7 +195,7 @@ export class Client {
   }
 
   /**
-   * Performs a a put request with authenticated consent request
+   * Performs a put request with authenticated consent request
    *
    * @param consentRequestId    unique identifier of the consent request
    * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
@@ -242,7 +242,7 @@ export class Client {
   }
 
   /**
-   * Performs a a put request with validated consent credential
+   * Performs a put request with validated consent credential
    *
    * @param consentId     identifier of consent as defined by Mojaloop API.
    * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
