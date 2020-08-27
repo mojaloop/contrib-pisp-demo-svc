@@ -123,7 +123,7 @@ this endpoint:
 - `HOST_URL`      : URL of the central ledger service in Mojaloop. Example: `https://central-ledger.local`.
 - `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
-                    Example: `https://pisp-demo-server.local/parties/{{partyIdType}}/{{partyIdentifier}}`.
+                    Example: `https://pisp-demo-server.local/parties/{{partyIdType}}/{{partyIdentifier}}/error`.
 
 ### `PUT /consentRequests/{ID}`
 
@@ -203,3 +203,28 @@ to perform a transaction. Below are the values for some specific variables to re
 - `TYPE_ENUM`     : `FSPIOP_CALLBACK_URL_TRANSFER_PUT_ERROR`
 - `PISP_ENDPOINT` : URL of the PISP endpoint that handles this callback. 
                     Example: `https://pisp-demo-server.local/transfers/{{transferId}}/error`.
+
+### Run A Script To Register All of The URLs
+
+For convenience, there is a script provided in this repository to register all of the URLs described above.
+
+Currently, there are three only three options that are required to run the script:
+- `-h` or `--host`: Host name for the pisp, which includes the transport protocol. The host name will be 
+  appended with the endpoint paths that are specified on the Mojaloop OpenAPI specification. For example,
+  if the host is "https://example.com" and there is an endpoint with path "/participants", then it means
+  the PISP needs to serve the following endpoint: "https://example.com/participants".
+- `-p` or `--participant-id`: Participant ID of the PISP that is registered in Mojaloop.
+- `--ml-central-ledger`: Host name of the central ledger service in Mojaloop, which is currently needed
+  to register all of the endpoints described above. The value should also include the transport protocol.
+  PISP endpoints that are related to the service will be registered by sending the registration object 
+  to the given address. Example: "https://central-ledger.local".
+
+You can execute the code using the npm script `register-url`. For example, you can try to enter the
+following command in the terminal when you are located at the root directory of this project:
+
+```
+npm run register-url -- -h https://pisp-demo-server.local -p pisp --ml-central-ledger https://central-ledger.local
+```
+
+Notice that `--` is used here, which is a special argument to make the provided arguments available for the
+underlying script execution.
