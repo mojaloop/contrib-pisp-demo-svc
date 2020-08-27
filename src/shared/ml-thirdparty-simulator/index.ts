@@ -198,7 +198,7 @@ export class Simulator {
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): Promise<void> {
-    const targetUrl = '/consentRequests/'
+    const targetUrl = '/consentRequests/' + requestBody.id
     const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
     this.server.inject({
@@ -269,7 +269,7 @@ export class Simulator {
   }
 
   /**
-   * Performs a put request with validated consent credential in Mojaloop by third-party application,
+   * Performs a put request with registered consent credential in Mojaloop by third-party application,
    * without the need of sending `POST /consents/{ID}/generateChallenge` request.
    *
    * @param consentId     identifier of consent as defined by Mojaloop API.
