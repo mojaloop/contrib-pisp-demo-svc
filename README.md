@@ -9,7 +9,7 @@ A server used to communicate with the Mojaloop network to facilitate account lin
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
 Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey`.
 
-Note that this path is just the default path but can be configured (see [Configurations section](#configurations).
+Note that this path is just the default path but can be configured (see [Configurations section](#configurations)).
 
 The contents of the JSON file should look like
 ```
@@ -36,7 +36,7 @@ EXPERIMENTAL_MODE=on
 EXPERIMENTAL_DELAY=5000
 ```
 These will enable the Mojaloop simulator until the relevant features on the real Mojaloop network are implemented.
-To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations).
+To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations)).
 
 
 3. Mock Consent Objects
@@ -45,18 +45,19 @@ You need to create a collection in your Firestore named "consents" and then crea
 
 ```
 {
-  "consentId": "555"
-"party":{
-   "partyIdInfo":{
-      "partyIdType":"MSISDN",
-      "partyIdentifier":"+1-111-111-1111",
-      "fspId":"fspb"
-   },
-   "name":"Bob Beaver",
-   "personalInfo":{
-      "complexName":{
-         "firstName":"Bob",
-         "lastName":"Beaver"
+   "consentId":"555",
+   "party":{
+      "partyIdInfo":{
+         "partyIdType":"MSISDN",
+         "partyIdentifier":"+1-111-111-1111",
+         "fspId":"fspb"
+      },
+      "name":"Bob Beaver",
+      "personalInfo":{
+         "complexName":{
+            "firstName":"Bob",
+            "lastName":"Beaver"
+         }
       }
    }
 }
@@ -64,7 +65,7 @@ You need to create a collection in your Firestore named "consents" and then crea
 
 Note: The nested structure can be replicated by using the Map data type in Firestore.
 
-You can use any info for the partyIdentifier and names but the consentId must be 555 for now - this is hardcoded in the mobile app so the consentId must match.
+You can use any info for the partyIdentifier and names but the consentId must be 555 or 985 for now - this is hardcoded in the mobile app so the consentId must match.
 
 (You can copy the example exactly and it will work)
 
