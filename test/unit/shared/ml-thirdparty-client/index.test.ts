@@ -218,10 +218,7 @@ describe('Mojaloop third-party client', () => {
 
     client.postConsentRequests(postConsentRequestRequest, destParticipantId)
 
-    expect(simulatorSpy).toBeCalledWith(
-      postConsentRequestRequest,
-      destParticipantId
-    )
+    expect(simulatorSpy).toBeCalledWith(postConsentRequestRequest)
   })
 
   it('Should use simulator to perform a put request for authenticated consent when simulator provided', (): void => {
@@ -238,8 +235,7 @@ describe('Mojaloop third-party client', () => {
 
     expect(simulatorSpy).toBeCalledWith(
       consentRequestId,
-      putConsentRequestRequest,
-      destParticipantId
+      putConsentRequestRequest
     )
   })
 
@@ -262,14 +258,10 @@ describe('Mojaloop third-party client', () => {
 
     client.putConsentId(consentId, putConsentRequest, destParticipantId)
 
-    expect(simulatorSpy).toBeCalledWith(
-      consentId,
-      putConsentRequest,
-      destParticipantId
-    )
+    expect(simulatorSpy).toBeCalledWith(consentId, putConsentRequest)
   })
 
-  it('Should use simulator to perform a put request for authenticated consent, when simulator provided', (): void => {
+  it('Should use simulator to perform a post request to revoke a given consent, when simulator provided', (): void => {
     client.simulator = simulator
     const simulatorSpy = jest
       .spyOn(simulator, 'postRevokeConsent')
