@@ -1,12 +1,12 @@
 # PISP Demo Server (Work in Progress)
 
-A server used to communicate with the Mojaloop network to facilitate account linking and transactions for the PISP demo app (see: https://github.com/mojaloop/pisp-demo-app-flutter).
+A server used to communicate with the Mojaloop network to facilitate account linking and transactions for the [PISP demo app](https://github.com/mojaloop/pisp-demo-app-flutter).
 
 # Quick Setup Guide
 
 1. Firebase SDK Admin Key
 
-Follow the instructions outlined here: https://firebase.google.com/docs/admin/setup to obtain a .json file containing your secret key.
+Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
 Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey`.
 
 The contents of the JSON file should look like
@@ -41,7 +41,8 @@ These will enable the Mojaloop simulator until the relevant features on the real
 You need to create a collection in your Firestore named "consents" and then create an object in that collection like so: 
 
 ```
-consentId: "555"
+{
+  "consentId": "555"
 "party":{
    "partyIdInfo":{
       "partyIdType":"MSISDN",
