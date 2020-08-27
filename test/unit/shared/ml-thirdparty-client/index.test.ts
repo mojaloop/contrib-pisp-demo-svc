@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -42,6 +43,7 @@ import {
   AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionRequestId: '888',
@@ -90,6 +92,58 @@ const authorizationData: AuthorizationsPutIdRequest = {
   responseType: AuthenticationResponseType.ENTERED,
 }
 
+const consentId = '123'
+
+const destParticipantId = 'dfspA'
+
+const consentRequestId = 'ab123'
+
+const scopes = [
+  {
+    accountId: 'as2342',
+    actions: ['account.getAccess', 'account.transferMoney'],
+  },
+  {
+    accountId: 'as22',
+    actions: ['account.getAccess'],
+  },
+]
+
+const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
+  id: '111',
+  initiatorId: 'pispA',
+  authChannels: ['WEB', 'OTP'],
+  scopes,
+  callbackUri: 'https://pisp.com',
+}
+
+const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
+  id: '111',
+  initiatorId: 'pispA',
+  authChannels: ['WEB', 'OTP'],
+  scopes,
+  callbackUri: 'https://pisp.com',
+  authorizationUri: 'https://dfspAuth.com',
+  authToken: 'secret-token',
+}
+
+const putConsentRequest: SDKStandardComponents.PutConsentsRequest = {
+  requestId: '88',
+  initiatorId: 'pispA',
+  participantId: 'participant',
+  scopes,
+  credential: {
+    id: '9876',
+    credentialType: 'FIDO',
+    status: 'PENDING',
+    challenge: {
+      payload: 'string_representing_challenge_payload',
+      signature: 'string_representing_challenge_signature',
+    },
+    payload: 'string_representing_credential_payload',
+  },
+}
+
 describe('Mojaloop third-party client', () => {
   let client: Client
   let simulator: Simulator
@@ -99,7 +153,7 @@ describe('Mojaloop third-party client', () => {
     client = new Client({
       participantId: 'pisp',
       endpoints: {
-        default: 'api.mojaloop.io'
+        default: 'api.mojaloop.io',
       },
     })
 
@@ -110,7 +164,7 @@ describe('Mojaloop third-party client', () => {
     })
   })
 
-  it('Should use simulator to perform party lookup when it is provided', (): void => {
+  it('Should use simulator to perform party lookup when simulator provided', (): void => {
     client.simulator = simulator
     const simulatorSpy = jest
       .spyOn(simulator, 'getParties')
@@ -123,7 +177,7 @@ describe('Mojaloop third-party client', () => {
     expect(simulatorSpy).toBeCalledWith(type, identifier)
   })
 
-  it('Should use simulator to perform transaction request when it is provided', (): void => {
+  it('Should use simulator to perform transaction request when simulator provided', (): void => {
     client.simulator = simulator
     const simulatorSpy = jest
       .spyOn(simulator, 'postTransactions')
@@ -134,7 +188,7 @@ describe('Mojaloop third-party client', () => {
     expect(simulatorSpy).toBeCalledWith(transactionRequestData)
   })
 
-  it('Should use simulator to perform authorization when it is provided', (): void => {
+  it('Should use simulator to perform authorization when simulator provided', (): void => {
     client.simulator = simulator
     const simulatorSpy = jest
       .spyOn(simulator, 'putAuthorizations')
@@ -143,5 +197,86 @@ describe('Mojaloop third-party client', () => {
     client.putAuthorizations('111', authorizationData, '222')
 
     expect(simulatorSpy).toBeCalledWith('111', authorizationData, '222')
+  })
+
+  it('Should use simulator to perform participant lookup when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'getParticipants')
+      .mockImplementation()
+
+    client.getParticipants()
+
+    expect(simulatorSpy).toBeCalledWith()
+  })
+
+  it('Should use simulator to perform request for new consent when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'postConsentRequests')
+      .mockImplementation()
+
+    client.postConsentRequests(postConsentRequestRequest, destParticipantId)
+
+    expect(simulatorSpy).toBeCalledWith(
+      postConsentRequestRequest,
+      destParticipantId
+    )
+  })
+
+  it('Should use simulator to perform a put request for authenticated consent when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'putConsentRequests')
+      .mockImplementation()
+
+    client.putConsentRequests(
+      consentRequestId,
+      putConsentRequestRequest,
+      destParticipantId
+    )
+
+    expect(simulatorSpy).toBeCalledWith(
+      consentRequestId,
+      putConsentRequestRequest,
+      destParticipantId
+    )
+  })
+
+  it('Should use simulator to perform a request to generate a challenge for consent, when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'postGenerateChallengeForConsent')
+      .mockImplementation()
+
+    client.postGenerateChallengeForConsent(consentId)
+
+    expect(simulatorSpy).toBeCalledWith(consentId)
+  })
+
+  it('Should use simulator to perform a put request for validated consent credential, when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'putConsentId')
+      .mockImplementation()
+
+    client.putConsentId(consentId, putConsentRequest, destParticipantId)
+
+    expect(simulatorSpy).toBeCalledWith(
+      consentId,
+      putConsentRequest,
+      destParticipantId
+    )
+  })
+
+  it('Should use simulator to perform a put request for authenticated consent, when simulator provided', (): void => {
+    client.simulator = simulator
+    const simulatorSpy = jest
+      .spyOn(simulator, 'postRevokeConsent')
+      .mockImplementation()
+
+    client.postRevokeConsent(consentId)
+
+    expect(simulatorSpy).toBeCalledWith(consentId)
   })
 })
