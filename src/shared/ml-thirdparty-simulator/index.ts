@@ -39,6 +39,7 @@ import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { ConsentFactory } from './factories/consents'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -169,15 +170,15 @@ export class Simulator {
     })
   }
 
-   /**
+  /**
    * Gets a list of PISP/DFSP participants
    */
   public async getParticipants(): Promise<void> {
     const targetUrl = '/participants'
-    const payload = {}
+    const payload = ParticipantFactory.getParticipants()
 
     this.server.inject({
-      method: 'GET',
+      method: 'PUT',
       url: targetUrl,
       headers: {
         host: this.options.host ?? '',
@@ -193,31 +194,7 @@ export class Simulator {
     destParticipantId: string
   ): Promise<void> {
     const targetUrl = '/consentRequests/'
-    const payload = ConsentFactory.createPostConsentRequestsRequest(
-      requestBody,
-      destParticipantId
-    )
-
-    this.server.inject({
-      method: 'POST',
-      url: targetUrl,
-      headers: {
-        host: this.options.host ?? '',
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  }
-
-  public async putConsentRequests(
-    consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
-    destParticipantId: string
-  ): Promise<void> {
-    const targetUrl = '/consentRequests/' + consentRequestId
-    const payload = ConsentFactory.createPutConsentRequestsRequest(
-      consentRequestId,
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(
       requestBody,
       destParticipantId
     )
@@ -234,16 +211,40 @@ export class Simulator {
     })
   }
 
+  public async putConsentRequests(
+    consentRequestId: string,
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<void> {
+    const targetUrl = '/consent/'
+    const payload = ConsentFactory.createPostConsentRequest(
+      consentRequestId,
+      requestBody,
+      destParticipantId
+    )
+
+    this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     consentId: string
   ): Promise<void> {
     // TODO: Refactor once implemented in sdk-standard components
-    const targetUrl = '/consents/' + consentId + '/generateChallenge'
-    const payload = {}
+    const targetUrl = '/consents/' + consentId
+    const payload = ConsentFactory.createPutConsentIdRequest(consentId)
 
     this.server.inject({
-      method: 'POST',
+      method: 'PUT',
       url: targetUrl,
       headers: {
         host: this.options.host ?? '',
@@ -260,7 +261,7 @@ export class Simulator {
     destParticipantId: string
   ): Promise<void> {
     const targetUrl = '/consents/' + consentId
-    const payload = ConsentFactory.createPutConsentRequest(
+    const payload = ConsentFactory.createPutConsentIdValidationRequest(
       consentId,
       requestBody,
       destParticipantId
@@ -281,11 +282,11 @@ export class Simulator {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(consentId: string): Promise<void> {
     // TODO: Refactor once implemented in sdk-standard components
-    const targetUrl = '/consents/' + consentId + '/revoke'
-    const payload = {}
+    const targetUrl = '/consents/' + consentId
+    const payload = ConsentFactory.createPatchConsentRevokeRequest(consentId)
 
     this.server.inject({
-      method: 'POST',
+      method: 'PATCH',
       url: targetUrl,
       headers: {
         host: this.options.host ?? '',
