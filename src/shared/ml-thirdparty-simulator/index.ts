@@ -169,6 +169,25 @@ export class Simulator {
     })
   }
 
+   /**
+   * Gets a list of PISP/DFSP participants
+   */
+  public async getParticipants(): Promise<void> {
+    const targetUrl = '/participants'
+    const payload = {}
+
+    this.server.inject({
+      method: 'GET',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest,
     destParticipantId: string
