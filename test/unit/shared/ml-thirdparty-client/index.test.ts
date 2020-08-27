@@ -250,7 +250,7 @@ describe('Mojaloop third-party client', () => {
     expect(simulatorSpy).toBeCalledWith(consentId)
   })
 
-  it('Should use simulator to perform a put request for validated consent credential, when simulator provided', (): void => {
+  it('Should use simulator to perform a put request for registered consent credential, when simulator provided', (): void => {
     client.simulator = simulator
     const simulatorSpy = jest
       .spyOn(simulator, 'putConsentId')
