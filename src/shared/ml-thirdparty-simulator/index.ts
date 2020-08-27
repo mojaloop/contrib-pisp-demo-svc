@@ -194,17 +194,12 @@ export class Simulator {
    * without the need of sending `POST /consentRequest` request.
    *
    * @param requestBody         an consent request object as defined by the Mojaloop API.
-   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async postConsentRequests(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
-    destParticipantId: string
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): Promise<void> {
     const targetUrl = '/consentRequests/'
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(
-      requestBody,
-      destParticipantId
-    )
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
     this.server.inject({
       method: 'PUT',
@@ -224,18 +219,15 @@ export class Simulator {
    *
    * @param consentRequestId    unique identifier of the consent request
    * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
-   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async putConsentRequests(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
-    destParticipantId: string
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest
   ): Promise<void> {
     const targetUrl = '/consent/'
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
-      requestBody,
-      destParticipantId
+      requestBody
     )
 
     this.server.inject({
@@ -262,7 +254,7 @@ export class Simulator {
   ): Promise<void> {
     // TODO: Refactor once implemented in sdk-standard components
     const targetUrl = '/consents/' + consentId
-    const payload = ConsentFactory.createPutConsentIdRequest(consentId)
+    const payload = ConsentFactory.createPutConsentIdRequest()
 
     this.server.inject({
       method: 'PUT',
@@ -282,18 +274,14 @@ export class Simulator {
    *
    * @param consentId     identifier of consent as defined by Mojaloop API.
    * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
-   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async putConsentId(
     consentId: string,
-    requestBody: SDKStandardComponents.PutConsentsRequest,
-    destParticipantId: string
+    requestBody: SDKStandardComponents.PutConsentsRequest
   ): Promise<void> {
     const targetUrl = '/consents/' + consentId
     const payload = ConsentFactory.createPutConsentIdValidationRequest(
-      consentId,
-      requestBody,
-      destParticipantId
+      requestBody
     )
 
     this.server.inject({
@@ -318,7 +306,7 @@ export class Simulator {
   public async postRevokeConsent(consentId: string): Promise<void> {
     // TODO: Refactor once implemented in sdk-standard components
     const targetUrl = '/consents/' + consentId
-    const payload = ConsentFactory.createPatchConsentRevokeRequest(consentId)
+    const payload = ConsentFactory.createPatchConsentRevokeRequest()
 
     this.server.inject({
       method: 'PATCH',
