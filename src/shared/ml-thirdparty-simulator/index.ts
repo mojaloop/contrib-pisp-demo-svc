@@ -171,7 +171,7 @@ export class Simulator {
   }
 
   /**
-   * Gets a list of PISP/DFSP participants
+   * Simulates looking up list of PISP/DFSP participants
    */
   public async getParticipants(): Promise<void> {
     const targetUrl = '/participants'
@@ -189,6 +189,13 @@ export class Simulator {
     })
   }
 
+  /**
+   * Performs a request for a new consent in Mojaloop by third-party application,
+   * without the need of sending `POST /consentRequest` request.
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest,
     destParticipantId: string
@@ -211,6 +218,14 @@ export class Simulator {
     })
   }
 
+  /**
+   * Performs a put request with authenticated consent request in Mojaloop by third-party application,
+   * without the need of sending `PUT /consentRequest/{ID}` request.
+   *
+   * @param consentRequestId    unique identifier of the consent request
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async putConsentRequests(
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest,
@@ -235,6 +250,12 @@ export class Simulator {
     })
   }
 
+  /**
+   * Performs a request to generate a challenge for FIDO registration in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     consentId: string
@@ -255,6 +276,14 @@ export class Simulator {
     })
   }
 
+  /**
+   * Performs a put request with validated consent credential in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
   public async putConsentId(
     consentId: string,
     requestBody: SDKStandardComponents.PutConsentsRequest,
@@ -279,6 +308,12 @@ export class Simulator {
     })
   }
 
+  /**
+   * Performs a request to revoke the Consent object and unlink in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(consentId: string): Promise<void> {
     // TODO: Refactor once implemented in sdk-standard components
