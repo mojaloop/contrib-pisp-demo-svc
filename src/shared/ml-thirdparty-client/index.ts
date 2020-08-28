@@ -106,42 +106,50 @@ export class Client {
   /**
    * Performs a lookup for a party with the given identifier.
    *
-   * @param type  the type of party identifier
-   * @param id    the party identifier
+   * @param _type  the type of party identifier
+   * @param _id    the party identifier
    */
   public async getParties(
-    type: PartyIdType,
-    id: string
+    _type: PartyIdType,
+    _id: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
+    // Placeholder below
+    return undefined
   }
 
   /**
    * Performs a transaction initiation with the given transaction request object.
    *
-   * @param requestBody a transaction request object as defined by the Mojaloop API.
+   * @param _requestBody a transaction request object as defined by the Mojaloop API.
    */
-  public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
+  public async postTransactions(
+    _requestBody: ThirdPartyTransactionRequest
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
+    // Placeholder below
+    return undefined
   }
 
   /**
    * Performs a transaction authorization with the given authorization object.
    *
-   * @param id              a transaction request id that corresponds with the
+   * @param _id              a transaction request id that corresponds with the
    *                        authorization.
-   * @param requestBody     an authorization object as defined by the Mojaloop API.
-   * @param transactionId   an optional field that needs to be passed in order for
+   * @param _requestBody     an authorization object as defined by the Mojaloop API.
+   * @param _transactionId   an optional field that needs to be passed in order for
    *                        the mojaloop simulator to generate a callback. If the
    *                        value is not provided, the Mojaloop client will not be
    *                        able to use a simulator.
    */
   public async putAuthorizations(
-    id: string,
-    requestBody: AuthorizationsPutIdRequest,
-    transactionId?: string
-  ) {
+    _id: string,
+    _requestBody: AuthorizationsPutIdRequest,
+    _transactionId?: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
+    // Placeholder below
+    return undefined
   }
 
   /**
@@ -151,6 +159,8 @@ export class Client {
   SDKStandardComponents.GenericRequestResponse | undefined
   > {
     // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    return undefined
   }
 
   /**
@@ -191,13 +201,15 @@ export class Client {
   /**
    * Performs a request to generate a challenge for FIDO registration
    *
-   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param _consentId     identifier of consent as defined by Mojaloop API.
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    consentId: string
+    _consentId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    return undefined
   }
 
   /**
@@ -222,12 +234,14 @@ export class Client {
   /**
    * Performs a request to revoke the Consent object and unlink
    *
-   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param _consentId     identifier of consent as defined by Mojaloop API.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(
-    consentId: string
+    _consentId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    return undefined
   }
 }
