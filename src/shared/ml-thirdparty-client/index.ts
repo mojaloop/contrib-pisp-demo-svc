@@ -37,6 +37,8 @@ import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { ServerInjectResponse } from '@hapi/hapi'
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -108,15 +110,18 @@ export class Client {
     type: PartyIdType,
     id: string,
     idSubValue = ''
-  ): Promise<void> {
+  ): Promise<
+    | SDKStandardComponents.GenericRequestResponse
+    | undefined
+    | ServerInjectResponse
+    > {
     if (this.simulator) {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
       // a random response that is injected to the internal routes.
       this.simulator.getParties(type, id)
     }
-
-    this.mojaloopRequests.getParties(type, id, idSubValue)
+    return this.mojaloopRequests.getParties(type, id, idSubValue)
   }
 
   /**
@@ -125,8 +130,24 @@ export class Client {
    * @param requestBody a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    requestBody: ThirdPartyTransactionRequest
-  ): Promise<void> {
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
+  ): Promise<
+    | SDKStandardComponents.GenericRequestResponse
+    | undefined
+    | ServerInjectResponse
+    > {
+    if (
+      !requestBody?.payee?.partyIdInfo?.fspId ||
+      requestBody.payee.partyIdInfo.fspId === ''
+    ) {
+      throw Error('Invalid Request Body - FSP Id not provided')
+    }
+    // Since we know it is a valid string,
+    // we cast it to be compatible with outgoing request
+    requestBody.payee.partyIdInfo.fspId = requestBody.payee.partyIdInfo
+      .fspId as string
+
     if (this.simulator) {
       // If the client is configured with a simulator, then it will not
       // communicate with Mojaloop directly. Instead, it will only generate
@@ -135,9 +156,9 @@ export class Client {
     }
 
     // TODO: Confirm destination id
-    this.thirdpartyRequests.postThirdpartyRequestsTransactions(
+    return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       requestBody,
-      this.options.participantId
+      destParticipantId
     )
   }
 
@@ -155,8 +176,13 @@ export class Client {
   public async putAuthorizations(
     id: string,
     requestBody: AuthorizationsPutIdRequest,
+    destParticipantId: string,
     transactionId?: string
-  ): Promise<void> {
+  ): Promise<
+    | SDKStandardComponents.GenericRequestResponse
+    | undefined
+    | ServerInjectResponse
+    > {
     if (transactionId && this.simulator) {
       // If a transaction id is provided and the client is configured with a
       // simulator, then it will not communicate with Mojaloop directly. Instead,
@@ -165,10 +191,10 @@ export class Client {
     }
 
     // TODO: Confirm destination id
-    this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
       requestBody,
       id,
-      this.options.participantId
+      destParticipantId
     )
   }
 }
