@@ -42,7 +42,6 @@ import SDKStandardComponents, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
-import { ServerInjectResponse } from '@hapi/hapi'
 
 /**
  * A client object that abstracts out operations that could be performed in
