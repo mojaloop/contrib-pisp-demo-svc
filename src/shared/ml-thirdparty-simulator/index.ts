@@ -79,7 +79,7 @@ export class Simulator {
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  async getParties(
+  public async getParties(
     type: PartyIdType,
     id: string
   ): Promise<ServerInjectResponse> {
