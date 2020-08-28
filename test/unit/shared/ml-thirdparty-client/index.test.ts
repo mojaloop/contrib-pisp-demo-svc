@@ -118,12 +118,12 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
 }
 
 const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  id: '111',
+  // id: '111',
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: 'https://pisp.com',
-  authorizationUri: 'https://dfspAuth.com',
+  authUri: 'https://dfspAuth.com',
   authToken: 'secret-token',
 }
 

@@ -47,6 +47,7 @@ import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories
 import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 import { ParticipantFactory } from '~/shared/ml-thirdparty-simulator/factories/__mocks__/participant'
 import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 jest.useFakeTimers()
 
@@ -79,8 +80,8 @@ const transactionRequestData = {
 }
 
 /*
-* Mock consent and request data
-*/
+ * Mock consent and request data
+ */
 const consentId = '123'
 
 const id = '111'
@@ -107,12 +108,12 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
 }
 
 const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  id: '111',
+  // id: '111',
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: 'https://pisp.com',
-  authorizationUri: 'https://dfspAuth.com',
+  authUri: 'https://dfspAuth.com',
   authToken: 'secret-token',
 }
 
@@ -302,7 +303,9 @@ describe('Mojaloop third-party simulator', () => {
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
     await simulator.postConsentRequests(postConsentRequestRequest)
 
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(postConsentRequestRequest)
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(
+      postConsentRequestRequest
+    )
 
     expect(server.inject).toBeCalledTimes(1)
     expect(server.inject).toBeCalledWith({
@@ -324,47 +327,9 @@ describe('Mojaloop third-party simulator', () => {
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
     await simulator.postConsentRequests(postConsentRequestRequest)
 
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(postConsentRequestRequest)
-
-    expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: 'mojaloop.' + config.get('hostname'),
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  })it('Should inject server with result of requesting a new conseent', async () => {
-    const targetUrl = '/consentRequests/' + id
-
-    // this is a workaround to handle the delay before injecting response to the server
-    Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.postConsentRequests(postConsentRequestRequest)
-
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(postConsentRequestRequest)
-
-    expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: 'mojaloop.' + config.get('hostname'),
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  })it('Should inject server with result of requesting a new consent', async () => {
-    const targetUrl = '/consentRequests/' + id
-
-    // this is a workaround to handle the delay before injecting response to the server
-    Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.postConsentRequests(postConsentRequestRequest)
-
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(postConsentRequestRequest)
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(
+      postConsentRequestRequest
+    )
 
     expect(server.inject).toBeCalledTimes(1)
     expect(server.inject).toBeCalledWith({
@@ -378,15 +343,69 @@ describe('Mojaloop third-party simulator', () => {
       payload,
     })
   })
-  
+
+  it('Should inject server with result of requesting a new conseent', async () => {
+    const targetUrl = '/consentRequests/' + id
+
+    // this is a workaround to handle the delay before injecting response to the server
+    Promise.resolve().then(() => jest.advanceTimersByTime(100))
+    await simulator.postConsentRequests(postConsentRequestRequest)
+
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(
+      postConsentRequestRequest
+    )
+
+    expect(server.inject).toBeCalledTimes(1)
+    expect(server.inject).toBeCalledWith({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: 'mojaloop.' + config.get('hostname'),
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  })
+
+  it('Should inject server with result of requesting a new consent', async () => {
+    const targetUrl = '/consentRequests/' + id
+
+    // this is a workaround to handle the delay before injecting response to the server
+    Promise.resolve().then(() => jest.advanceTimersByTime(100))
+    await simulator.postConsentRequests(postConsentRequestRequest)
+
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(
+      postConsentRequestRequest
+    )
+
+    expect(server.inject).toBeCalledTimes(1)
+    expect(server.inject).toBeCalledWith({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: 'mojaloop.' + config.get('hostname'),
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  })
+
   it('Should inject server with a granted consent', async () => {
     const targetUrl = '/consentRequests/' + id
 
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.putConsentRequests(consentRequestId, putConsentRequestRequest)
+    await simulator.putConsentRequests(
+      consentRequestId,
+      putConsentRequestRequest
+    )
 
-    const payload = ConsentFactory.createPostConsentRequest(consentRequestId, putConsentRequestRequest)
+    const payload = ConsentFactory.createPostConsentRequest(
+      consentRequestId,
+      putConsentRequestRequest
+    )
 
     expect(server.inject).toBeCalledTimes(1)
     expect(server.inject).toBeCalledWith({
@@ -421,30 +440,34 @@ describe('Mojaloop third-party simulator', () => {
       },
       payload,
     })
+  })
 
-    it('Should inject server with a granted consent', async () => {
-      const targetUrl = '/consents/' + id
-  
-      // this is a workaround to handle the delay before injecting response to the server
-      Promise.resolve().then(() => jest.advanceTimersByTime(100))
-      await simulator.putConsentId(consentId, putConsentRequest)
-  
-      const payload = ConsentFactory.createPutConsentIdValidationRequest(putConsentRequest)
-  
-      expect(server.inject).toBeCalledTimes(1)
-      expect(server.inject).toBeCalledWith({
-        method: 'PUT',
-        url: targetUrl,
-        headers: {
-          host: 'mojaloop.' + config.get('hostname'),
-          'Content-Length': JSON.stringify(payload).length.toString(),
-          'Content-Type': 'application/json',
-        },
-        payload,
-      })
+  it('Should inject server with a granted consent', async () => {
+    const targetUrl = '/consents/' + id
+
+    // this is a workaround to handle the delay before injecting response to the server
+    Promise.resolve().then(() => jest.advanceTimersByTime(100))
+    await simulator.putConsentId(consentId, putConsentRequest)
+
+    const payload = ConsentFactory.createPutConsentIdValidationRequest(
+      putConsentRequest
+    )
+
+    expect(server.inject).toBeCalledTimes(1)
+    expect(server.inject).toBeCalledWith({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: 'mojaloop.' + config.get('hostname'),
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  })
 
   it('Should inject server with patch from revoking consent', async () => {
-    const targetUrl = '/consents/' + consentId 
+    const targetUrl = '/consents/' + consentId
 
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
