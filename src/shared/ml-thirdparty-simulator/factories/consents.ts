@@ -33,7 +33,7 @@ export class ConsentFactory {
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): SDKStandardComponents.PutConsentRequestsRequest {
     return {
-      authChannels: ['OTP'],
+      authChannels: ['WEB'],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       authUri: null,
