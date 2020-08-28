@@ -26,13 +26,16 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
+import { consentRepository } from '~/repositories/consent'
 
 export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
   return h.response().code(200)
 }
 
-export const remove: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
+export const patch: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
   logger.logRequest(context, request, h)
+  // Updates consent fields patched
+  consentRepository.updateConsentById(request.params.id, context.request.body)
   return h.response().code(200)
 }
