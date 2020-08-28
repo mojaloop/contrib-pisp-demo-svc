@@ -24,7 +24,7 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
+import { Server, ServerInjectResponse } from '@hapi/hapi'
 import * as faker from 'faker'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
@@ -79,7 +79,10 @@ export class Simulator {
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  async getParties(type: PartyIdType, id: string): Promise<void> {
+  async getParties(
+    type: PartyIdType,
+    id: string
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
@@ -91,7 +94,7 @@ export class Simulator {
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -111,7 +114,7 @@ export class Simulator {
    */
   public async postTransactions(
     request: ThirdPartyTransactionRequest
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/authorizations'
     const payload = AuthorizationFactory.createPostAuthorizationsRequest(
       request
@@ -123,7 +126,7 @@ export class Simulator {
       await this.delay(this.options.delay)
     }
 
-    this.server.inject({
+    return this.server.inject({
       method: 'POST',
       url: targetUrl,
       headers: {
@@ -150,7 +153,7 @@ export class Simulator {
     id: string,
     request: AuthorizationsPutIdRequest,
     transactionId: string
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/transfers/' + faker.random.uuid()
     const payload = TransferFactory.createTransferIdPutRequest(
       id,
@@ -158,7 +161,7 @@ export class Simulator {
       transactionId
     )
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -173,11 +176,11 @@ export class Simulator {
   /**
    * Simulates looking up list of PISP/DFSP participants
    */
-  public async getParticipants(): Promise<void> {
+  public async getParticipants(): Promise<ServerInjectResponse> {
     const targetUrl = '/participants'
     const payload = ParticipantFactory.getParticipants()
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -197,11 +200,11 @@ export class Simulator {
    */
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/consentRequests/' + requestBody.id
     const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -223,14 +226,14 @@ export class Simulator {
   public async putConsentRequests(
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/consent/'
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
       requestBody
     )
 
-    this.server.inject({
+    return this.server.inject({
       method: 'POST',
       url: targetUrl,
       headers: {
@@ -251,12 +254,12 @@ export class Simulator {
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     consentId: string
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     // TODO: Refactor once implemented in sdk-standard components
     const targetUrl = '/consents/' + consentId
     const payload = ConsentFactory.createPutConsentIdRequest()
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -278,13 +281,13 @@ export class Simulator {
   public async putConsentId(
     consentId: string,
     requestBody: SDKStandardComponents.PutConsentsRequest
-  ): Promise<void> {
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/consents/' + consentId
     const payload = ConsentFactory.createPutConsentIdValidationRequest(
       requestBody
     )
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -303,12 +306,14 @@ export class Simulator {
    * @param consentId     identifier of consent as defined by Mojaloop API.
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public async postRevokeConsent(consentId: string): Promise<void> {
+  public async postRevokeConsent(
+    consentId: string
+  ): Promise<ServerInjectResponse> {
     // TODO: Refactor once implemented in sdk-standard components
     const targetUrl = '/consents/' + consentId
     const payload = ConsentFactory.createPatchConsentRevokeRequest()
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PATCH',
       url: targetUrl,
       headers: {
