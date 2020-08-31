@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -25,43 +26,115 @@
  ******/
 
 import * as uuid from 'uuid'
-import { Server } from '@hapi/hapi'
+import { Server, server } from '@hapi/hapi'
 
-import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
-  AmountType,
   AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
-import { Consent } from '~/models/consent'
-import { Status } from '~/models/transaction'
+import { Consent, ConsentStatus } from '~/models/consent'
 
 // import * as validator from './consents.validator'
 import { consentRepository } from '~/repositories/consent'
 
 async function handleNewConsent(_: Server, consent: Consent) {
-  // Assign a transactionRequestId to the document and set the initial
+  // Assign a consentRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
   consentRepository.updateConsentById(consent.id, {
     consentRequestId: uuid.v4(),
-    status: Status.PENDING_PARTY_LOOKUP,
+    status: ConsentStatus.PENDING_PARTY_LOOKUP,
   })
+}
+
+async function handlePartyLookup(server: Server, consent: Consent) {
+  // Check whether the consent document has all the necessary properties
+  // to perform a party lookup.
+  //   if (validator.isValidPartyLookup(transaction)) {
+  // Payee is guaranteed to be non-null by the validator.
+
+  server.app.mojaloopClient.getParties(
+    // @ts-ignore
+    consent.party.partyIdInfo.partyIdType,
+    // @ts-ignore
+    consent.party.partyIdInfo.partyIdentifier
+  )
+  //   }
+}
+
+async function handleConsentRequest(
+  server: Server,
+  consent: Consent
+) {
+  // Upon receiving a callback from Mojaloop that contains information about
+  // the payee, the server will update all relevant transaction documents
+  // in the Firebase. However, we can just ignore all updates by the server
+  // and wait for the user to confirm the payee by keying in more details
+  // about the transaction (i.e., source account ID, consent ID, and
+  // transaction amount).
+  // if (validator.isValidPayeeConfirmation(consent)) {
+    // If the update contains all the necessary fields, process document
+    // to the next step by sending a transaction request to Mojaloop.
+
+    try {
+      // The optional values are guaranteed to exist by the validator.
+      // eslint-disable @typescript-eslint/no-non-null-assertion
+
+      consent = await consentRepository.getConsentById(
+        consent.consentId!
+      )
+
+      server.app.mojaloopClient.postConsentRequests({
+        id: consent.id!,
+        initiatorId: string,
+        accountIds: string[],
+        authChannels: TAuthChannel[],
+        scopes: string[],
+        callbackUri: string,
+      })
+
+      // eslint-enable @typescript-eslint/no-non-null-assertion
+    } catch (err) {
+      logger.error(err)
+    }
+  // }
 }
 
 export const onCreate: ConsentHandler = async (
   server: Server,
   consent: Consent
 ): Promise<void> => {
-//   if (transaction.status) {
-//     // Skip transaction that has been processed previously.
-//     // We need this because when the server starts for the first time,
-//     // all existing documents in the Firebase will be treated as a new
-//     // document.
-//     return
-//   }
+  if (consent.status) {
+    // Skip transaction that has been processed previously.
+    // We need this because when the server starts for the first time,
+    // all existing documents in the Firebase will be treated as a new
+    // document.
+    return
+  }
 
   await handleNewConsent(server, consent)
+}
+
+export const onUpdate: ConsentHandler = async (
+  server: Server,
+  consent: Consent
+): Promise<void> => {
+  if (!consent.status) {
+    // Status is expected to be null only when the document is created for the first
+    // time by the user.
+    logger.error('Invalid consent, undefined status.')
+    return
+  }
+
+  switch (consent.status) {
+    case ConsentStatus.PENDING_PARTY_LOOKUP:
+      await handlePartyLookup(server, consent)
+      break
+
+    case ConsentStatus.AUTHORIZATION_REQUIRED:
+      await handleAuthorization(server, consent)
+      break
+  }
 }
