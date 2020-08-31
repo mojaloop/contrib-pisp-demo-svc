@@ -25,6 +25,7 @@
 
 import { program } from 'commander'
 import axios from 'axios'
+import packageInfo from '../package.json'
 
 interface RegistrationValue {
   targetServiceId: string
@@ -35,7 +36,7 @@ interface RegistrationValue {
 const registrationValues: Array<RegistrationValue> = [
   // PUT /participants
   {
-    targetServiceId: 'central-ledger',
+    targetServiceId: 'central-services-shared',
     type: 'FSIOP_CALLBACK_URL_PARTICIPANT_PUT',
     endpointPath: '/participants',
   },
@@ -101,7 +102,7 @@ const registrationValues: Array<RegistrationValue> = [
   }
 ]
 
-program.version('0.0.1')
+program.version(packageInfo.version)
 
 program.requiredOption(
   '-h, --host',
@@ -159,8 +160,7 @@ registrationValues.forEach(async (value) => {
   const variableName = toCamelCase('ml-' + value.targetServiceId)
 
   // Target URL in Mojaloop
-  const targetUrl = program[variableName] + '/participants/'
-    + program.participantId + '/endpoints'
+  const targetUrl = `${program[variableName]}/participants/${program.participantId}/endpoints`
 
   // Endpoint of the PISP that serves the callback from Mojaloop.
   const pispEndpoint = program.host + value.endpointPath

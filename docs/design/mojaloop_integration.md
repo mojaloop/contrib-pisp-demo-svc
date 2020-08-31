@@ -223,7 +223,9 @@ You can execute the code using the npm script `register-url`. For example, you c
 following command in the terminal when you are located at the root directory of this project:
 
 ```
-npm run register-url -- -h https://pisp-demo-server.local -p pisp --ml-central-ledger https://central-ledger.local
+npm run register-url -- -h https://pisp-demo-server.local -p pisp \
+  --ml-central-ledger https://central-ledger.local \
+  --ml-central-services-shared https://central-services-shared.local
 ```
 
 Notice that `--` is used here, which is a special argument to make the provided arguments available for the
