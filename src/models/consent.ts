@@ -40,17 +40,27 @@ export enum ConsentStatus {
    * Waiting for the user to confirm payee information and provide more
    * details about the transaction.
    */
-  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
+  PENDING_PARTY_CONFIRMATION = 'PENDING_PARTY_CONFIRMATION',
 
   /**
    * Waiting for the user to authorize the consent.
    */
-  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
+  AUTHENTICATION_REQUIRED = 'AUTHENTICATION_REQUIRED',
 
   /**
-   * The consent is authorized and active.
+   * The consent is granted and active.
    */
   ACTIVE = 'ACTIVE',
+
+  /**
+   * The consent is ACTIVE and challenge has been generated
+   */
+  CHALLENGE_GENERATED = 'CHALLENGE_GENERATED',
+
+  /**
+   * The consent is ACTIVE and challenge has been verified
+   */
+  CHALLENGE_VERIFIED = 'CHALLENGE_VERIFIED',
 
   /**
    * The consent is revoked and no longer valid.
