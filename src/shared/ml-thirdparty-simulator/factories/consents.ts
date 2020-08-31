@@ -36,7 +36,7 @@ export class ConsentFactory {
       authChannels: ['WEB'],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      authUri: null,
+      authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
       authToken: faker.random.alphaNumeric(13),
     }
@@ -44,7 +44,7 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest
+    requestBody: SDKStandardComponents.PostConsentsRequest
   ): SDKStandardComponents.PostConsentsRequest {
     return {
       id: faker.random.uuid(),
@@ -52,7 +52,6 @@ export class ConsentFactory {
       initiatorId: requestBody.initiatorId,
       participantId: 'dfsp',
       scopes: requestBody.scopes,
-      credential: null,
     }
   }
 

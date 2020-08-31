@@ -35,7 +35,6 @@ export class ConsentFactory {
     return {
       authChannels: ['WEB'],
       initiatorId: requestBody.initiatorId,
-      accountIds: [],
       scopes: requestBody.scopes,
       authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
@@ -45,7 +44,7 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest
+    requestBody: SDKStandardComponents.PostConsentsRequest
   ): SDKStandardComponents.PostConsentsRequest {
     return {
       id: '111',
@@ -53,7 +52,6 @@ export class ConsentFactory {
       initiatorId: requestBody.initiatorId,
       participantId: 'dfsp',
       scopes: requestBody.scopes,
-      credential: (null as unknown) as TCredential,
     }
   }
 
