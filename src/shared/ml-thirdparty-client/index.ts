@@ -34,7 +34,8 @@ import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-import Logger from '@mojaloop/central-services-logger'
+// import Logger from '@mojaloop/central-services-logger'
+import { logger as Logger } from '~/shared/logger'
 
 import SDKStandardComponents, {
   // TODO: Once implemented in sdk-standard-components, use this logger
@@ -115,7 +116,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 
   /**
@@ -128,7 +129,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 
   /**
@@ -149,7 +150,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 
   /**
@@ -160,7 +161,7 @@ export class Client {
   > {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 
   /**
@@ -209,7 +210,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 
   /**
@@ -242,6 +243,6 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    return undefined
+    throw new Error('Not Implemented Yet')
   }
 }
