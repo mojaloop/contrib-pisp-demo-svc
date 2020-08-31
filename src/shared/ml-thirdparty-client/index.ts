@@ -125,32 +125,38 @@ export class Client {
    * @param _requestBody a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    _requestBody: ThirdPartyTransactionRequest
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new Error('Not Implemented Yet')
+    return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
+      (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
+      destParticipantId
+    )
   }
 
   /**
    * Performs a transaction authorization with the given authorization object.
    *
-   * @param _id              a transaction request id that corresponds with the
+   * @param id              a transaction request id that corresponds with the
    *                        authorization.
-   * @param _requestBody     an authorization object as defined by the Mojaloop API.
-   * @param _transactionId   an optional field that needs to be passed in order for
-   *                        the mojaloop simulator to generate a callback. If the
-   *                        value is not provided, the Mojaloop client will not be
-   *                        able to use a simulator.
+   * @param requestBody     an authorization object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+
    */
   public async putAuthorizations(
     _id: string,
     _requestBody: AuthorizationsPutIdRequest,
-    _transactionId?: string
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
     throw new Error('Not Implemented Yet')
+
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+    //   requestBody,
+    //   id,
+    //   destParticipantId
+    // )
   }
 
   /**
