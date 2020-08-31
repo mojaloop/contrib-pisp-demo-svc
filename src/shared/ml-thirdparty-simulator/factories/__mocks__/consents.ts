@@ -37,7 +37,7 @@ export class ConsentFactory {
       initiatorId: requestBody.initiatorId,
       accountIds: [],
       scopes: requestBody.scopes,
-      authUri: 'dfsp.com',
+      authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
       authToken: 'y19jtyyd5oofj',
     }
