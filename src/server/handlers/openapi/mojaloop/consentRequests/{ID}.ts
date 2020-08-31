@@ -27,6 +27,7 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
 import { consentRepository } from '~/repositories/consent'
+import { ConsentStatus } from '~/models/consent'
 
 export const put: Handler = async (
   context: Context,
@@ -39,9 +40,7 @@ export const put: Handler = async (
   consentRepository.updateConsentById(id, {
     authChannels,
     authUri,
-    // TODO: check how consent status field is being used
-    // TODO: Shift this to enum - if the field is required
-    status: 'AUTHENTICATION_REQUIRED',
+    status: ConsentStatus.AUTHENTICATION_REQUIRED,
   })
   return h.response().code(200)
 }
