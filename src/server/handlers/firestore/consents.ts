@@ -26,12 +26,9 @@
  ******/
 
 import * as uuid from 'uuid'
-import { Server, server } from '@hapi/hapi'
+import { Server } from '@hapi/hapi'
 
 import { logger } from '~/shared/logger'
-import {
-  AuthenticationResponseType,
-} from '~/shared/ml-thirdparty-client/models/core'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
 import { Consent, ConsentStatus } from '~/models/consent'
@@ -64,42 +61,109 @@ async function handlePartyLookup(server: Server, consent: Consent) {
   //   }
 }
 
-async function handleConsentRequest(
-  server: Server,
-  consent: Consent
-) {
+async function handleAuthentication(server: Server, consent: Consent) {
+  if (
+    !consent.authToken ||
+    !consent.scopes ||
+    !consent.initiatorId ||
+    !consent.party
+  ) {
+    throw new Error('Consent Object Missing Fields')
+  }
+
+  try {
+    server.app.mojaloopClient.putConsentRequests(
+      consent.id,
+      {
+        initiatorId: consent.initiatorId,
+        authChannels: consent.authChannels,
+        scopes: consent.scopes,
+        // TODO: FIGURE OUT FROM WHERE TO GET
+        callbackUri: '',
+        authToken: consent.authToken,
+      },
+      consent.party.partyIdInfo.fspId
+    )
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+async function handleConsentRequest(server: Server, consent: Consent) {
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
   // in the Firebase. However, we can just ignore all updates by the server
   // and wait for the user to confirm the payee by keying in more details
   // about the transaction (i.e., source account ID, consent ID, and
   // transaction amount).
+
   // if (validator.isValidPayeeConfirmation(consent)) {
-    // If the update contains all the necessary fields, process document
-    // to the next step by sending a transaction request to Mojaloop.
+  // If the update contains all the necessary fields, process document
+  // to the next step by sending a transaction request to Mojaloop.
 
-    try {
-      // The optional values are guaranteed to exist by the validator.
-      // eslint-disable @typescript-eslint/no-non-null-assertion
+  if (!consent.authChannels || !consent.scopes || !consent.initiatorId) {
+    throw new Error('Consent Object Missing Fields')
+  }
 
-      consent = await consentRepository.getConsentById(
-        consent.consentId!
-      )
+  try {
+    // The optional values are guaranteed to exist by the validator.
+    // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      server.app.mojaloopClient.postConsentRequests({
-        id: consent.id!,
-        initiatorId: string,
-        accountIds: string[],
-        authChannels: TAuthChannel[],
-        scopes: string[],
-        callbackUri: string,
-      })
+    server.app.mojaloopClient.postConsentRequests(
+      {
+        initiatorId: consent.initiatorId,
+        scopes: consent.scopes,
+        authChannels: consent.authChannels,
+        id: consent.id,
+        authUri: consent.authUri,
+        // TODO: FIGURE OUT FROM WHERE TO GET
+        callbackUri: '',
+      },
+      consent.party.partyIdInfo.fspId
+    )
 
-      // eslint-enable @typescript-eslint/no-non-null-assertion
-    } catch (err) {
-      logger.error(err)
-    }
+    // eslint-enable @typescript-eslint/no-non-null-assertion
+  } catch (err) {
+    logger.error(err)
+  }
   // }
+}
+
+async function handleChallengeGeneration(server: Server, consent: Consent) {
+  if (!consent.consentId || !consent.party) {
+    throw new Error('Consent Object Missing Fields')
+  }
+
+  try {
+    server.app.mojaloopClient.postGenerateChallengeForConsent(
+      consent.consentId,
+      consent.party.partyIdInfo.fspId
+    )
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+async function handleSignedChallenge(server: Server, consent: Consent) {
+  // TODO: Replace with validator
+  if (!consent.credential || !consent.party) {
+    throw new Error('Consent Object Missing Fields')
+  }
+
+  try {
+    server.app.mojaloopClient.putConsentId(
+      consent.consentId,
+      {
+        requestId: consent.id,
+        initiatorId: consent.initiatorId,
+        scopes: consent.scopes,
+        credential: consent.credential,
+      },
+      consent.party.partyIdInfo.fspId
+    )
+  } catch (error) {
+    logger.error(error)
+  }
 }
 
 export const onCreate: ConsentHandler = async (
@@ -133,8 +197,20 @@ export const onUpdate: ConsentHandler = async (
       await handlePartyLookup(server, consent)
       break
 
-    case ConsentStatus.AUTHORIZATION_REQUIRED:
-      await handleAuthorization(server, consent)
+    case ConsentStatus.PENDING_PARTY_CONFIRMATION:
+      await handleConsentRequest(server, consent)
+      break
+
+    case ConsentStatus.AUTHENTICATION_REQUIRED:
+      await handleAuthentication(server, consent)
+      break
+
+    case ConsentStatus.ACTIVE:
+      await handleChallengeGeneration(server, consent)
+      break
+
+    case ConsentStatus.CHALLENGE_VERIFIED:
+      await handleSignedChallenge(server, consent)
       break
   }
 }
