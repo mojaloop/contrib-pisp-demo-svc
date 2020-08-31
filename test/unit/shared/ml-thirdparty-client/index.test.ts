@@ -24,10 +24,6 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
-
-import config from '~/lib/config'
-
 import { Client } from '~/shared/ml-thirdparty-client'
 
 import {
@@ -117,6 +113,7 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
 }
 
 const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
+  accountIds: [],
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
@@ -182,26 +179,30 @@ describe('Mojaloop third-party client', () => {
       .mockImplementation()
 
     // Act
-    client.postTransactions(transactionRequestData)
+    client.postTransactions(transactionRequestData, destParticipantId)
 
     // Assert
-    expect(postTransactionsSpy).toBeCalledWith(transactionRequestData)
+    expect(postTransactionsSpy).toBeCalledWith(transactionRequestData, destParticipantId)
   })
 
-  it('Should perform transaction authorization request', (): void => {
-    // Arrange
-    const putAuthorizationSpy = jest
-      .spyOn(
-        client.thirdpartyRequests,
-        'putThirdpartyRequestsTransactionsAuthorizations'
-      )
-      .mockImplementation()
+  it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
+    expect(
+      client.putAuthorizations('111', authorizationData, '222')
+    ).rejects.toThrowError('Not Implemented Yet')
 
-    // Act
-    client.putAuthorizations('111', authorizationData, '222')
+    // // Arrange
+    // const putAuthorizationSpy = jest
+    //   .spyOn(
+    //     client.thirdpartyRequests,
+    //     'putThirdpartyRequestsTransactionsAuthorizations'
+    //   )
+    //   .mockImplementation()
 
-    // Assert
-    expect(putAuthorizationSpy).toBeCalledWith('111', authorizationData, '222')
+    // // Act
+    // client.putAuthorizations('111', authorizationData, '222')
+
+    // // Assert
+    // expect(putAuthorizationSpy).toBeCalledWith('111', authorizationData, '222')
   })
 
   it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {
@@ -230,7 +231,7 @@ describe('Mojaloop third-party client', () => {
     client.postConsentRequests(postConsentRequestRequest, destParticipantId)
 
     // Assert
-    expect(postConsentRequestsSpy).toBeCalledWith(postConsentRequestRequest)
+    expect(postConsentRequestsSpy).toBeCalledWith(postConsentRequestRequest, destParticipantId)
   })
 
   it('Should perform a put request for authenticated consent', (): void => {
@@ -249,7 +250,8 @@ describe('Mojaloop third-party client', () => {
     // Assert
     expect(putConsentRequestsSpy).toBeCalledWith(
       consentRequestId,
-      putConsentRequestRequest
+      putConsentRequestRequest,
+      destParticipantId
     )
   })
 
@@ -281,7 +283,7 @@ describe('Mojaloop third-party client', () => {
     client.putConsentId(consentId, putConsentRequest, destParticipantId)
 
     // Assert
-    expect(putConsentIdSpy).toBeCalledWith(consentId, putConsentRequest)
+    expect(putConsentIdSpy).toBeCalledWith(consentId, putConsentRequest, destParticipantId)
   })
 
   it('Should throw Not Implemented error, attempting to perform a post request to revoke a given consent,', (): void => {
