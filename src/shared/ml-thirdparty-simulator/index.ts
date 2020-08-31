@@ -227,7 +227,7 @@ export class Simulator {
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consent/'
+    const targetUrl = '/consentRequests/' + consentRequestId
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
       requestBody
@@ -256,7 +256,7 @@ export class Simulator {
     consentId: string
   ): Promise<ServerInjectResponse> {
     // TODO: Refactor once implemented in sdk-standard components
-    const targetUrl = '/consents/' + consentId
+    const targetUrl = '/consents/' + consentId + '/generateChallenge'
     const payload = ConsentFactory.createPutConsentIdRequest()
 
     return this.server.inject({
