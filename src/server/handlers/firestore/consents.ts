@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
@@ -53,13 +54,11 @@ async function handlePartyLookup(server: Server, consent: Consent) {
     throw new Error('Consent Object Missing Fields')
   }
 
-  // Payee is guaranteed to be non-null by the validator.
+  // Party is guaranteed to be non-null by the validator.
 
   server.app.mojaloopClient.getParties(
-    // @ts-ignore
-    consent.party.partyIdInfo.partyIdType,
-    // @ts-ignore
-    consent.party.partyIdInfo.partyIdentifier
+    consent.party!.partyIdInfo.partyIdType,
+    consent.party!.partyIdInfo.partyIdentifier
   )
   //   }
 }
@@ -80,7 +79,7 @@ async function handleAuthentication(server: Server, consent: Consent) {
         callbackUri: '',
         authToken: consent.authToken,
       },
-      consent.party.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId
     )
   } catch (error) {
     logger.error(error)
