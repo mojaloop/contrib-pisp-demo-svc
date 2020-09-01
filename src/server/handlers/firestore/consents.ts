@@ -88,14 +88,8 @@ async function handleAuthentication(server: Server, consent: Consent) {
 }
 
 async function handleConsentRequest(server: Server, consent: Consent) {
-  // Upon receiving a callback from Mojaloop that contains information about
-  // the payee, the server will update all relevant transaction documents
-  // in the Firebase. However, we can just ignore all updates by the server
-  // and wait for the user to confirm the payee by keying in more details
-  // about the transaction (i.e., source account ID, consent ID, and
-  // transaction amount).
 
-  if (!validator.isValidAuthentication(consent)) {
+  if (!validator.isValidConsentRequest(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
   // If the update contains all the necessary fields, process document

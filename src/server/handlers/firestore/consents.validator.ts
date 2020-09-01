@@ -45,7 +45,7 @@ export const isValidPartyLookup = (consent: Consent): boolean => {
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as a consent request.
+ * processed as an authenticated consent request.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
@@ -66,7 +66,7 @@ export const isValidAuthentication = (consent: Consent): boolean => {
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as a consent authorization.
+ * processed as a consent request.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
@@ -76,7 +76,8 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
     consent.authChannels &&
     consent.scopes &&
     consent.initiatorId &&
-    consent.party
+    consent.party &&
+    consent.authUri
   ) {
     return true
   }
@@ -85,7 +86,7 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as a consent authorization.
+ * processed as a request to generate challenge for a consent.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
@@ -99,7 +100,7 @@ export const isValidChallengeGeneration = (consent: Consent): boolean => {
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as a consent authorization.
+ * processed as a signed consent request.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
