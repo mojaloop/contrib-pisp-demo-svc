@@ -33,8 +33,8 @@ import { logger } from '~/shared/logger'
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
 import { Consent, ConsentStatus } from '~/models/consent'
 
-// import * as validator from './consents.validator'
 import { consentRepository } from '~/repositories/consent'
+import * as validator from './consents.validator'
 
 async function handleNewConsent(_: Server, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -49,7 +49,10 @@ async function handleNewConsent(_: Server, consent: Consent) {
 async function handlePartyLookup(server: Server, consent: Consent) {
   // Check whether the consent document has all the necessary properties
   // to perform a party lookup.
-  //   if (validator.isValidPartyLookup(transaction)) {
+  if (!validator.isValidPartyLookup(consent)) {
+    throw new Error('Consent Object Missing Fields')
+  }
+
   // Payee is guaranteed to be non-null by the validator.
 
   server.app.mojaloopClient.getParties(
@@ -62,12 +65,7 @@ async function handlePartyLookup(server: Server, consent: Consent) {
 }
 
 async function handleAuthentication(server: Server, consent: Consent) {
-  if (
-    !consent.authToken ||
-    !consent.scopes ||
-    !consent.initiatorId ||
-    !consent.party
-  ) {
+  if (!validator.isValidAuthentication(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
 
@@ -78,7 +76,7 @@ async function handleAuthentication(server: Server, consent: Consent) {
         initiatorId: consent.initiatorId,
         authChannels: consent.authChannels,
         scopes: consent.scopes,
-        // TODO: FIGURE OUT FROM WHERE TO GET
+        // TODO: FIGURE OUT FROM WHERE TO GET THIS
         callbackUri: '',
         authToken: consent.authToken,
       },
@@ -97,13 +95,10 @@ async function handleConsentRequest(server: Server, consent: Consent) {
   // about the transaction (i.e., source account ID, consent ID, and
   // transaction amount).
 
-  // if (validator.isValidPayeeConfirmation(consent)) {
-  // If the update contains all the necessary fields, process document
-  // to the next step by sending a transaction request to Mojaloop.
-
-  if (!consent.authChannels || !consent.scopes || !consent.initiatorId) {
+  if (!validator.isValidAuthentication(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
+  // If the update contains all the necessary fields, process document
 
   try {
     // The optional values are guaranteed to exist by the validator.
@@ -130,7 +125,7 @@ async function handleConsentRequest(server: Server, consent: Consent) {
 }
 
 async function handleChallengeGeneration(server: Server, consent: Consent) {
-  if (!consent.consentId || !consent.party) {
+  if (!validator.isValidChallengeGeneration(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
 
@@ -145,8 +140,7 @@ async function handleChallengeGeneration(server: Server, consent: Consent) {
 }
 
 async function handleSignedChallenge(server: Server, consent: Consent) {
-  // TODO: Replace with validator
-  if (!consent.credential || !consent.party) {
+  if (!validator.isValidSignedChallenge(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
 
