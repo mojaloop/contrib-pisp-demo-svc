@@ -41,7 +41,7 @@ export const apiHandlers = {
   postAuthorizations: MojaloopAuthorizations.post,
   postConsents: MojaloopConsents.post,
   putConsentsById: MojaloopConsentsById.put,
-  deleteConsentsById: MojaloopConsentsById.remove,
+  patchConsentsById: MojaloopConsentsById.patch,
   putConsentRequestsById: MojaloopConsentRequestsById.put,
   putParticipants: MojaloopParticipants.put,
   putParticipantsError: MojaloopParticipantsError.put,
