@@ -24,9 +24,7 @@
  --------------
  ******/
 
-import SDKStandardComponents, {
-  TCredential,
-} from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(

@@ -113,7 +113,6 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
 }
 
 const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  accountIds: [],
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,

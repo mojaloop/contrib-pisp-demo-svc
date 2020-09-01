@@ -44,7 +44,7 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PostConsentsRequest
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest
   ): SDKStandardComponents.PostConsentsRequest {
     return {
       id: faker.random.uuid(),
