@@ -157,21 +157,4 @@ export class Client {
 
     // TODO: Implement communication with Mojaloop.
   }
-
-  public async postConsentRequests(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): Promise<void> {
-    if (this.simulator) {
-      // If the client is configured with a simulator, then it will not
-      // communicate with Mojaloop directly. Instead, it will only generate
-      // a random response that is injected to the internal routes.
-      // return this.simulator
-    }
-
-    // TODO: Check Destination id
-    this.thirdpartyRequests.postConsentRequests(
-      requestBody,
-      this.options.participantId
-    )
-  }
 }
