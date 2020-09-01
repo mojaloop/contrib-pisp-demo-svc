@@ -45,7 +45,7 @@ export interface IConsentRepository {
    */
   getConsentById(id: string): Promise<Consent>
 
-    /**
+  /**
    * Updates one or more consent documents based on the given conditions.
    *
    * @param conditions  Conditions for the documents that need to be updated.
