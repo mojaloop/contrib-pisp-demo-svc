@@ -21,13 +21,14 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { logger } from '~/shared/logger'
-
+import { participantRepository } from '~/repositories/participants'
 
 export const put: Handler = async (
   context: Context,
@@ -38,7 +39,7 @@ export const put: Handler = async (
   // @ts-ignore
   const participants = request.payload.participants
 
-  // TODO: Implement this function
-  updateFirebaseParticipants(participants)
+  // Replace existing participants list with received list
+  participantRepository.replace(participants)
   return h.response().code(200)
 }
