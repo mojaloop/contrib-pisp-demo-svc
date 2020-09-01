@@ -88,7 +88,6 @@ async function handleAuthentication(server: Server, consent: Consent) {
 }
 
 async function handleConsentRequest(server: Server, consent: Consent) {
-
   if (!validator.isValidConsentRequest(consent)) {
     throw new Error('Consent Object Missing Fields')
   }
