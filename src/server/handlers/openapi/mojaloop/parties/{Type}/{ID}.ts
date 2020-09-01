@@ -68,7 +68,7 @@ export const put: Handler = async (
       {
         party: body.party,
         accounts: body.accounts,
-        status: Status.PENDING_PAYEE_CONFIRMATION,
+        status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
       }
     )
   } else {
