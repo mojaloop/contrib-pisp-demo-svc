@@ -106,7 +106,7 @@ async function handleConsentRequest(server: Server, consent: Consent) {
         // TODO: FIGURE OUT FROM WHERE TO GET
         callbackUri: '',
       },
-      consent.party.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId
     )
 
     // eslint-enable @typescript-eslint/no-non-null-assertion
@@ -124,7 +124,7 @@ async function handleChallengeGeneration(server: Server, consent: Consent) {
   try {
     server.app.mojaloopClient.postGenerateChallengeForConsent(
       consent.consentId,
-      consent.party.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId
     )
   } catch (error) {
     logger.error(error)
@@ -145,7 +145,7 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
         scopes: consent.scopes,
         credential: consent.credential,
       },
-      consent.party.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId
     )
   } catch (error) {
     logger.error(error)
