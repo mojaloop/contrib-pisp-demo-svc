@@ -181,7 +181,10 @@ describe('Mojaloop third-party client', () => {
     client.postTransactions(transactionRequestData, destParticipantId)
 
     // Assert
-    expect(postTransactionsSpy).toBeCalledWith(transactionRequestData, destParticipantId)
+    expect(postTransactionsSpy).toBeCalledWith(
+      transactionRequestData,
+      destParticipantId
+    )
   })
 
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
@@ -230,7 +233,10 @@ describe('Mojaloop third-party client', () => {
     client.postConsentRequests(postConsentRequestRequest, destParticipantId)
 
     // Assert
-    expect(postConsentRequestsSpy).toBeCalledWith(postConsentRequestRequest, destParticipantId)
+    expect(postConsentRequestsSpy).toBeCalledWith(
+      postConsentRequestRequest,
+      destParticipantId
+    )
   })
 
   it('Should perform a put request for authenticated consent', (): void => {
@@ -256,7 +262,7 @@ describe('Mojaloop third-party client', () => {
 
   it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
     expect(
-      client.postGenerateChallengeForConsent(consentId)
+      client.postGenerateChallengeForConsent(consentId, destParticipantId)
     ).rejects.toThrowError('Not Implemented Yet')
 
     // TODO: Use this test once implemented
@@ -282,13 +288,17 @@ describe('Mojaloop third-party client', () => {
     client.putConsentId(consentId, putConsentRequest, destParticipantId)
 
     // Assert
-    expect(putConsentIdSpy).toBeCalledWith(consentId, putConsentRequest, destParticipantId)
+    expect(putConsentIdSpy).toBeCalledWith(
+      consentId,
+      putConsentRequest,
+      destParticipantId
+    )
   })
 
   it('Should throw Not Implemented error, attempting to perform a post request to revoke a given consent,', (): void => {
-    expect(client.postRevokeConsent(consentId)).rejects.toThrowError(
-      'Not Implemented Yet'
-    )
+    expect(
+      client.postRevokeConsent(consentId, destParticipantId)
+    ).rejects.toThrowError('Not Implemented Yet')
 
     // TODO: Use this test once implemented
     // // Arrange

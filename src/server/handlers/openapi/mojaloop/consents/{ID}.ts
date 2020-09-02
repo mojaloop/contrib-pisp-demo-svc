@@ -47,6 +47,9 @@ export const patch: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
   // Updates consent fields patched
-  consentRepository.updateConsentById(request.params.id, context.request.body)
+  consentRepository.updateConsentById(
+    context.request.params.id as string,
+    context.request.body
+  )
   return h.response().code(200)
 }
