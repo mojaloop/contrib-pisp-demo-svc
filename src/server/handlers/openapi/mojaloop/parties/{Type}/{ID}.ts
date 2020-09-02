@@ -57,7 +57,8 @@ export const put: Handler = async (
   // give a response to Mojaloop.
 
   if (partyIdType === 'OPAQUE') {
-    // Update Consents
+    // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
+    // available for linking from a pre-determined DFSP
     consentRepository.updateConsent(
       // Conditions for the documents that need to be updated
       {
