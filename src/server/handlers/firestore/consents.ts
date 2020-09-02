@@ -36,6 +36,7 @@ import { Consent, ConsentStatus } from '~/models/consent'
 
 import { consentRepository } from '~/repositories/consent'
 import * as validator from './consents.validator'
+import { TCredentialScope, TAuthChannel } from '@mojaloop/sdk-standard-components'
 
 async function handleNewConsent(_: Server, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -72,14 +73,15 @@ async function handleAuthentication(server: Server, consent: Consent) {
     server.app.mojaloopClient.putConsentRequests(
       consent.id,
       {
-        initiatorId: consent.initiatorId,
-        authChannels: consent.authChannels,
-        scopes: consent.scopes,
+        initiatorId: consent.initiatorId as string,
+        authChannels: consent.authChannels as TAuthChannel[],
+        scopes: consent.scopes as TCredentialScope[],
+        authUri: consent.authUri as string,
         // TODO: FIGURE OUT FROM WHERE TO GET THIS
         callbackUri: '',
-        authToken: consent.authToken,
+        authToken: consent.authToken as string,
       },
-      consent.party!.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId as string
     )
   } catch (error) {
     logger.error(error)
@@ -98,15 +100,14 @@ async function handleConsentRequest(server: Server, consent: Consent) {
 
     server.app.mojaloopClient.postConsentRequests(
       {
-        initiatorId: consent.initiatorId,
-        scopes: consent.scopes,
-        authChannels: consent.authChannels,
+        initiatorId: consent.initiatorId as string,
+        scopes: consent.scopes as TCredentialScope[],
+        authChannels: consent.authChannels as TAuthChannel[],
         id: consent.id,
-        authUri: consent.authUri,
         // TODO: FIGURE OUT FROM WHERE TO GET
         callbackUri: '',
       },
-      consent.party!.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId as string
     )
 
     // eslint-enable @typescript-eslint/no-non-null-assertion
@@ -138,7 +139,7 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
 
   try {
     server.app.mojaloopClient.putConsentId(
-      consent.consentId,
+      consent.consentId as string,
       {
         requestId: consent.id,
         initiatorId: consent.initiatorId,
