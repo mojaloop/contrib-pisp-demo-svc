@@ -37,7 +37,7 @@ export const put: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
   // @ts-ignore
-  const participants = request.payload.participants
+  const participants = context.request.body.participants
 
   // Replace existing participants list with received list
   participantRepository.replace(participants)
