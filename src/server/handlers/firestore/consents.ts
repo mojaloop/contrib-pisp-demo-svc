@@ -39,6 +39,7 @@ import * as validator from './consents.validator'
 import {
   TCredentialScope,
   TAuthChannel,
+  TCredential,
 } from '@mojaloop/sdk-standard-components'
 
 async function handleNewConsent(_: Server, consent: Consent) {
@@ -127,8 +128,8 @@ async function handleChallengeGeneration(server: Server, consent: Consent) {
 
   try {
     server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId,
-      consent.party!.partyIdInfo.fspId
+      consent.consentId as string,
+      consent.party!.partyIdInfo.fspId as string
     )
   } catch (error) {
     logger.error(error)
@@ -145,11 +146,12 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
       consent.consentId as string,
       {
         requestId: consent.id,
-        initiatorId: consent.initiatorId,
-        scopes: consent.scopes,
-        credential: consent.credential,
+        initiatorId: consent.initiatorId as string,
+        participantId: consent.participantId as string,
+        scopes: consent.scopes as TCredentialScope[],
+        credential: consent.credential as TCredential,
       },
-      consent.party!.partyIdInfo.fspId
+      consent.party!.partyIdInfo.fspId as string
     )
   } catch (error) {
     logger.error(error)
