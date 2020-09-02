@@ -90,7 +90,10 @@ describe('/consents/{ID}', () => {
         mockResponseToolkit
       )
 
-      expect(consentRepositorySpy).toBeCalledWith('99', requestBody)
+      expect(consentRepositorySpy).toBeCalledWith(
+        context.request.params.id,
+        requestBody
+      )
 
       expect(response).toBe(200)
     })
@@ -122,7 +125,10 @@ describe('/consents/{ID}', () => {
         mockResponseToolkit
       )
 
-      expect(consentRepositorySpy).toBeCalledWith('99', requestBody)
+      expect(consentRepositorySpy).toBeCalledWith(
+        context.request.params.id,
+        requestBody
+      )
 
       expect(response).toBe(200)
     })
