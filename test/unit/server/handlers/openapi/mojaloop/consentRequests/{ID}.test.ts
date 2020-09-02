@@ -74,7 +74,7 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
       actions: ['account.getAccess'],
     },
   ],
-  callbackUri: 'https://pisp.com',
+  callbackUri: config.get('mojaloop').callbackUri,
 }
 
 describe('/consentRequests/{ID}', () => {

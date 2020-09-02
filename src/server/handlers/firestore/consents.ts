@@ -41,6 +41,7 @@ import {
   TAuthChannel,
   TCredential,
 } from '@mojaloop/sdk-standard-components'
+import config from '~/lib/config'
 
 async function handleNewConsent(_: Server, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -82,7 +83,7 @@ async function handleAuthentication(server: Server, consent: Consent) {
         scopes: consent.scopes as TCredentialScope[],
         authUri: consent.authUri as string,
         // TODO: FIGURE OUT FROM WHERE TO GET THIS
-        callbackUri: '',
+        callbackUri: config.get('mojaloop').callbackUri,
         authToken: consent.authToken as string,
       },
       consent.party!.partyIdInfo.fspId as string
@@ -109,7 +110,7 @@ async function handleConsentRequest(server: Server, consent: Consent) {
         authChannels: consent.authChannels as TAuthChannel[],
         id: consent.id,
         // TODO: FIGURE OUT FROM WHERE TO GET
-        callbackUri: '',
+        callbackUri: config.get('mojaloop').callbackUri,
       },
       consent.party!.partyIdInfo.fspId as string
     )

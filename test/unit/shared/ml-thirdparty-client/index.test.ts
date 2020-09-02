@@ -116,7 +116,7 @@ const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest 
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
-  callbackUri: 'https://pisp.com',
+  callbackUri: config.get('mojaloop').callbackUri,
   authUri: 'https://dfspAuth.com',
   authToken: 'secret-token',
 }
