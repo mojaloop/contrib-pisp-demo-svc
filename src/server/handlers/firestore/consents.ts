@@ -36,7 +36,10 @@ import { Consent, ConsentStatus } from '~/models/consent'
 
 import { consentRepository } from '~/repositories/consent'
 import * as validator from './consents.validator'
-import { TCredentialScope, TAuthChannel } from '@mojaloop/sdk-standard-components'
+import {
+  TCredentialScope,
+  TAuthChannel,
+} from '@mojaloop/sdk-standard-components'
 
 async function handleNewConsent(_: Server, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -153,6 +156,22 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
   }
 }
 
+async function handleRevokingConsent(server: Server, consent: Consent) {
+  if (!validator.isValidRevokeConsent(consent)) {
+    throw new Error('Consent Object Missing Fields')
+  }
+
+  try {
+    // Make outgoing POST consents/{ID}/revoke request to Mojaloop
+    server.app.mojaloopClient.postRevokeConsent(
+      consent.consentId as string,
+      consent.party!.partyIdInfo.fspId as string
+    )
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
 export const onCreate: ConsentHandler = async (
   server: Server,
   consent: Consent
@@ -198,6 +217,10 @@ export const onUpdate: ConsentHandler = async (
 
     case ConsentStatus.CHALLENGE_VERIFIED:
       await handleSignedChallenge(server, consent)
+      break
+
+    case ConsentStatus.REVOKE_REQUESTED:
+      await handleRevokingConsent(server, consent)
       break
   }
 }

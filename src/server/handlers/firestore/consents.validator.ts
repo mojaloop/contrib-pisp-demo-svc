@@ -116,3 +116,17 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
   }
   return false
 }
+
+/**
+ * Checks whether a consent document has all the necessary fields to be
+ * processed as revoke consent request.
+ *
+ * @param consent the object representation of a consent that is stored
+ *                    on Firebase.
+ */
+export const isValidRevokeConsent = (consent: Consent): boolean => {
+  if (consent.consentId && consent.party && consent.party.partyIdInfo.fspId) {
+    return true
+  }
+  return false
+}

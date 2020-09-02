@@ -242,10 +242,12 @@ export class Client {
    * Performs a request to revoke the Consent object and unlink
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below

@@ -25,9 +25,7 @@
  ******/
 
 import * as Health from '../health'
-import * as MojaloopConsentsById from './consents/{ID}'
 
 export const apiHandlers = {
   getHealth: Health.get,
-  deleteConsentsById: MojaloopConsentsById.remove,
 }

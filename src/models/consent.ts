@@ -66,6 +66,11 @@ export enum ConsentStatus {
    * The consent is revoked and no longer valid.
    */
   REVOKED = 'REVOKED',
+
+  /**
+   * The consent is requested to be revoked for unlinking.
+   */
+  REVOKE_REQUESTED = 'REVOKE_REQUESTED',
 }
 
 export interface Consent {
