@@ -21,6 +21,7 @@
  * Google
  - Steven Wijaya <stevenwjy@google.com>
  - Raman Mangla <ramanmangla@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -33,7 +34,12 @@ import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-import Logger, {
+// import Logger from '@mojaloop/central-services-logger'
+import { logger as Logger } from '~/shared/logger'
+
+import SDKStandardComponents, {
+  // TODO: Once implemented in sdk-standard-components, use this logger
+  // Logger,
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
@@ -101,34 +107,31 @@ export class Client {
   /**
    * Performs a lookup for a party with the given identifier.
    *
-   * @param type  the type of party identifier
-   * @param id    the party identifier
+   * @param _type  the type of party identifier
+   * @param _id    the party identifier
    */
-  public async getParties(type: PartyIdType, id: string): Promise<void> {
-    if (this.simulator) {
-      // If the client is configured with a simulator, then it will not
-      // communicate with Mojaloop directly. Instead, it will only generate
-      // a random response that is injected to the internal routes.
-      this.simulator.getParties(type, id)
-    }
-
+  public async getParties(
+    _type: PartyIdType,
+    _id: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
+    // Placeholder below
+    throw new Error('Not Implemented Yet')
   }
 
   /**
    * Performs a transaction initiation with the given transaction request object.
    *
-   * @param requestBody a transaction request object as defined by the Mojaloop API.
+   * @param _requestBody a transaction request object as defined by the Mojaloop API.
    */
-  public async postTransactions(requestBody: ThirdPartyTransactionRequest) {
-    if (this.simulator) {
-      // If the client is configured with a simulator, then it will not
-      // communicate with Mojaloop directly. Instead, it will only generate
-      // a random response that is injected to the internal routes.
-      return this.simulator.postTransactions(requestBody)
-    }
-
-    // TODO: Implement communication with Mojaloop.
+  public async postTransactions(
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
+      (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
+      destParticipantId
+    )
   }
 
   /**
@@ -137,23 +140,115 @@ export class Client {
    * @param id              a transaction request id that corresponds with the
    *                        authorization.
    * @param requestBody     an authorization object as defined by the Mojaloop API.
-   * @param transactionId   an optional field that needs to be passed in order for
-   *                        the mojaloop simulator to generate a callback. If the
-   *                        value is not provided, the Mojaloop client will not be
-   *                        able to use a simulator.
+   * @param destParticipantId   ID of destination - to be used when sending request
+
    */
   public async putAuthorizations(
-    id: string,
-    requestBody: AuthorizationsPutIdRequest,
-    transactionId?: string
-  ) {
-    if (transactionId && this.simulator) {
-      // If a transaction id is provided and the client is configured with a
-      // simulator, then it will not communicate with Mojaloop directly. Instead,
-      // it will only generate a random response that is injected to the internal routes.
-      return this.simulator.putAuthorizations(id, requestBody, transactionId)
-    }
-
+    _id: string,
+    _requestBody: AuthorizationsPutIdRequest,
+    _destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
+    // Placeholder below
+    throw new Error('Not Implemented Yet')
+
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+    //   requestBody,
+    //   id,
+    //   destParticipantId
+    // )
+  }
+
+  /**
+   * Gets a list of PISP/DFSP participants
+   */
+  public async getParticipants(): Promise<
+  SDKStandardComponents.GenericRequestResponse | undefined
+  > {
+    // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    throw new Error('Not Implemented Yet')
+  }
+
+  /**
+   * Performs a request for a new consent
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  public async postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    return this.thirdpartyRequests.postConsentRequests(
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  /**
+   * Performs a put request with authenticated consent request
+   *
+   * @param consentRequestId    unique identifier of the consent request
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  public async putConsentRequests(
+    consentRequestId: string,
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    return this.thirdpartyRequests.putConsentRequests(
+      consentRequestId,
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  /**
+   * Performs a request to generate a challenge for FIDO registration
+   *
+   * @param _consentId     identifier of consent as defined by Mojaloop API.
+   */
+  public async postGenerateChallengeForConsent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _consentId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    throw new Error('Not Implemented Yet')
+  }
+
+  /**
+   * Performs a put request with registered consent credential
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  public async putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    return this.thirdpartyRequests.putConsents(
+      consentId,
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  /**
+   * Performs a request to revoke the Consent object and unlink
+   *
+   * @param _consentId     identifier of consent as defined by Mojaloop API.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async postRevokeConsent(
+    _consentId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    // TODO: Add once implemented in sdk-standard components
+    // Placeholder below
+    throw new Error('Not Implemented Yet')
   }
 }

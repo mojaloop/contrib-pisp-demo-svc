@@ -209,7 +209,7 @@ describe('Handlers for transaction documents in Firebase', () => {
     await transactionsHandler.onUpdate(server, transactionRequestData)
 
     expect(consentRepositorySpy).toBeCalled()
-    expect(mojaloopClientSpy).toBeCalledWith(transactionRequest)
+    expect(mojaloopClientSpy).toBeCalledWith(transactionRequest, expect.any(String))
   })
 
   it('Should send authorization when all necessary fields are set', () => {
@@ -242,7 +242,7 @@ describe('Handlers for transaction documents in Firebase', () => {
     transactionsHandler.onUpdate(server, transactionData)
 
     expect(mojaloopClientSpy).toBeCalledWith(
-      transactionData.transactionRequestId!, authorization, transactionData.transactionId
+      transactionData.transactionRequestId!, authorization, expect.any(String)
     )
   })
 })

@@ -20,15 +20,11 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
-
-import config from '~/lib/config'
-
 import { Client } from '~/shared/ml-thirdparty-client'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
 import {
   AmountType,
@@ -42,6 +38,7 @@ import {
   AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionRequestId: '888',
@@ -90,58 +87,219 @@ const authorizationData: AuthorizationsPutIdRequest = {
   responseType: AuthenticationResponseType.ENTERED,
 }
 
+const consentId = '123'
+
+const destParticipantId = 'dfspA'
+
+const consentRequestId = 'ab123'
+
+const scopes = [
+  {
+    accountId: 'as2342',
+    actions: ['account.getAccess', 'account.transferMoney'],
+  },
+  {
+    accountId: 'as22',
+    actions: ['account.getAccess'],
+  },
+]
+
+const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
+  id: '111',
+  initiatorId: 'pispA',
+  authChannels: ['WEB', 'OTP'],
+  scopes,
+  callbackUri: 'https://pisp.com',
+}
+
+const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
+  initiatorId: 'pispA',
+  authChannels: ['WEB', 'OTP'],
+  scopes,
+  callbackUri: 'https://pisp.com',
+  authUri: 'https://dfspAuth.com',
+  authToken: 'secret-token',
+}
+
+const putConsentRequest: SDKStandardComponents.PutConsentsRequest = {
+  requestId: '88',
+  initiatorId: 'pispA',
+  participantId: 'participant',
+  scopes,
+  credential: {
+    id: '9876',
+    credentialType: 'FIDO',
+    status: 'PENDING',
+    challenge: {
+      payload: 'string_representing_challenge_payload',
+      signature: 'string_representing_challenge_signature',
+    },
+    payload: 'string_representing_credential_payload',
+  },
+}
+
 describe('Mojaloop third-party client', () => {
   let client: Client
-  let simulator: Simulator
 
   beforeAll(async () => {
-    // Setup client and simulator
+    // Setup client
     client = new Client({
       participantId: 'pisp',
       endpoints: {
-        default: 'api.mojaloop.io'
+        default: 'api.mojaloop.io',
       },
     })
-
-    // Use jest function for the purpose of dependency injection
-    simulator = new Simulator((jest.fn() as unknown) as Server, {
-      host: 'mojaloop.' + config.get('hostname'),
-      delay: 100,
-    })
   })
 
-  it('Should use simulator to perform party lookup when it is provided', (): void => {
-    client.simulator = simulator
-    const simulatorSpy = jest
-      .spyOn(simulator, 'getParties')
-      .mockImplementation()
+  it('Should throw Not Implemented error, attempting to perform party lookup', (): void => {
+    expect(
+      client.getParties(PartyIdType.MSISDN, '+1-111-111-1111')
+    ).rejects.toThrowError('Not Implemented Yet')
 
-    const type = PartyIdType.MSISDN
-    const identifier = '+1-111-111-1111'
-    client.getParties(PartyIdType.MSISDN, '+1-111-111-1111')
+    // TODO: Use this test once implemented
+    // // Arrange
+    // const getPartiesSpy = jest
+    //   .spyOn(client.mojaloopRequests.get, 'getParties')
+    //   .mockImplementation()
+    // const type = PartyIdType.MSISDN
+    // const identifier = '+1-111-111-1111'
 
-    expect(simulatorSpy).toBeCalledWith(type, identifier)
+    // // Act
+    // client.getParties(PartyIdType.MSISDN, '+1-111-111-1111')
+
+    // // Assert
+    // expect(getPartiesSpy).toBeCalledWith(type, identifier)
   })
 
-  it('Should use simulator to perform transaction request when it is provided', (): void => {
-    client.simulator = simulator
-    const simulatorSpy = jest
-      .spyOn(simulator, 'postTransactions')
+  it('Should perform transaction request', (): void => {
+    // Arrange
+    const postTransactionsSpy = jest
+      .spyOn(client.thirdpartyRequests, 'postThirdpartyRequestsTransactions')
       .mockImplementation()
 
-    client.postTransactions(transactionRequestData)
+    // Act
+    client.postTransactions(transactionRequestData, destParticipantId)
 
-    expect(simulatorSpy).toBeCalledWith(transactionRequestData)
+    // Assert
+    expect(postTransactionsSpy).toBeCalledWith(transactionRequestData, destParticipantId)
   })
 
-  it('Should use simulator to perform authorization when it is provided', (): void => {
-    client.simulator = simulator
-    const simulatorSpy = jest
-      .spyOn(simulator, 'putAuthorizations')
+  it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
+    expect(
+      client.putAuthorizations('111', authorizationData, '222')
+    ).rejects.toThrowError('Not Implemented Yet')
+
+    // // Arrange
+    // const putAuthorizationSpy = jest
+    //   .spyOn(
+    //     client.thirdpartyRequests,
+    //     'putThirdpartyRequestsTransactionsAuthorizations'
+    //   )
+    //   .mockImplementation()
+
+    // // Act
+    // client.putAuthorizations('111', authorizationData, '222')
+
+    // // Assert
+    // expect(putAuthorizationSpy).toBeCalledWith('111', authorizationData, '222')
+  })
+
+  it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {
+    expect(client.getParticipants()).rejects.toThrowError('Not Implemented Yet')
+
+    // TODO: Use this test once implemented
+    // // Arrange
+    // const getParticipantsSpy = jest
+    //   .spyOn(client.thirdpartyRequests, 'getParticipants')
+    //   .mockImplementation()
+
+    // // Act
+    // client.getParticipants()
+
+    // // Assert
+    // expect(getParticipantsSpy).toBeCalledWith()
+  })
+
+  it('Should perform request for new consent', (): void => {
+    // Arrange
+    const postConsentRequestsSpy = jest
+      .spyOn(client.thirdpartyRequests, 'postConsentRequests')
       .mockImplementation()
 
-    client.putAuthorizations('111', authorizationData, '222')
+    // Act
+    client.postConsentRequests(postConsentRequestRequest, destParticipantId)
 
-    expect(simulatorSpy).toBeCalledWith('111', authorizationData, '222')
+    // Assert
+    expect(postConsentRequestsSpy).toBeCalledWith(postConsentRequestRequest, destParticipantId)
+  })
+
+  it('Should perform a put request for authenticated consent', (): void => {
+    // Arrange
+    const putConsentRequestsSpy = jest
+      .spyOn(client.thirdpartyRequests, 'putConsentRequests')
+      .mockImplementation()
+
+    // Act
+    client.putConsentRequests(
+      consentRequestId,
+      putConsentRequestRequest,
+      destParticipantId
+    )
+
+    // Assert
+    expect(putConsentRequestsSpy).toBeCalledWith(
+      consentRequestId,
+      putConsentRequestRequest,
+      destParticipantId
+    )
+  })
+
+  it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
+    expect(
+      client.postGenerateChallengeForConsent(consentId)
+    ).rejects.toThrowError('Not Implemented Yet')
+
+    // TODO: Use this test once implemented
+    // // Arrange
+    // const GenerateChallengeSpy = jest
+    //   .spyOn(client.thirdpartyRequests, 'generateChallenge')
+    //   .mockImplementation()
+
+    // // Act
+    // client.postGenerateChallengeForConsent(consentId)
+
+    // // Assert
+    // expect(GenerateChallengeSpy).toBeCalledWith(consentId)
+  })
+
+  it('Should perform a put request for registered consent credential,', (): void => {
+    // Arrange
+    const putConsentIdSpy = jest
+      .spyOn(client.thirdpartyRequests, 'putConsents')
+      .mockImplementation()
+
+    // Act
+    client.putConsentId(consentId, putConsentRequest, destParticipantId)
+
+    // Assert
+    expect(putConsentIdSpy).toBeCalledWith(consentId, putConsentRequest, destParticipantId)
+  })
+
+  it('Should throw Not Implemented error, attempting to perform a post request to revoke a given consent,', (): void => {
+    expect(client.postRevokeConsent(consentId)).rejects.toThrowError(
+      'Not Implemented Yet'
+    )
+
+    // TODO: Use this test once implemented
+    // // Arrange
+    // const postRevokeConsentSpy = jest
+    //   .spyOn(client.thirdpartyRequests, 'postRevokeConsent')
+    //   .mockImplementation()
+
+    // // Act
+    // client.postRevokeConsent(consentId)
+
+    // // Assert
+    // expect(postRevokeConsentSpy).toBeCalledWith(consentId)
   })
 })

@@ -40,6 +40,9 @@ import { transactionRepository } from '~/repositories/transaction'
 import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
 
+// TODO: Replace once decided how to implement
+const destParticipantId = 'PLACEHOLDER'
+
 async function handleNewTransaction(_: Server, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
@@ -87,21 +90,24 @@ async function handlePartyConfirmation(
         transaction.consentId!
       )
 
-      server.app.mojaloopClient.postTransactions({
-        transactionRequestId: transaction.transactionRequestId!,
-        sourceAccountId: transaction.sourceAccountId!,
-        consentId: transaction.consentId!,
-        payee: transaction.payee!,
-        payer: consent.party!,
-        amountType: AmountType.RECEIVE,
-        amount: transaction.amount!,
-        transactionType: {
-          scenario: 'TRANSFER',
-          initiator: 'PAYER',
-          initiatorType: 'CONSUMER',
+      server.app.mojaloopClient.postTransactions(
+        {
+          transactionRequestId: transaction.transactionRequestId!,
+          sourceAccountId: transaction.sourceAccountId!,
+          consentId: transaction.consentId!,
+          payee: transaction.payee!,
+          payer: consent.party!,
+          amountType: AmountType.RECEIVE,
+          amount: transaction.amount!,
+          transactionType: {
+            scenario: 'TRANSFER',
+            initiator: 'PAYER',
+            initiatorType: 'CONSUMER',
+          },
+          expiration: utils.getTomorrowsDate().toISOString(),
         },
-        expiration: utils.getTomorrowsDate().toISOString(),
-      })
+        destParticipantId
+      )
 
       // eslint-enable @typescript-eslint/no-non-null-assertion
     } catch (err) {
@@ -142,7 +148,7 @@ async function handleAuthorization(server: Server, transaction: Transaction) {
           authenticationValue: transaction.authentication!.value!,
         },
       },
-      transaction.transactionId
+      destParticipantId
     )
     // eslint-enable @typescript-eslint/no-non-null-assertion
   }
