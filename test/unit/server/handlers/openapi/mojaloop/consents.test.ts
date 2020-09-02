@@ -80,7 +80,7 @@ const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest 
   authToken: 'secret-token',
 }
 
-describe('/parties/{Type}/{ID}', () => {
+describe('/consents', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.clearAllTimers()
