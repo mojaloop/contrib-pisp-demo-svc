@@ -37,7 +37,6 @@ import Logger, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 /**
  * A client object that abstracts out operations that could be performed in

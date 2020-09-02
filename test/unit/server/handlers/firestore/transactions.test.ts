@@ -186,7 +186,7 @@ describe('Handlers for transaction documents in Firebase', () => {
     const consentData = createStubConsentData()
 
     const consentRepositorySpy = jest
-      .spyOn(consentRepository, 'getByConsentId')
+      .spyOn(consentRepository, 'getConsentById')
       .mockImplementation(() => new Promise((resolve) => resolve(consentData)))
 
     // Mock the expected transaction request being sent.

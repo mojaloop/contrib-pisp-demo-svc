@@ -48,9 +48,9 @@ export interface Options {
       onRemove?: TransactionHandler
     }
     consents: {
-      onCreate?: TransactionHandler
-      onUpdate?: TransactionHandler
-      onRemove?: TransactionHandler
+      onCreate?: ConsentHandler
+      onUpdate?: ConsentHandler
+      onRemove?: ConsentHandler
     }
   }
 }
