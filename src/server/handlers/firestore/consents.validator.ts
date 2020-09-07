@@ -55,6 +55,7 @@ export const isValidAuthentication = (consent: Consent): boolean => {
     consent.consentRequestId &&
     consent.consentId &&
     consent.party &&
+    consent.party.partyIdInfo &&
     consent.party.partyIdInfo.fspId &&
     consent.initiatorId &&
     consent.authChannels &&
@@ -78,7 +79,7 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
     consent.scopes &&
     consent.initiatorId &&
     consent.party &&
-    consent.party.partyIdInfo.fspId &&
+    consent.party.partyIdInfo?.fspId &&
     consent.authUri
   ) {
     return true
@@ -94,7 +95,7 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidChallengeGeneration = (consent: Consent): boolean => {
-  if (consent.consentId && consent.party && consent.party.partyIdInfo.fspId) {
+  if (consent.consentId && consent.party && consent.party.partyIdInfo?.fspId) {
     return true
   }
   return false
@@ -111,7 +112,7 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
   if (
     consent.credential &&
     consent.party &&
-    consent.party.partyIdInfo.fspId &&
+    consent.party.partyIdInfo?.fspId &&
     consent.scopes &&
     consent.initiatorId &&
     consent.participantId
@@ -129,7 +130,7 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidRevokeConsent = (consent: Consent): boolean => {
-  if (consent.consentId && consent.party && consent.party.partyIdInfo.fspId) {
+  if (consent.consentId && consent.party && consent.party.partyIdInfo?.fspId) {
     return true
   }
   return false

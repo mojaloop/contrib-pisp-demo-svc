@@ -19,7 +19,7 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
