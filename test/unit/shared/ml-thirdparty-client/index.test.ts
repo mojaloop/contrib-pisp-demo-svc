@@ -39,6 +39,7 @@ import {
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import config from '~/lib/config'
 
 const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionRequestId: '888',

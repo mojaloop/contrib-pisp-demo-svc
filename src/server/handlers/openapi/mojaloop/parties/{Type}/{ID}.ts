@@ -33,6 +33,7 @@ import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
+import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 
 /**
  * Handles callback from Mojaloop that specifies detailed info about a requested party.
@@ -56,7 +57,7 @@ export const put: Handler = async (
   // function is expected to run asynchronously, so the server could quickly
   // give a response to Mojaloop.
 
-  if (partyIdType === 'OPAQUE') {
+  if (partyIdType === PartyIdType.OPAQUE) {
     // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
     // available for linking from a pre-determined DFSP
     consentRepository.updateConsent(
