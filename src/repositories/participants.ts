@@ -28,6 +28,7 @@
 
 import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
+import { Participant } from '~/shared/ml-thirdparty-client/models/core'
 
 export interface IParticipantRepository {
   /**
@@ -35,12 +36,12 @@ export interface IParticipantRepository {
    *
    * @param data   Documents that are about to be added.
    */
-  replace(data: Record<string, any>): Promise<void>
+  replace(data: Participant[]): Promise<void>
 }
 
 export class FirebaseParticipantRepository implements IParticipantRepository {
   // TODO: Confirm data Type
-  async replace(data: Record<string, any>): Promise<void> {
+  async replace(data: Participant[]): Promise<void> {
     const collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> = firebase
       .firestore()
       .collection('participants')
