@@ -37,7 +37,7 @@ export const put: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
 
-  const id = context.request.params.id as string
+  const id = context.request.params.ID as string
   const { authChannels, authUri } = context.request.body
   consentRepository.updateConsentById(id, {
     authChannels,

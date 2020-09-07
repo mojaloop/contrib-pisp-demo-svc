@@ -91,7 +91,7 @@ describe('/consents/{ID}', () => {
       )
 
       expect(consentRepositorySpy).toBeCalledWith(
-        context.request.params.id,
+        context.request.params.ID,
         requestBody
       )
 
@@ -126,7 +126,7 @@ describe('/consents/{ID}', () => {
       )
 
       expect(consentRepositorySpy).toBeCalledWith(
-        context.request.params.id,
+        context.request.params.ID,
         requestBody
       )
 

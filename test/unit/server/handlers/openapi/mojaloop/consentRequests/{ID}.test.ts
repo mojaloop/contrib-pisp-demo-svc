@@ -113,7 +113,7 @@ describe('/consentRequests/{ID}', () => {
 
       const { authChannels, authUri } = requestBody
 
-      expect(consentRepositorySpy).toBeCalledWith(context.request.params.id, {
+      expect(consentRepositorySpy).toBeCalledWith(context.request.params.ID, {
         authChannels,
         authUri,
         status: ConsentStatus.AUTHENTICATION_REQUIRED,
