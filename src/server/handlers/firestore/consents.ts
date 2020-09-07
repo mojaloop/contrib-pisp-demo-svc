@@ -82,7 +82,6 @@ async function handleAuthentication(server: Server, consent: Consent) {
         authChannels: consent.authChannels as TAuthChannel[],
         scopes: consent.scopes as TCredentialScope[],
         authUri: consent.authUri as string,
-        // TODO: FIGURE OUT FROM WHERE TO GET THIS
         callbackUri: config.get('mojaloop').callbackUri,
         authToken: consent.authToken as string,
       },
@@ -109,7 +108,6 @@ async function handleConsentRequest(server: Server, consent: Consent) {
         scopes: consent.scopes as TCredentialScope[],
         authChannels: consent.authChannels as TAuthChannel[],
         id: consent.id,
-        // TODO: FIGURE OUT FROM WHERE TO GET
         callbackUri: config.get('mojaloop').callbackUri,
       },
       consent.party!.partyIdInfo.fspId as string
