@@ -27,6 +27,9 @@ import { program } from 'commander'
 import axios from 'axios'
 import packageInfo from '../package.json'
 
+const { Enum } = require('@mojaloop/central-services-shared')
+const EndPoints = Enum.EndPoints
+
 interface RegistrationValue {
   targetServiceId: string
   type: string
@@ -36,62 +39,62 @@ interface RegistrationValue {
 const registrationValues: Array<RegistrationValue> = [
   // PUT /participants
   {
-    targetServiceId: 'central-services-shared',
-    type: 'FSIOP_CALLBACK_URL_PARTICIPANT_PUT',
+    targetServiceId: 'central-ledger',
+    type: EndPoints.FspEndpointTypes.FSPIOP_CALLBACK_URL_PARTICIPANT_PUT,
     endpointPath: '/participants',
   },
   // PUT /parties/{Type}/{ID}
   {
     targetServiceId: 'central-ledger',
-    type: 'FSIOP_CALLBACK_URL_PARTIES_PUT',
+    type: EndPoints.FspEndpointTypes.FSPIOP_CALLBACK_URL_PARTIES_PUT,
     endpointPath: '/parties/{{partyIdType}}/{{partyIdentifier}}',
   },
   // PUT /parties/{Type}/{ID}/error
   {
     targetServiceId: 'central-ledger',
-    type: 'FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR',
-    endpointPath: '/parties/{{partyIdType}}/{{partyIdentifier}}/error',
+    type: EndPoints.FspEndpointTypes.FSPIOP_CALLBACK_URL_PARTIES_PUT_ERROR,
+    endpointPath: EndPoints.FspEndpointTemplates.PARTIES_PUT_ERROR,
   },
   // PUT /consentRequests/{ID}
   {
     targetServiceId: 'central-ledger',
-    type: 'THIRDPARTY_CALLBACK_URL_CONSENT_REQUEST_PUT',
-    endpointPath: '/consentRequests/{{consentId}}',
+    type: EndPoints.FspEndpointTypes.TP_CB_URL_CONSENT_REQUEST_PUT,
+    endpointPath: EndPoints.FspEndpointTemplates.TP_CONSENT_REQUEST_PUT,
   },
   // PUT /consentRequests/{ID}/error
   {
     targetServiceId: 'central-ledger',
-    type: 'THIRDPARTY_CALLBACK_URL_CONSENT_REQUEST_PUT_ERROR',
-    endpointPath: '/consentRequests/{{consentId}}/error',
+    type: EndPoints.FspEndpointTypes.TP_CB_URL_CONSENT_REQUEST_PUT_ERROR,
+    endpointPath: EndPoints.FspEndpointTemplates.TP_CONSENT_REQUEST_PUT_ERROR,
   },
   // POST /consents
   {
     targetServiceId: 'central-ledger',
-    type: 'THIRDPARTY_CALLBACK_URL_CONSENT_POST',
-    endpointPath: '/consents',
+    type: EndPoints.FspEndpointTypes.TP_CB_URL_CONSENT_POST,
+    endpointPath: EndPoints.FspEndpointTemplates.TP_CONSENT_POST,
   },
   // PUT /consents/{ID}
   {
     targetServiceId: 'central-ledger',
-    type: 'THIRDPARTY_CALLBACK_URL_CONSENT_PUT',
-    endpointPath: '/consents/{{consentId}}',
+    type: EndPoints.FspEndpointTypes.TP_CB_URL_CONSENT_PUT,
+    endpointPath: EndPoints.FspEndpointTemplates.TP_CONSENT_PUT,
   },
   // PUT /consents/{ID}/error
   {
     targetServiceId: 'central-ledger',
-    type: 'THIRDPARTY_CALLBACK_URL_CONSENT_PUT_ERROR',
-    endpointPath: '/consents/{{consentId}}/error',
+    type: EndPoints.FspEndpointTypes.TP_CB_URL_CONSENT_PUT_ERROR,
+    endpointPath: EndPoints.FspEndpointTemplates.TP_CONSENT_PUT_ERROR,
   },
   // POST /authorizations
   {
     targetServiceId: 'central-ledger',
     type: 'FSPIOP_CALLBACK_URL_TRX_REQ_SERVICE',
-    endpointPath: '/authorizations',
+    endpointPath: EndPoints.FspEndpointTemplates.TP_AUTHORIZATIONS_POST,
   },
   // PUT /transfers/{ID}
   {
     targetServiceId: 'central-ledger',
-    type: 'FSPIOP_CALLBACK_URL_TRANSFER_PUT',
+    type: EndPoints.FspEndpointTypes.FSPIOP_CALLBACK_URL_TRANSFER_PUT,
     endpointPath: '/transfers/{{transferId}}',
   },
   // PUT /transfers/{ID}/error

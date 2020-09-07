@@ -25,6 +25,8 @@
 
 import { Client } from '~/shared/ml-thirdparty-client'
 
+declare module '@mojaloop/central-services-shared'
+
 declare module '@hapi/hapi' {
   interface ServerApplicationState {
     mojaloopClient: Client
