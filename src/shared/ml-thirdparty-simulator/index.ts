@@ -20,10 +20,11 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
+import { Server, ServerInjectResponse } from '@hapi/hapi'
 import * as faker from 'faker'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
@@ -37,6 +38,8 @@ import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { ConsentFactory } from './factories/consents'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -56,7 +59,7 @@ export class Simulator {
 
   /**
    * Constructor for the Mojaloop simulator.
-   * 
+   *
    * @param server a server object to be used to inject the fake Mojaloop callbacks.
    * @param options a configuration object for the simulator.
    */
@@ -70,13 +73,16 @@ export class Simulator {
   }
 
   /**
-   * Simulates a party lookup operation in Mojaloop, without the need of 
+   * Simulates a party lookup operation in Mojaloop, without the need of
    * sending `GET /parties/{Type}/{ID}` request.
-   * 
+   *
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  async getParties(type: PartyIdType, id: string): Promise<void> {
+  public async getParties(
+    type: PartyIdType,
+    id: string
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
@@ -88,7 +94,7 @@ export class Simulator {
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -103,12 +109,16 @@ export class Simulator {
   /**
    * Simulates a transaction initiation in Mojaloop by third-party application,
    * without the need of sending `POST /thirdpartyRequests/transactions` request.
-   * 
+   *
    * @param request a transaction request object as defined by the Mojaloop API.
    */
-  public async postTransactions(request: ThirdPartyTransactionRequest): Promise<void> {
+  public async postTransactions(
+    request: ThirdPartyTransactionRequest
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/authorizations'
-    const payload = AuthorizationFactory.createPostAuthorizationsRequest(request)
+    const payload = AuthorizationFactory.createPostAuthorizationsRequest(
+      request
+    )
 
     if (this.options.delay) {
       // Delay operations to simulate network latency in real communication
@@ -116,7 +126,7 @@ export class Simulator {
       await this.delay(this.options.delay)
     }
 
-    this.server.inject({
+    return this.server.inject({
       method: 'POST',
       url: targetUrl,
       headers: {
@@ -131,7 +141,7 @@ export class Simulator {
   /**
    * Simulates a transaction authorization in Mojaloop by third-party application,
    * without the need of sending `PUT /authorizations/{ID}` request.
-   * 
+   *
    * @param id            the transaction request ID that is used to identify the
    *                      authorization.
    * @param request       a transaction authorization object as defined by the Mojaloop API.
@@ -139,12 +149,19 @@ export class Simulator {
    *                      value is required by the simulator as it will be contained in the
    *                      response object.
    */
-  public async putAuthorizations(id: string,
-    request: AuthorizationsPutIdRequest, transactionId: string): Promise<void> {
+  public async putAuthorizations(
+    id: string,
+    request: AuthorizationsPutIdRequest,
+    transactionId: string
+  ): Promise<ServerInjectResponse> {
     const targetUrl = '/transfers/' + faker.random.uuid()
-    const payload = TransferFactory.createTransferIdPutRequest(id, request, transactionId)
+    const payload = TransferFactory.createTransferIdPutRequest(
+      id,
+      request,
+      transactionId
+    )
 
-    this.server.inject({
+    return this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -157,8 +174,160 @@ export class Simulator {
   }
 
   /**
+   * Simulates looking up list of PISP/DFSP participants
+   */
+  public async getParticipants(): Promise<ServerInjectResponse> {
+    const targetUrl = '/participants'
+    const payload = ParticipantFactory.getParticipants()
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a request for a new consent in Mojaloop by third-party application,
+   * without the need of sending `POST /consentRequest` request.
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   */
+  public async postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest
+  ): Promise<ServerInjectResponse> {
+    const targetUrl = '/consentRequests/' + requestBody.id
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a put request with authenticated consent request in Mojaloop by third-party application,
+   * without the need of sending `PUT /consentRequest/{ID}` request.
+   *
+   * @param consentRequestId    unique identifier of the consent request
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   */
+  public async putConsentRequests(
+    consentRequestId: string,
+    requestBody: SDKStandardComponents.PutConsentRequestsRequest
+  ): Promise<ServerInjectResponse> {
+    const targetUrl = '/consentRequests/' + consentRequestId
+    const payload = ConsentFactory.createPostConsentRequest(
+      consentRequestId,
+      requestBody
+    )
+
+    return this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a request to generate a challenge for FIDO registration in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
+  public async postGenerateChallengeForConsent(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    consentId: string
+  ): Promise<ServerInjectResponse> {
+    // TODO: Refactor once implemented in sdk-standard components
+    const targetUrl = '/consents/' + consentId + '/generateChallenge'
+    const payload = ConsentFactory.createPutConsentIdRequest()
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a put request with registered consent credential in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   */
+  public async putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest
+  ): Promise<ServerInjectResponse> {
+    const targetUrl = '/consents/' + consentId
+    const payload = ConsentFactory.createPutConsentIdValidationRequest(
+      requestBody
+    )
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a request to revoke the Consent object and unlink in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async postRevokeConsent(
+    consentId: string
+  ): Promise<ServerInjectResponse> {
+    // TODO: Refactor once implemented in sdk-standard components
+    const targetUrl = '/consents/' + consentId
+    const payload = ConsentFactory.createPatchConsentRevokeRequest()
+
+    return this.server.inject({
+      method: 'PATCH',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
    * Returns a promise that will be resolved after a certain duration.
-   * 
+   *
    * @param ms the length of delay in milisecond.
    */
   private async delay(ms: number): Promise<void> {
