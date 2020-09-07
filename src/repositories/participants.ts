@@ -65,7 +65,7 @@ export class FirebaseParticipantRepository implements IParticipantRepository {
           })
         }
         // Iterate through received participants list and add them to the processing batch.
-        data.array.forEach((participant: any) => {
+        data.forEach((participant: Participant) => {
           batch.set(collectionRef.doc(), participant)
         })
 
