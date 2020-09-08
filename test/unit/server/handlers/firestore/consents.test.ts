@@ -41,6 +41,7 @@ import SDKStandardComponents, {
   TAuthChannel,
   TCredentialScope,
 } from '@mojaloop/sdk-standard-components'
+import { logger } from '~/shared/logger'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -50,14 +51,18 @@ jest.mock('uuid', () => ({
   v4: jest.fn().mockImplementation(() => '12345'),
 }))
 
-// Mock utils to consistently return the provided value.
-// jest.mock('~/shared/logger', () => ({
-// }))
+// Mock logger to prevent handlers from logging incoming request
+jest.mock('~/shared/logger', () => ({
+  logger: {
+    error: jest.fn().mockImplementation(),
+  },
+}))
 
 const documentId = '111'
 
 describe('Handlers for consent documents in Firebase', () => {
   let server: Server
+  // let loggerErrorSpy: jest.SpyInstance
 
   beforeAll(async () => {
     server = await createServer(config)
@@ -65,6 +70,7 @@ describe('Handlers for consent documents in Firebase', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    // loggerErrorSpy = jest.spyOn(logger, 'error')
   })
 
   afterEach(() => {
@@ -100,9 +106,7 @@ describe('Handlers for consent documents in Firebase', () => {
   describe('OnUpdate', () => {
     describe('Party Lookup', () => {
       // Mocked Methods
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'getParties')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidPartyLookup')
@@ -121,6 +125,12 @@ describe('Handlers for consent documents in Firebase', () => {
         consentRequestId: '12345',
         status: ConsentStatus.PENDING_PARTY_LOOKUP,
       }
+
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'getParties')
+          .mockImplementation()
+      })
 
       it('Should perform party lookup when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentPartyLookup)
@@ -152,23 +162,22 @@ describe('Handlers for consent documents in Firebase', () => {
         expect(mojaloopClientSpy).not.toBeCalled()
       })
 
-      it('Should throw an error if mojaloop client throws error', async () => {
-        mojaloopClientSpy.mockImplementation(() => {
-          throw new Error('Client not connected')
+      it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
+        mojaloopClientSpy.mockImplementationOnce(() => {
+          throw Error('Client not connected')
         })
 
         await consentsHandler.onUpdate(server, consentPartyLookup)
 
         expect(validatorSpy).toBeCalledWith(consentPartyLookup)
         expect(mojaloopClientSpy).toBeCalledWith(PartyIdType.OPAQUE, 'bob1234')
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
 
     describe('Authentication', () => {
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'putConsentRequests')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidAuthentication')
@@ -216,6 +225,13 @@ describe('Handlers for consent documents in Firebase', () => {
         authToken: consentAuthentication.authToken as string,
         authUri: consentAuthentication.authUri as string,
       }
+
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'putConsentRequests')
+          .mockImplementation()
+      })
+
       it('Should initiate consent request request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentAuthentication)
 
@@ -239,6 +255,7 @@ describe('Handlers for consent documents in Firebase', () => {
       })
 
       it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
         mojaloopClientSpy.mockImplementation(() => {
           throw new Error('Client not connected')
         })
@@ -251,14 +268,12 @@ describe('Handlers for consent documents in Firebase', () => {
           consentAuthentication.party?.partyIdInfo.fspId
         )
         expect(validatorSpy).toBeCalledWith(consentAuthentication)
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
 
     describe('Consent Request', () => {
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'postConsentRequests')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidConsentRequest')
@@ -303,6 +318,12 @@ describe('Handlers for consent documents in Firebase', () => {
         callbackUri: config.get('mojaloop').callbackUri,
       }
 
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'postConsentRequests')
+          .mockImplementation()
+      })
+
       it('Should initiate consent request request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentConsentRequest)
 
@@ -325,6 +346,7 @@ describe('Handlers for consent documents in Firebase', () => {
       })
 
       it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
         mojaloopClientSpy.mockImplementation(() => {
           throw new Error('Client not connected')
         })
@@ -336,15 +358,13 @@ describe('Handlers for consent documents in Firebase', () => {
           consentConsentRequest.party?.partyIdInfo.fspId
         )
         expect(validatorSpy).toBeCalledWith(consentConsentRequest)
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
 
     describe('Challenge Generation Request', () => {
       // Mocked Methods
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidChallengeGeneration')
@@ -380,6 +400,12 @@ describe('Handlers for consent documents in Firebase', () => {
         ],
       }
 
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
+          .mockImplementation()
+      })
+
       it('Should initiate challenge generation request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentGenerateChallenge)
 
@@ -393,13 +419,16 @@ describe('Handlers for consent documents in Firebase', () => {
       it('Should throw an error if Validator returns false', async () => {
         validatorSpy.mockReturnValueOnce(false)
 
-        await consentsHandler.onUpdate(server, consentGenerateChallenge)
+        await expect(
+          consentsHandler.onUpdate(server, consentGenerateChallenge)
+        ).rejects.toThrowError('Consent Object Missing Fields')
 
         expect(validatorSpy).toBeCalledWith(consentGenerateChallenge)
         expect(mojaloopClientSpy).not.toBeCalled()
       })
 
       it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
         mojaloopClientSpy.mockImplementation(() => {
           throw new Error('Client not connected')
         })
@@ -411,14 +440,12 @@ describe('Handlers for consent documents in Firebase', () => {
           consentGenerateChallenge.consentId,
           consentGenerateChallenge.party?.partyIdInfo.fspId
         )
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
 
     describe('Signed Challenge', () => {
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'putConsentId')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidSignedChallenge')
@@ -459,6 +486,13 @@ describe('Handlers for consent documents in Firebase', () => {
           payload: 'string_representing_credential_payload',
         },
       }
+
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'putConsentId')
+          .mockImplementation()
+      })
+
       it('Should initiate PUT consent/{ID} request when challenge has been signed and all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentVerifiedChallenge)
 
@@ -477,23 +511,18 @@ describe('Handlers for consent documents in Firebase', () => {
       })
 
       it('Should throw an error if Validator returns false', async () => {
-        await consentsHandler.onUpdate(server, consentVerifiedChallenge)
+        validatorSpy.mockReturnValueOnce(false)
+
+        await expect(
+          consentsHandler.onUpdate(server, consentVerifiedChallenge)
+        ).rejects.toThrowError('Consent Object Missing Fields')
 
         expect(validatorSpy).toBeCalledWith(consentVerifiedChallenge)
-        expect(mojaloopClientSpy).toBeCalledWith(
-          consentVerifiedChallenge.consentId,
-          {
-            requestId: consentVerifiedChallenge.id,
-            initiatorId: consentVerifiedChallenge.initiatorId,
-            participantId: consentVerifiedChallenge.participantId,
-            scopes: consentVerifiedChallenge.scopes,
-            credential: consentVerifiedChallenge.credential,
-          },
-          consentVerifiedChallenge.party.partyIdInfo.fspId
-        )
+        expect(mojaloopClientSpy).not.toBeCalled()
       })
 
       it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
         mojaloopClientSpy.mockImplementation(() => {
           throw new Error('Client not connected')
         })
@@ -512,15 +541,13 @@ describe('Handlers for consent documents in Firebase', () => {
           },
           consentVerifiedChallenge.party.partyIdInfo.fspId
         )
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
 
     describe('Request to Revoke Consent ', () => {
       // Mocked Methods
-      const mojaloopClientSpy = jest
-        .spyOn(server.app.mojaloopClient, 'postRevokeConsent')
-        .mockImplementation()
+      let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
         .spyOn(Validator, 'isValidRevokeConsent')
@@ -540,6 +567,12 @@ describe('Handlers for consent documents in Firebase', () => {
         status: ConsentStatus.REVOKE_REQUESTED,
       }
 
+      beforeAll(() => {
+        mojaloopClientSpy = jest
+          .spyOn(server.app.mojaloopClient, 'postRevokeConsent')
+          .mockImplementation()
+      })
+
       it('Should initiate consent revoke request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentRevokeRequested)
 
@@ -553,20 +586,20 @@ describe('Handlers for consent documents in Firebase', () => {
       it('Should throw an error if Validator returns false', async () => {
         validatorSpy.mockReturnValueOnce(false)
 
-        await consentsHandler.onUpdate(server, consentRevokeRequested)
+        await expect(
+          consentsHandler.onUpdate(server, consentRevokeRequested)
+        ).rejects.toThrowError('Consent Object Missing Fields')
 
         expect(validatorSpy).toBeCalledWith(consentRevokeRequested)
-        expect(mojaloopClientSpy).toBeCalledWith(
-          consentRevokeRequested.consentId,
-          consentRevokeRequested.party.partyIdInfo.fspId
-        )
+        expect(mojaloopClientSpy).not.toBeCalled()
       })
 
       it('Should log an error if mojaloop client throws error', async () => {
+        const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
         mojaloopClientSpy.mockImplementation(() => {
           throw new Error('Client not connected')
         })
-        
+
         await consentsHandler.onUpdate(server, consentRevokeRequested)
 
         expect(validatorSpy).toBeCalledWith(consentRevokeRequested)
@@ -574,7 +607,7 @@ describe('Handlers for consent documents in Firebase', () => {
           consentRevokeRequested.consentId,
           consentRevokeRequested.party.partyIdInfo.fspId
         )
-        expect()
+        expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })
     })
   })
