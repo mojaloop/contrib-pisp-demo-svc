@@ -61,12 +61,14 @@ async function handlePartyLookup(server: Server, consent: Consent) {
   }
 
   // Party is guaranteed to be non-null by the validator.
-
-  server.app.mojaloopClient.getParties(
-    consent.party!.partyIdInfo.partyIdType,
-    consent.party!.partyIdInfo.partyIdentifier
-  )
-  //   }
+  try {
+    server.app.mojaloopClient.getParties(
+      consent.party!.partyIdInfo.partyIdType,
+      consent.party!.partyIdInfo.partyIdentifier
+    )
+  } catch (error) {
+    logger.error(error)
+  }
 }
 
 async function handleAuthentication(server: Server, consent: Consent) {
@@ -100,7 +102,6 @@ async function handleConsentRequest(server: Server, consent: Consent) {
 
   try {
     // The optional values are guaranteed to exist by the validator.
-    // eslint-disable @typescript-eslint/no-non-null-assertion
 
     server.app.mojaloopClient.postConsentRequests(
       {
@@ -112,12 +113,9 @@ async function handleConsentRequest(server: Server, consent: Consent) {
       },
       consent.party!.partyIdInfo.fspId as string
     )
-
-    // eslint-enable @typescript-eslint/no-non-null-assertion
   } catch (err) {
     logger.error(err)
   }
-  // }
 }
 
 async function handleChallengeGeneration(server: Server, consent: Consent) {
