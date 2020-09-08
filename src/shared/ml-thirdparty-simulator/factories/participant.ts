@@ -22,6 +22,8 @@
  - Steven Wijaya <stevenwjy@google.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: Confirm if testing necessary for factory methods
 
 import * as faker from 'faker'
 

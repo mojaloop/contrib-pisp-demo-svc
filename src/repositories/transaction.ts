@@ -24,6 +24,8 @@
  ******/
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* istanbul ignore file */
+// TODO: Testing will covered in separate ticket
 
 import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
