@@ -54,7 +54,7 @@ export interface IConsentRepository {
    * @param data        Document fields that are about to be updated.
    */
   updateConsent(
-    conditions: Record<string, any>,
+    conditions: Record<string, unknown>,
     data: Record<string, any>
   ): Promise<void>
 }
