@@ -121,7 +121,7 @@ describe('/consents', () => {
         initiatorId,
         participantId,
         scopes,
-        status: ConsentStatus.ACTIVE,
+        status: ConsentStatus.CONSENT_GRANTED,
       })
 
       expect(response).toBe(202)

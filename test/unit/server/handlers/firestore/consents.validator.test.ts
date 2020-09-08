@@ -436,7 +436,7 @@ describe('Validators for different consents used in requests', () => {
           id,
           consentId,
           party: partyWithFSPId,
-          status: ConsentStatus.ACTIVE,
+          status: ConsentStatus.CONSENT_GRANTED,
           scopes,
           consentRequestId,
           authChannels,
@@ -457,7 +457,7 @@ describe('Validators for different consents used in requests', () => {
           consentRequestId,
           authChannels,
           accounts,
-          status: ConsentStatus.ACTIVE,
+          status: ConsentStatus.CONSENT_GRANTED,
         })
       ).toBe(false)
 
@@ -473,7 +473,7 @@ describe('Validators for different consents used in requests', () => {
           accounts,
           // @ts-ignore
           party: {},
-          status: ConsentStatus.ACTIVE,
+          status: ConsentStatus.CONSENT_GRANTED,
         })
       ).toBe(false)
 
@@ -491,7 +491,7 @@ describe('Validators for different consents used in requests', () => {
             // @ts-ignore
             partyIdInfo: {},
           },
-          status: ConsentStatus.ACTIVE,
+          status: ConsentStatus.CONSENT_GRANTED,
         })
       ).toBe(false)
     })
@@ -503,7 +503,7 @@ describe('Validators for different consents used in requests', () => {
           userId,
           initiatorId,
           party: partyWithFSPId,
-          status: ConsentStatus.ACTIVE,
+          status: ConsentStatus.CONSENT_GRANTED,
         })
       ).toBe(false)
     })

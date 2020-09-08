@@ -381,7 +381,7 @@ describe('Handlers for consent documents in Firebase', () => {
             fspId: 'fspb',
           },
         },
-        status: ConsentStatus.ACTIVE,
+        status: ConsentStatus.CONSENT_GRANTED,
         scopes: [
           {
             accountId: 'as2342',
@@ -474,7 +474,7 @@ describe('Handlers for consent documents in Firebase', () => {
             fspId: 'fspb',
           },
         },
-        status: ConsentStatus.CHALLENGE_VERIFIED,
+        status: ConsentStatus.ACTIVE,
         credential: {
           id: '9876',
           credentialType: 'FIDO' as const,

@@ -43,7 +43,7 @@ export const post: Handler = async (
     initiatorId,
     participantId,
     scopes,
-    status: ConsentStatus.ACTIVE,
+    status: ConsentStatus.CONSENT_GRANTED,
   })
   return h.response().code(202)
 }

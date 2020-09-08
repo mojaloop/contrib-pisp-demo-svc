@@ -210,11 +210,11 @@ export const onUpdate: ConsentHandler = async (
       await handleAuthentication(server, consent)
       break
 
-    case ConsentStatus.ACTIVE:
+    case ConsentStatus.CONSENT_GRANTED:
       await handleChallengeGeneration(server, consent)
       break
 
-    case ConsentStatus.CHALLENGE_VERIFIED:
+    case ConsentStatus.ACTIVE:
       await handleSignedChallenge(server, consent)
       break
 

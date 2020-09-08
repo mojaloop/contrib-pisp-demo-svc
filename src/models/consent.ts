@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -50,7 +51,7 @@ export enum ConsentStatus {
   /**
    * The consent is granted and active.
    */
-  ACTIVE = 'ACTIVE',
+  CONSENT_GRANTED = 'CONSENT_GRANTED',
 
   /**
    * The consent is ACTIVE and challenge has been generated
@@ -60,7 +61,7 @@ export enum ConsentStatus {
   /**
    * The consent is ACTIVE and challenge has been verified
    */
-  CHALLENGE_VERIFIED = 'CHALLENGE_VERIFIED',
+  ACTIVE = 'ACTIVE',
 
   /**
    * The consent is revoked and no longer valid.
