@@ -34,11 +34,7 @@ import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-// import Logger from '@mojaloop/central-services-logger'
-// import { logger as Logger } from '~/shared/logger'
-
 import SDKStandardComponents, {
-  // TODO: Once implemented in sdk-standard-components, use this logger
   Logger,
   ThirdpartyRequests,
   MojaloopRequests,

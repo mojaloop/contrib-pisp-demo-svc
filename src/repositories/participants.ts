@@ -40,7 +40,6 @@ export interface IParticipantRepository {
 }
 
 export class FirebaseParticipantRepository implements IParticipantRepository {
-  // TODO: Confirm data Type
   async replace(data: Participant[]): Promise<void> {
     const collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> = firebase
       .firestore()
