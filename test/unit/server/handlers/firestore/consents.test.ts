@@ -78,12 +78,26 @@ describe('Handlers for consent documents in Firebase', () => {
   })
 
   describe('OnCreate', () => {
-    it('Should set status and consentRequestId for new consent', () => {
-      const consentRepositorySpy = jest.spyOn(
-        consentRepository,
-        'updateConsentById'
-      )
+    // Set spies
+    const consentRepositorySpy = jest.spyOn(
+      consentRepository,
+      'updateConsentById'
+    )
 
+    it('Should log an error and return, if status field exists', async () => {
+      const consentWithStatus = {
+        id: '111',
+        consentId: 'acv',
+        userId: 'bob123',
+        status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
+      }
+
+      await consentsHandler.onCreate(server, consentWithStatus)
+
+      expect(consentRepositorySpy).not.toBeCalled()
+    })
+
+    it('Should set status and consentRequestId for new consent', () => {
       consentsHandler.onCreate(server, {
         id: '111',
         userId: 'bob123',
@@ -104,6 +118,21 @@ describe('Handlers for consent documents in Firebase', () => {
   })
 
   describe('OnUpdate', () => {
+    it('Should log an error and return, if status field is missing', async () => {
+      const loggerErrorSpy = jest.spyOn(logger, 'error').mockImplementation()
+      const consentNoStatus = {
+        id: '111',
+        consentId: 'acv',
+        userId: 'bob123',
+      }
+
+      await consentsHandler.onUpdate(server, consentNoStatus)
+
+      expect(loggerErrorSpy).toBeCalledWith(
+        'Invalid consent, undefined status.'
+      )
+    })
+
     describe('Party Lookup', () => {
       // Mocked Methods
       let mojaloopClientSpy: jest.SpyInstance
