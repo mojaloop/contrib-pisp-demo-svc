@@ -33,7 +33,7 @@ export class MissingConsentFieldsError extends Error {
   public consent: Consent
 
   public constructor(consent: Consent) {
-    super(' Necessary Consent fields are missing')
+    super('Necessary Consent fields are missing')
     this.consent = consent
   }
 }
