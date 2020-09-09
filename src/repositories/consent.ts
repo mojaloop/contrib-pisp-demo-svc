@@ -100,7 +100,7 @@ export class FirebaseConsentRepository implements IConsentRepository {
     }
 
     // Find and update all matching documents in Firebase that match the given conditions.
-    await firestoreQuery
+    firestoreQuery
       .get()
       .then((response) => {
         // Create a batch to perform all of the updates using a single request.
