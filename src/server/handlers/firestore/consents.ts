@@ -42,6 +42,7 @@ import {
   TCredential,
 } from '@mojaloop/sdk-standard-components'
 import config from '~/lib/config'
+import { MissingConsentFieldsError } from '~/models/errors'
 
 async function handleNewConsent(_: Server, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -57,7 +58,7 @@ async function handlePartyLookup(server: Server, consent: Consent) {
   // Check whether the consent document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
 
   // Party is guaranteed to be non-null by the validator.
@@ -73,7 +74,7 @@ async function handlePartyLookup(server: Server, consent: Consent) {
 
 async function handleAuthentication(server: Server, consent: Consent) {
   if (!validator.isValidAuthentication(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
 
   try {
@@ -96,7 +97,7 @@ async function handleAuthentication(server: Server, consent: Consent) {
 
 async function handleConsentRequest(server: Server, consent: Consent) {
   if (!validator.isValidConsentRequest(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
   // If the update contains all the necessary fields, process document
 
@@ -120,7 +121,7 @@ async function handleConsentRequest(server: Server, consent: Consent) {
 
 async function handleChallengeGeneration(server: Server, consent: Consent) {
   if (!validator.isValidChallengeGeneration(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
 
   try {
@@ -135,7 +136,7 @@ async function handleChallengeGeneration(server: Server, consent: Consent) {
 
 async function handleSignedChallenge(server: Server, consent: Consent) {
   if (!validator.isValidSignedChallenge(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
 
   try {
@@ -157,7 +158,7 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
 
 async function handleRevokingConsent(server: Server, consent: Consent) {
   if (!validator.isValidRevokeConsent(consent)) {
-    throw new Error('Consent Object Missing Fields')
+    throw new MissingConsentFieldsError(consent)
   }
 
   try {

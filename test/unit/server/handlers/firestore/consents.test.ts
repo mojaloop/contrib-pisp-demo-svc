@@ -42,6 +42,7 @@ import SDKStandardComponents, {
   TCredentialScope,
 } from '@mojaloop/sdk-standard-components'
 import { logger } from '~/shared/logger'
+import { MissingConsentFieldsError } from '~/models/errors'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -185,7 +186,7 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentPartyLookup)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(new MissingConsentFieldsError(consentPartyLookup))
 
         expect(validatorSpy).toBeCalledWith(consentPartyLookup)
         expect(mojaloopClientSpy).not.toBeCalled()
@@ -277,7 +278,7 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentAuthentication)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(new MissingConsentFieldsError(consentAuthentication))
 
         expect(validatorSpy).toBeCalledWith(consentAuthentication)
         expect(mojaloopClientSpy).not.toBeCalled()
@@ -368,7 +369,7 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentConsentRequest)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(new MissingConsentFieldsError(consentConsentRequest))
 
         expect(validatorSpy).toBeCalledWith(consentConsentRequest)
         expect(mojaloopClientSpy).not.toBeCalled()
@@ -450,7 +451,9 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentGenerateChallenge)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(
+          new MissingConsentFieldsError(consentGenerateChallenge)
+        )
 
         expect(validatorSpy).toBeCalledWith(consentGenerateChallenge)
         expect(mojaloopClientSpy).not.toBeCalled()
@@ -544,7 +547,9 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentVerifiedChallenge)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(
+          new MissingConsentFieldsError(consentVerifiedChallenge)
+        )
 
         expect(validatorSpy).toBeCalledWith(consentVerifiedChallenge)
         expect(mojaloopClientSpy).not.toBeCalled()
@@ -617,7 +622,7 @@ describe('Handlers for consent documents in Firebase', () => {
 
         await expect(
           consentsHandler.onUpdate(server, consentRevokeRequested)
-        ).rejects.toThrowError('Consent Object Missing Fields')
+        ).rejects.toThrow(new MissingConsentFieldsError(consentRevokeRequested))
 
         expect(validatorSpy).toBeCalledWith(consentRevokeRequested)
         expect(mojaloopClientSpy).not.toBeCalled()
