@@ -33,9 +33,9 @@ declare module '@hapi/hapi' {
     mojaloopClient: Client
   }
 
-  interface Server {
-    app: ServerApplicationState
-  }
+  // interface Server {
+  //   app: ServerApplicationState
+  // }
 }
 
 // declare module '@mojaloop/sdk-standard-components' {
