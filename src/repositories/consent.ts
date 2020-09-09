@@ -23,7 +23,6 @@
  --------------
  ******/
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* istanbul ignore file */
 // TODO: Testing will covered in separate ticket
 
@@ -38,7 +37,7 @@ export interface IConsentRepository {
    * @param id    Id for the consent document that needs to be updated.
    * @param data  Document fields that are about to be updated.
    */
-  updateConsentById(id: string, data: Record<string, any>): Promise<void>
+  updateConsentById(id: string, data: Record<string, unknown>): Promise<void>
 
   /**
    * Retrieves a consent document based on its consent ID.
@@ -54,8 +53,8 @@ export interface IConsentRepository {
    * @param data        Document fields that are about to be updated.
    */
   updateConsent(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void>
 }
 
@@ -82,14 +81,14 @@ export class FirebaseConsentRepository implements IConsentRepository {
 
   async updateConsentById(
     id: string,
-    data: Record<string, any>
+    data: Record<string, unknown>
   ): Promise<void> {
     await firebase.firestore().collection('consents').doc(id).update(data)
   }
 
   async updateConsent(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void> {
     let firestoreQuery: FirebaseFirestore.Query = firebase
       .firestore()

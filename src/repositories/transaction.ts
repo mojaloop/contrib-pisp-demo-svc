@@ -23,7 +23,6 @@
  --------------
  ******/
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* istanbul ignore file */
 // TODO: Testing will covered in separate ticket
 
@@ -37,7 +36,7 @@ export interface ITransactionRepository {
    * @param id    Id for the transaction document that needs to be updated.
    * @param data  Document fields that are about to be updated.
    */
-  updateById(id: string, data: Record<string, any>): Promise<void>
+  updateById(id: string, data: Record<string, unknown>): Promise<void>
 
   /**
    * Updates one or more transaction documents based on the given conditions.
@@ -46,13 +45,13 @@ export interface ITransactionRepository {
    * @param data        Document fields that are about to be updated.
    */
   update(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void>
 }
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
-  async updateById(id: string, data: Record<string, any>): Promise<void> {
+  async updateById(id: string, data: Record<string, unknown>): Promise<void> {
     await firebase.firestore().collection('transactions').doc(id).update(data)
   }
 
