@@ -56,8 +56,8 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
   }
 
   async update(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void> {
     let firestoreQuery: FirebaseFirestore.Query = firebase
       .firestore()
