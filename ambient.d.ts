@@ -20,21 +20,24 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+declare module '@mojaloop/central-services-shared'
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
-}
+// declare module '@hapi/hapi' {
+//   import { Client } from '~/shared/ml-thirdparty-client'
 
-declare module '@mojaloop/sdk-standard-components' {
-  interface response {
-    statusCode: number
-    headers: Record<string, string>
-    data: Record<string, unknown>
-  }
-}
+//   interface ServerApplicationState {
+//     mojaloopClient: Client
+//   }
+// }
+
+// declare module '@mojaloop/sdk-standard-components' {
+//   interface response {
+//     statusCode: number
+//     headers: Record<string, string>
+//     data: Record<string, unknown>
+//   }
+// }
