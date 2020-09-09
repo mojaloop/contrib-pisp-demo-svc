@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -27,6 +28,7 @@ import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 
 import { consentRepository } from '~/repositories/consent'
 import { Context } from 'openapi-backend'
+import { Enum } from '@mojaloop/central-services-shared'
 
 import * as ConsentHandlers from '~/server/handlers/openapi/mojaloop/consentRequests/{ID}'
 
@@ -50,16 +52,18 @@ jest.mock('~/lib/firebase')
 
 const mockRequest = jest.fn().mockImplementation()
 
-const mockResponseToolkit = ({
+// @ts-ignore
+const mockResponseToolkit: ResponseToolkit = {
   response: (): ResponseObject => {
     return ({
       code: (num: number): ResponseObject => {
-        return (num as unknown) as ResponseObject
+        return ({
+          statusCode: num,
+        } as unknown) as ResponseObject
       },
     } as unknown) as ResponseObject
   },
-} as unknown) as ResponseToolkit
-
+}
 const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
   id: '111',
   initiatorId: 'pispA',
@@ -119,7 +123,7 @@ describe('/consentRequests/{ID}', () => {
         status: ConsentStatus.AUTHENTICATION_REQUIRED,
       })
 
-      expect(response).toBe(200)
+      expect(response.statusCode).toBe(Enum.Http.ReturnCodes.OK.CODE)
     })
   })
 })

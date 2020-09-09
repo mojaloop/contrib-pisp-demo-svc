@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -25,6 +26,7 @@
 
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Context } from 'openapi-backend'
+import { Enum } from '@mojaloop/central-services-shared'
 
 import { AuthenticationResponseType, AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
 import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
@@ -50,15 +52,18 @@ jest.mock('~/lib/firebase')
 
 const mockRequest = jest.fn().mockImplementation()
 
-const mockResponseToolkit = {
+// @ts-ignore
+const mockResponseToolkit: ResponseToolkit = {
   response: (): ResponseObject => {
-    return {
+    return ({
       code: (num: number): ResponseObject => {
-        return num as unknown as ResponseObject
-      }
-    } as unknown as ResponseObject
-  }
-} as unknown as ResponseToolkit
+        return ({
+          statusCode: num,
+        } as unknown) as ResponseObject
+      },
+    } as unknown) as ResponseObject
+  },
+}
 
 describe('/transfers/{ID}', () => {
   beforeEach(() => {
@@ -107,7 +112,7 @@ describe('/transfers/{ID}', () => {
         }
       )
 
-      expect(response).toBe(200)
+      expect(response.statusCode).toBe(Enum.Http.ReturnCodes.OK.CODE)
     })
   })
 })
