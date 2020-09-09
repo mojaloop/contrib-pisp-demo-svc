@@ -40,6 +40,7 @@ import {
 } from '~/shared/ml-thirdparty-client/models/openapi'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import config from '~/lib/config'
+import { NotImplementedError } from '~/shared/errors'
 
 const transactionRequestData: ThirdPartyTransactionRequest = {
   transactionRequestId: '888',
@@ -155,7 +156,7 @@ describe('Mojaloop third-party client', () => {
   it('Should throw Not Implemented error, attempting to perform party lookup', (): void => {
     expect(
       client.getParties(PartyIdType.MSISDN, '+1-111-111-1111')
-    ).rejects.toThrowError('Not Implemented Yet')
+    ).rejects.toThrow(new NotImplementedError())
 
     // TODO: Use this test once implemented
     // // Arrange
@@ -191,7 +192,7 @@ describe('Mojaloop third-party client', () => {
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
     expect(
       client.putAuthorizations('111', authorizationData, '222')
-    ).rejects.toThrowError('Not Implemented Yet')
+    ).rejects.toThrow(new NotImplementedError())
 
     // // Arrange
     // const putAuthorizationSpy = jest
@@ -209,7 +210,7 @@ describe('Mojaloop third-party client', () => {
   })
 
   it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {
-    expect(client.getParticipants()).rejects.toThrowError('Not Implemented Yet')
+    expect(client.getParticipants()).rejects.toThrow(new NotImplementedError())
 
     // TODO: Use this test once implemented
     // // Arrange
@@ -264,7 +265,7 @@ describe('Mojaloop third-party client', () => {
   it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
     expect(
       client.postGenerateChallengeForConsent(consentId, destParticipantId)
-    ).rejects.toThrowError('Not Implemented Yet')
+    ).rejects.toThrow(new NotImplementedError())
 
     // TODO: Use this test once implemented
     // // Arrange

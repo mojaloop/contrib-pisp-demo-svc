@@ -39,6 +39,7 @@ import SDKStandardComponents, {
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
+import { NotImplementedError } from '../errors'
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -112,7 +113,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 
   /**
@@ -146,7 +147,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
 
     // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
     //   requestBody,
@@ -163,7 +164,7 @@ export class Client {
   > {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 
   /**
@@ -214,7 +215,7 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 
   /**
@@ -249,6 +250,6 @@ export class Client {
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 }
