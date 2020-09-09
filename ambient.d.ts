@@ -26,17 +26,17 @@
 
 declare module '@mojaloop/central-services-shared'
 
-declare module '@hapi/hapi' {
-  import { Client } from '~/shared/ml-thirdparty-client'
+// declare module '@hapi/hapi' {
+//   import { Client } from '~/shared/ml-thirdparty-client'
 
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+//   interface ServerApplicationState {
+//     mojaloopClient: Client
+//   }
 
-  // interface Server {
-  //   app: ServerApplicationState
-  // }
-}
+//   // interface Server {
+//   //   app: ServerApplicationState
+//   // }
+// }
 
 // declare module '@mojaloop/sdk-standard-components' {
 //   interface response {
