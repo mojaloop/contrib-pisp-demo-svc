@@ -98,6 +98,7 @@ export class Client {
         },
       },
       peerEndpoint: this.options.endpoints.default,
+      responseType: 'string',
     }
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
@@ -111,12 +112,13 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
-    _type: PartyIdType,
-    _id: string
+    type: PartyIdType,
+    id: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new Error('Not Implemented Yet')
+    // TODO: this needs typings added
+    // @ts-ignore
+    return this.mojaloopRequests.getParties(type, id)
+
   }
 
   /**

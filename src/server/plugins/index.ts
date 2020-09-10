@@ -89,6 +89,7 @@ const firestoreOpts: FirestoreOptions = {
 export const mojaloopClientOpts: MojaloopClientOpts = {
   participantId: config.get('mojaloop.participantId'),
   endpoints: {
+    // Hmm I think default is a rather confusing name here
     default: config.get('mojaloop.endpoints.default'),
   },
 }

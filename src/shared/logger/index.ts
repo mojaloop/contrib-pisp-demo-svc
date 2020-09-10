@@ -51,6 +51,11 @@ export class Logger {
     this._logger = createDefaultLogger()
   }
 
+  // TODO: this is what sdk-standard-components wants...
+  log(things: any): void {
+    console.log(things)
+  }
+
   logRequest(context: Context, _: Request, __: ResponseToolkit): void {
     const headersStr = util.inspect(context.request.headers, { showHidden: true, depth: null })
     const paramstStr = util.inspect(context.request.params, { showHidden: true, depth: null })
