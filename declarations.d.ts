@@ -24,18 +24,4 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
-
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
-}
-
-declare module '@mojaloop/sdk-standard-components' {
-  interface response {
-    statusCode: number
-    headers: Record<string, string>
-    data: Record<string, unknown>
-  }
-}
+declare module '@mojaloop/central-services-shared'

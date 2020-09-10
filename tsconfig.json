@@ -2,6 +2,7 @@
   "include": [
     "src",
     "test",
+    "declarations.d.ts",
     "ambient.d.ts",
     "commitlint.config.js",
     "jest.bdd.config.js",
