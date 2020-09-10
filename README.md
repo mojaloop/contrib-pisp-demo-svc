@@ -113,7 +113,7 @@ An Account document consists of a Map that looks like so:
 
 ```
 {
-  id: "fspId",
+  id: "account.bob.fsp",
   currency: "SGD"
 }
 ```
@@ -125,7 +125,8 @@ The overall Consent object should look like this:
    "consentId":"555",
    ...
    "accounts": [
-     { "id": "fspA", "currency": "USD" },
+     { "id": "account.bob.fsp", "currency": "USD" },
+     { "id": "anotheraccount.bob.fsp", "currency": "SGD" },
      ...
    ]
 }
