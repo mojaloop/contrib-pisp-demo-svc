@@ -35,3 +35,5 @@ interface PISPServerApplicationState extends ServerApplicationState {
 interface StateServer extends Server {
   app: PISPServerApplicationState
 }
+
+declare module '@mojaloop/central-services-shared'
