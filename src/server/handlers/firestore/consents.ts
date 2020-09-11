@@ -27,8 +27,6 @@
  ******/
 
 import * as uuid from 'uuid'
-import { Server } from '@hapi/hapi'
-
 import { logger } from '~/shared/logger'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
@@ -44,7 +42,7 @@ import {
 import config from '~/lib/config'
 import { MissingConsentFieldsError } from '~/models/errors'
 
-async function handleNewConsent(_: Server, consent: Consent) {
+async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
@@ -54,7 +52,7 @@ async function handleNewConsent(_: Server, consent: Consent) {
   })
 }
 
-async function handlePartyLookup(server: Server, consent: Consent) {
+async function handlePartyLookup(server: StateServer, consent: Consent) {
   // Check whether the consent document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(consent)) {
@@ -72,7 +70,7 @@ async function handlePartyLookup(server: Server, consent: Consent) {
   }
 }
 
-async function handleAuthentication(server: Server, consent: Consent) {
+async function handleAuthentication(server: StateServer, consent: Consent) {
   if (!validator.isValidAuthentication(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -95,7 +93,7 @@ async function handleAuthentication(server: Server, consent: Consent) {
   }
 }
 
-async function handleConsentRequest(server: Server, consent: Consent) {
+async function handleConsentRequest(server: StateServer, consent: Consent) {
   if (!validator.isValidConsentRequest(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -119,7 +117,7 @@ async function handleConsentRequest(server: Server, consent: Consent) {
   }
 }
 
-async function handleChallengeGeneration(server: Server, consent: Consent) {
+async function handleChallengeGeneration(server: StateServer, consent: Consent) {
   if (!validator.isValidChallengeGeneration(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -134,7 +132,7 @@ async function handleChallengeGeneration(server: Server, consent: Consent) {
   }
 }
 
-async function handleSignedChallenge(server: Server, consent: Consent) {
+async function handleSignedChallenge(server: StateServer, consent: Consent) {
   if (!validator.isValidSignedChallenge(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -156,7 +154,7 @@ async function handleSignedChallenge(server: Server, consent: Consent) {
   }
 }
 
-async function handleRevokingConsent(server: Server, consent: Consent) {
+async function handleRevokingConsent(server: StateServer, consent: Consent) {
   if (!validator.isValidRevokeConsent(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -173,7 +171,7 @@ async function handleRevokingConsent(server: Server, consent: Consent) {
 }
 
 export const onCreate: ConsentHandler = async (
-  server: Server,
+  server: StateServer,
   consent: Consent
 ): Promise<void> => {
   if (consent.status) {
@@ -188,7 +186,7 @@ export const onCreate: ConsentHandler = async (
 }
 
 export const onUpdate: ConsentHandler = async (
-  server: Server,
+  server: StateServer,
   consent: Consent
 ): Promise<void> => {
   if (!consent.status) {
