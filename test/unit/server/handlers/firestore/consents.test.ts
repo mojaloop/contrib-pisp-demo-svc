@@ -23,8 +23,6 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
-
 import config from '~/lib/config'
 
 import createServer from '~/server/create'
@@ -62,7 +60,7 @@ jest.mock('~/shared/logger', () => ({
 const documentId = '111'
 
 describe('Handlers for consent documents in Firebase', () => {
-  let server: Server
+  let server: StateServer
   // let loggerErrorSpy: jest.SpyInstance
 
   beforeAll(async () => {
