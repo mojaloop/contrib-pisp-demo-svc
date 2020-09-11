@@ -19,22 +19,27 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  - Steven Wijaya <stevenwjy@google.com>
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+type Client = import('~/shared/ml-thirdparty-client').Client
+type Server = import('@hapi/hapi').Server
+type ServerApplicationState = import('@hapi/hapi').ServerApplicationState
 
-declare module '@hapi/hapi' {
-  interface ServerApplicationState {
-    mojaloopClient: Client
-  }
+interface NewServerApplicationState extends ServerApplicationState {
+  mojaloopClient: Client
 }
 
-declare module '@mojaloop/sdk-standard-components' {
-  interface response {
-    statusCode: number
-    headers: Record<string, string>
-    data: Record<string, unknown>
-  }
+interface StateServer extends Server {
+  app: NewServerApplicationState
 }
+
+// declare module '@mojaloop/sdk-standard-components' {
+//   interface response {
+//     statusCode: number
+//     headers: Record<string, string>
+//     data: Record<string, unknown>
+//   }
+// }
