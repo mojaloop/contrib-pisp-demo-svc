@@ -21,6 +21,7 @@
  * Google
  - Steven Wijaya <stevenwjy@google.com>
  - Raman Mangla <ramanmangla@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -42,6 +43,6 @@ export const MojaloopClient: Plugin<Options> = {
   name: 'MojaloopClient',
   version: '1.0.0',
   register: (server: Server, options: Options) => {
-    server.app.mojaloopClient = new Client({ ...options })
+    (server as StateServer).app.mojaloopClient = new Client({ ...options })
   },
 }

@@ -300,7 +300,7 @@ describe('Mojaloop third-party client', () => {
   it('Should throw Not Implemented error, attempting to perform a post request to revoke a given consent,', (): void => {
     expect(
       client.postRevokeConsent(consentId, destParticipantId)
-    ).rejects.toThrowError('Not Implemented Yet')
+    ).rejects.toThrow(new NotImplementedError())
 
     // TODO: Use this test once implemented
     // // Arrange

@@ -31,11 +31,14 @@ import { Transaction } from '~/models/transaction'
 import { Consent } from '~/models/consent'
 
 export type TransactionHandler = (
-  server: Server,
+  server: StateServer,
   transaction: Transaction
 ) => Promise<void>
 
-export type ConsentHandler = (server: Server, consent: Consent) => Promise<void>
+export type ConsentHandler = (
+  server: StateServer,
+  consent: Consent
+) => Promise<void>
 
 /**
  * An interface definition for options that need to be specfied to use this plugin.
@@ -67,7 +70,7 @@ export interface Options {
  * @returns a function to unsubscribe the listener.
  */
 const listenToTransactions = (
-  server: Server,
+  server: StateServer,
   options: Options
 ): (() => void) => {
   const transactionHandlers = options.handlers.transactions
@@ -108,7 +111,10 @@ const listenToTransactions = (
  * @param options a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToConsents = (server: Server, options: Options): (() => void) => {
+const listenToConsents = (
+  server: StateServer,
+  options: Options
+): (() => void) => {
   const consentHandlers = options.handlers.consents
 
   return firebase
@@ -144,8 +150,11 @@ export const Firestore: Plugin<Options> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
   register: async (server: Server, options: Options) => {
-    const unsubscribeTransactions = listenToTransactions(server, options)
-    const unsubscribeConsents = listenToConsents(server, options)
+    const unsubscribeConsents = listenToConsents(server as StateServer, options)
+    const unsubscribeTransactions = listenToTransactions(
+      server as StateServer,
+      options
+    )
 
     // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {
