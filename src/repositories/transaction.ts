@@ -31,7 +31,7 @@ import { logger } from '~/shared/logger'
 export interface ITransactionRepository {
 
   //TD: Lewis hacky
-  insert(data: Record<string, any>): Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>
+  insert(data: Record<string, any>): Promise<string>
 
   /**
    * Updates a transaction document based on a unique identifier.
@@ -55,14 +55,22 @@ export interface ITransactionRepository {
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
   // TD: Lewis hacky to get some tests working
-  async insert(data: Record<string, any>): Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>> {
-    const result = await firebase.firestore().collection('transactions').add(data)
-    return result
+  async insert(data: Record<string, any>): Promise<string> {
+    const ref = await firebase.firestore().collection('transactions').doc()
+    // Make sure we set the id correctly
+    data.id = ref.id
+    await ref.set(data)
+    return data.id
 
   }
 
   async updateById(id: string, data: Record<string, any>): Promise<void> {
-    await firebase.firestore().collection('transactions').doc(id).update(data)
+    // await firebase.firestore().collection('transactions').doc(id).update(data)
+    // TD - LD hack - just so we can merge things easier
+    const options: FirebaseFirestore.SetOptions = {
+      merge: true
+    }
+    await firebase.firestore().collection('transactions').doc(id).set(data, options)
   }
 
   async update(
