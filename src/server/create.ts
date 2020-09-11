@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -32,7 +33,9 @@ import onValidateFail from './handlers/onValidateFail'
 import extensions from './extensions'
 import plugins from './plugins'
 
-export default async function create(config: ServiceConfig): Promise<Server> {
+export default async function create(
+  config: ServiceConfig
+): Promise<StateServer> {
   let server = new Server({
     host: config.get('ip'),
     port: config.get('port'),
@@ -41,9 +44,9 @@ export default async function create(config: ServiceConfig): Promise<Server> {
         failAction: onValidateFail,
       },
     },
-  })
+  }) as StateServer
 
-  server = await plugins.register(server)
+  server = (await plugins.register(server)) as StateServer
   extensions.register(server)
 
   return server

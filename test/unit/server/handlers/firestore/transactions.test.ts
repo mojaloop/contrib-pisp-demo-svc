@@ -20,10 +20,9 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
-
-import { Server } from '@hapi/hapi'
 
 import * as utils from '~/lib/utils'
 import config from '~/lib/config'
@@ -111,7 +110,7 @@ function createStubConsentData(): Consent {
 }
 
 describe('Handlers for transaction documents in Firebase', () => {
-  let server: Server
+  let server: StateServer
 
   beforeAll(async () => {
     server = await createServer(config)
