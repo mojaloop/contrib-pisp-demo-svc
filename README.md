@@ -80,3 +80,10 @@ Go to the PISP demo app and try to send money to a payee. You should see that th
 # Configurations
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
+
+
+# API Examples:
+
+```
+curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
+```
