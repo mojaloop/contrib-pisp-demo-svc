@@ -44,10 +44,10 @@ export default async function create(
         failAction: onValidateFail,
       },
     },
-  }) as StateServer
+  })
 
-  server = (await plugins.register(server)) as StateServer
+  server = await plugins.register(server)
   extensions.register(server)
 
-  return server
+  return server as StateServer
 }
