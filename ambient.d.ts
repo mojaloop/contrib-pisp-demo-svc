@@ -28,12 +28,12 @@ type Client = import('~/shared/ml-thirdparty-client').Client
 type Server = import('@hapi/hapi').Server
 type ServerApplicationState = import('@hapi/hapi').ServerApplicationState
 
-interface NewServerApplicationState extends ServerApplicationState {
+interface CustomServerApplicationState extends ServerApplicationState {
   mojaloopClient: Client
 }
 
 interface StateServer extends Server {
-  app: NewServerApplicationState
+  app: CustomServerApplicationState
 }
 
 // declare module '@mojaloop/sdk-standard-components' {
