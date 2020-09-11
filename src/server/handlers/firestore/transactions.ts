@@ -30,15 +30,15 @@ import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
   AmountType,
-  AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
-import { Transaction, Status, ResponseType } from '~/models/transaction'
+import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
+import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
 // TODO: Replace once decided how to implement
 const destParticipantId = 'PLACEHOLDER'
@@ -125,16 +125,16 @@ async function handlePartyConfirmation(
   }
 }
 
-function toMojaloopResponseType(
-  type: ResponseType
-): AuthenticationResponseType {
-  switch (type) {
-    case ResponseType.AUTHORIZED:
-      return AuthenticationResponseType.ENTERED
-    case ResponseType.REJECTED:
-      return AuthenticationResponseType.REJECTED
-  }
-}
+// function toMojaloopResponseType(
+//   type: ResponseType
+// ): AuthenticationResponseType {
+//   switch (type) {
+//     case ResponseType.AUTHORIZED:
+//       return AuthenticationResponseType.ENTERED
+//     case ResponseType.REJECTED:
+//       return AuthenticationResponseType.REJECTED
+//   }
+// }
 
 async function handleAuthorization(server: Server, transaction: Transaction) {
   if (validator.isValidAuthorization(transaction)) {
@@ -142,23 +142,20 @@ async function handleAuthorization(server: Server, transaction: Transaction) {
     // to the next step by sending an authorization to Mojaloop.
 
     // Convert to a response type that is understood by Mojaloop.
-    const mojaloopResponseType = toMojaloopResponseType(
-      transaction.responseType!
-    )
+    // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
+
+    // TD - LD eww so much messy casting going on
+    const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+      challenge: JSON.stringify(transaction.quote),
+      consentId: transaction.consentId!,
+      sourceAccountId: transaction.sourceAccountId!,
+      status: 'PENDING',
+      value: transaction.authentication?.value as string,
+    }
 
     // The optional values are guaranteed to exist by the validator.
     // eslint-disable @typescript-eslint/no-non-null-assertion
-    server.app.mojaloopClient.putAuthorizations(
-      transaction.transactionRequestId!,
-      {
-        responseType: mojaloopResponseType,
-        authenticationInfo: {
-          authentication: transaction.authentication!.type!,
-          authenticationValue: transaction.authentication!.value!,
-        },
-      },
-      destParticipantId
-    )
+    server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
     // eslint-enable @typescript-eslint/no-non-null-assertion
   }
 }

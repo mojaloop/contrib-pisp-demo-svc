@@ -6,7 +6,7 @@ describe('payment confirmation', () => {
     const transactionId = process.env.TRANSACTION_ID!
     const transaction = {
       responseType: 'AUTHORIZED',
-      authentication: { type: 'U2F', value: 'unimplemented1234' },
+      authentication: { type: 'U2F', value: 'unimplemented1236' },
     }
 
     // Act

@@ -30,7 +30,6 @@ import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
-  AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
@@ -42,6 +41,7 @@ import SDKStandardComponents, {
   // Logger,
   ThirdpartyRequests,
   MojaloopRequests,
+  PutThirdpartyRequestsTransactionsAuthorizationsRequest,
 } from '@mojaloop/sdk-standard-components'
 
 /**
@@ -146,19 +146,18 @@ export class Client {
 
    */
   public async putAuthorizations(
-    _id: string,
-    _requestBody: AuthorizationsPutIdRequest,
-    _destParticipantId: string
+    id: string,
+    requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-    throw new Error('Not Implemented Yet')
 
-    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-    //   requestBody,
-    //   id,
-    //   destParticipantId
-    // )
+    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+      requestBody,
+      id,
+      destParticipantId
+    )
   }
 
   /**
