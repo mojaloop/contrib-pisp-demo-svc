@@ -1,4 +1,3 @@
-// import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 describe('party lookup', () => {
@@ -19,24 +18,6 @@ describe('party lookup', () => {
     const transactionId = await transactionRepository.insert(transaction)
     console.log('created new doc with id', transactionId)
     console.log(`make sure to set this: export TRANSACTION_ID=${transactionId}`)
-
-    // Assert
-  })
-})
-
-describe.only('payment confirmation', () => {
-  it('confirms payment to payee', async () => {
-    // Arrange
-    const transactionId = process.env.TRANSACTION_ID!
-    const transaction = {
-      consentId: '555',
-      sourceAccountId: 'bob.fspA',
-      amount: { currency: 'USD', amount: '31' }
-    }
-
-    // Act
-    await transactionRepository.updateById(transactionId, transaction)
-
 
     // Assert
   })

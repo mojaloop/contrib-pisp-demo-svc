@@ -90,6 +90,12 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
     await firestoreQuery
       .get()
       .then((response) => {
+        console.log('transaction::update, found docs for conditions', response.docs, conditions)
+
+        if (response.docs.length === 0) {
+          console.log('transaction::update - WARNING: found no docs for conditions', conditions)
+        }
+
         // Create a batch to perform all of the updates using a single request.
         // Firebase will also execute the updates atomically according to the
         // API specification.

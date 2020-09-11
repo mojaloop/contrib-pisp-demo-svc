@@ -87,3 +87,29 @@ Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blo
 ```
 curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
 ```
+
+
+## Transaction callback
+
+## LD Testing notes:
+
+- consentId must be valid uuid, otherwise mojaloop will reject, eg `e94b9110-f6c9-44cf-bdc0-895430f1ca9c`
+   - had to hack around in the app to get this to work
+
+- for `transactionRepository.update(conditions, body)`, I'm pretty sure we're going to need some firestore indicies
+
+
+## TTK Steps:
+
+```bash
+# start a lookup
+./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_01_party_lookup.test.ts
+
+# Then look for the line:
+#     make sure to set this: export TRANSACTION_ID=<some id>
+
+export TRANSACTION_ID=yIf88LByjKGtNraZADOq
+
+# Confirm payee, and set amount
+./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_02_payment_confirmation.test.ts
+```

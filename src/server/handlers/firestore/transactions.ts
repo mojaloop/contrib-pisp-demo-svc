@@ -23,7 +23,7 @@
  --------------
  ******/
 
-import * as uuid from 'uuid'
+// import * as uuid from 'uuid'
 import { Server } from '@hapi/hapi'
 
 import * as utils from '~/lib/utils'
@@ -48,7 +48,10 @@ async function handleNewTransaction(_: Server, transaction: Transaction) {
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
   transactionRepository.updateById(transaction.id, {
-    transactionRequestId: uuid.v4(),
+    // TD - LD Hack - set this to match what the testing toolkit will return
+    // TODO: make configurable
+    // transactionRequestId: uuid.v4(),
+    transactionRequestId: '02e28448-3c05-4059-b5f7-d518d0a2d8ea',
     status: Status.PENDING_PARTY_LOOKUP,
   })
 }

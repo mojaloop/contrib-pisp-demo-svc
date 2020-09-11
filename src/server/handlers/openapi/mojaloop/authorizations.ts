@@ -34,6 +34,7 @@ import { Status } from '~/models/transaction'
 export const post: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
   let body = context.request.body as AuthorizationsPostRequest
 
+  console.log("post authorizations inbound")
   transactionRepository.update(
     {
       transactionRequestId: body.transactionRequestId,
