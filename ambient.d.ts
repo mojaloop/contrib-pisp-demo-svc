@@ -35,11 +35,3 @@ interface PISPServerApplicationState extends ServerApplicationState {
 interface StateServer extends Server {
   app: PISPServerApplicationState
 }
-
-// declare module '@mojaloop/sdk-standard-components' {
-//   interface response {
-//     statusCode: number
-//     headers: Record<string, string>
-//     data: Record<string, unknown>
-//   }
-// }
