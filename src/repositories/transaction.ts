@@ -29,6 +29,10 @@ import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
 
 export interface ITransactionRepository {
+
+  //TD: Lewis hacky
+  insert(data: Record<string, any>): Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>>
+
   /**
    * Updates a transaction document based on a unique identifier.
    *
@@ -50,6 +54,13 @@ export interface ITransactionRepository {
 }
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
+  // TD: Lewis hacky to get some tests working
+  async insert(data: Record<string, any>): Promise<FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>> {
+    const result = await firebase.firestore().collection('transactions').add(data)
+    return result
+
+  }
+
   async updateById(id: string, data: Record<string, any>): Promise<void> {
     await firebase.firestore().collection('transactions').doc(id).update(data)
   }
