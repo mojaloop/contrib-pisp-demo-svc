@@ -432,7 +432,7 @@ describe('Validators for different consents used in requests', () => {
   describe('isValidChallengeGeneration', () => {
     it('Should return true if all necessary fields are present', () => {
       expect(
-        Validator.isValidChallengeGeneration({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           consentId,
           party: partyWithFSPId,
@@ -447,7 +447,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if party or partyIdInfo or fspId is not present', () => {
       expect(
-        Validator.isValidChallengeGeneration({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           initiatorId,
           consentId,
@@ -462,7 +462,7 @@ describe('Validators for different consents used in requests', () => {
       ).toBe(false)
 
       expect(
-        Validator.isValidChallengeGeneration({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           initiatorId,
           consentId,
@@ -478,7 +478,7 @@ describe('Validators for different consents used in requests', () => {
       ).toBe(false)
 
       expect(
-        Validator.isValidChallengeGeneration({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           userId,
           initiatorId,
@@ -498,7 +498,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if consent ID is not present', () => {
       expect(
-        Validator.isValidRevokeConsent({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           userId,
           initiatorId,
@@ -634,7 +634,7 @@ describe('Validators for different consents used in requests', () => {
   describe('isValidRevokeConsent', () => {
     it('Should return true if all necessary fields are present', () => {
       expect(
-        Validator.isValidRevokeConsent({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           userId,
           consentId,
@@ -647,7 +647,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if party or partyIdInfo or fspId is not present', () => {
       expect(
-        Validator.isValidRevokeConsent({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           initiatorId,
           consentId,
@@ -662,7 +662,7 @@ describe('Validators for different consents used in requests', () => {
       ).toBe(false)
 
       expect(
-        Validator.isValidRevokeConsent({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           initiatorId,
           consentId,
@@ -698,7 +698,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if consent ID is not present', () => {
       expect(
-        Validator.isValidRevokeConsent({
+        Validator.isValidGenerateChallengeOrRevokeConsent({
           id,
           userId,
           initiatorId,

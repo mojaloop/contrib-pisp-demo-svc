@@ -33,14 +33,10 @@ import { Consent } from '~/models/consent'
  *                    on Firebase.
  */
 export const isValidPartyLookup = (consent: Consent): boolean => {
-  if (
-    consent?.party?.partyIdInfo &&
-    consent.party.partyIdInfo.partyIdType &&
+  return !!(
+    consent?.party?.partyIdInfo?.partyIdType &&
     consent.party.partyIdInfo.partyIdentifier
-  ) {
-    return true
-  }
-  return false
+  )
 }
 
 /**
@@ -51,19 +47,14 @@ export const isValidPartyLookup = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidAuthentication = (consent: Consent): boolean => {
-  if (
+  return !!(
+    consent?.party?.partyIdInfo?.fspId &&
     consent.consentRequestId &&
     consent.consentId &&
-    consent.party &&
-    consent.party.partyIdInfo &&
-    consent.party.partyIdInfo.fspId &&
     consent.initiatorId &&
     consent.authChannels &&
     consent.authToken
-  ) {
-    return true
-  }
-  return false
+  )
 }
 
 /**
@@ -74,31 +65,13 @@ export const isValidAuthentication = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidConsentRequest = (consent: Consent): boolean => {
-  if (
+  return !!(
+    consent?.party?.partyIdInfo?.fspId &&
     consent.authChannels &&
     consent.scopes &&
     consent.initiatorId &&
-    consent.party &&
-    consent.party.partyIdInfo?.fspId &&
     consent.authUri
-  ) {
-    return true
-  }
-  return false
-}
-
-/**
- * Checks whether a consent document has all the necessary fields to be
- * processed as a request to generate challenge for a consent.
- *
- * @param consent the object representation of a consent that is stored
- *                    on Firebase.
- */
-export const isValidChallengeGeneration = (consent: Consent): boolean => {
-  if (consent.consentId && consent.party && consent.party.partyIdInfo?.fspId) {
-    return true
-  }
-  return false
+  )
 }
 
 /**
@@ -109,29 +82,24 @@ export const isValidChallengeGeneration = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidSignedChallenge = (consent: Consent): boolean => {
-  if (
+  return !!(
+    consent?.party?.partyIdInfo?.fspId &&
     consent.credential &&
-    consent.party &&
-    consent.party.partyIdInfo?.fspId &&
     consent.scopes &&
     consent.initiatorId &&
     consent.participantId
-  ) {
-    return true
-  }
-  return false
+  )
 }
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as revoke consent request.
+ * processed as revoke consent request or a request to generate challenge for a consent.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
  */
-export const isValidRevokeConsent = (consent: Consent): boolean => {
-  if (consent.consentId && consent.party && consent.party.partyIdInfo?.fspId) {
-    return true
-  }
-  return false
+export const isValidGenerateChallengeOrRevokeConsent = (
+  consent: Consent
+): boolean => {
+  return !!(consent?.party?.partyIdInfo?.fspId && consent.consentId)
 }

@@ -395,7 +395,7 @@ describe('Handlers for consent documents in Firebase', () => {
       let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
-        .spyOn(Validator, 'isValidChallengeGeneration')
+        .spyOn(Validator, 'isValidGenerateChallengeOrRevokeConsent')
         .mockReturnValue(true)
 
       // Mock consent data that would be given by Firebase
@@ -582,7 +582,7 @@ describe('Handlers for consent documents in Firebase', () => {
       let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
-        .spyOn(Validator, 'isValidRevokeConsent')
+        .spyOn(Validator, 'isValidGenerateChallengeOrRevokeConsent')
         .mockReturnValue(true)
 
       // Mock the expected transaction request being sent.

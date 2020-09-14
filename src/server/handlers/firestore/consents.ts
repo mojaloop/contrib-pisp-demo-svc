@@ -118,7 +118,7 @@ async function handleConsentRequest(server: StateServer, consent: Consent) {
 }
 
 async function handleChallengeGeneration(server: StateServer, consent: Consent) {
-  if (!validator.isValidChallengeGeneration(consent)) {
+  if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
 
@@ -155,7 +155,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 }
 
 async function handleRevokingConsent(server: StateServer, consent: Consent) {
-  if (!validator.isValidRevokeConsent(consent)) {
+  if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
 
