@@ -145,8 +145,10 @@ export class Client {
     _requestBody: AuthorizationsPutIdRequest,
     _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
+    // TODO: Replace placeholder with commented implementation
+    //       once implemented in sdk-standard-components
+
+    // Placeholder
     throw new NotImplementedError()
 
     // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
