@@ -23,6 +23,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: Testing will covered in separate ticket
 
 import * as uuid from 'uuid'
 

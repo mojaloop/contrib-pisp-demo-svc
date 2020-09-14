@@ -24,6 +24,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'

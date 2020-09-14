@@ -25,6 +25,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import * as uuid from 'uuid'
 import { logger } from '~/shared/logger'
