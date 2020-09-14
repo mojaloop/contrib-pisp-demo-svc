@@ -247,7 +247,7 @@ describe('Handlers for consent documents in Firebase', () => {
         initiatorId: consentAuthentication.initiatorId!,
         scopes: consentAuthentication.scopes!,
         authChannels: consentAuthentication.authChannels!,
-        callbackUri: config.get('mojaloop').callbackUri,
+        callbackUri: config.get('mojaloop').pispCallbackUri,
         authToken: consentAuthentication.authToken!,
         authUri: consentAuthentication.authUri!,
       }
@@ -341,7 +341,7 @@ describe('Handlers for consent documents in Firebase', () => {
         id: consentConsentRequest.id,
         scopes: consentConsentRequest.scopes!,
         authChannels: consentConsentRequest.authChannels!,
-        callbackUri: config.get('mojaloop').callbackUri,
+        callbackUri: config.get('mojaloop').pispCallbackUri,
       }
 
       beforeAll(() => {

@@ -79,7 +79,7 @@ async function handleAuthentication(server: StateServer, consent: Consent) {
         authChannels: consent.authChannels!,
         scopes: consent.scopes!,
         authUri: consent.authUri!,
-        callbackUri: config.get('mojaloop').callbackUri,
+        callbackUri: config.get('mojaloop').pispCallbackUri,
         authToken: consent.authToken!,
       },
       consent.party!.partyIdInfo.fspId!
@@ -103,7 +103,7 @@ async function handleConsentRequest(server: StateServer, consent: Consent) {
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
         id: consent.id,
-        callbackUri: config.get('mojaloop').callbackUri,
+        callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
     )

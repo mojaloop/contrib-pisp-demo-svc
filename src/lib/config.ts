@@ -109,7 +109,7 @@ const config = convict({
       env: 'MOJALOOP_PARTICIPANT_ID',
     },
     // TODO: Replace placeholder
-    callbackUri: {
+    pispCallbackUri: {
       doc: 'The callback URI sent by PISP deeplinked with the app',
       format: String,
       default: 'PLACEHOLDER',
