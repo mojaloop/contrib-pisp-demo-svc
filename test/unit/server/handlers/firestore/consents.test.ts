@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /*****
  License
  --------------
@@ -35,10 +36,7 @@ import {
   PartyIdType,
   Currency,
 } from '~/shared/ml-thirdparty-client/models/core'
-import SDKStandardComponents, {
-  TAuthChannel,
-  TCredentialScope,
-} from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { logger } from '~/shared/logger'
 import { MissingConsentFieldsError } from '~/models/errors'
 
@@ -246,12 +244,12 @@ describe('Handlers for consent documents in Firebase', () => {
 
       // Mock the expected transaction request being sent.
       const request: SDKStandardComponents.PutConsentRequestsRequest = {
-        initiatorId: consentAuthentication.initiatorId as string,
-        scopes: consentAuthentication.scopes as TCredentialScope[],
-        authChannels: consentAuthentication.authChannels as TAuthChannel[],
+        initiatorId: consentAuthentication.initiatorId!,
+        scopes: consentAuthentication.scopes!,
+        authChannels: consentAuthentication.authChannels!,
         callbackUri: config.get('mojaloop').callbackUri,
-        authToken: consentAuthentication.authToken as string,
-        authUri: consentAuthentication.authUri as string,
+        authToken: consentAuthentication.authToken!,
+        authUri: consentAuthentication.authUri!,
       }
 
       beforeAll(() => {
@@ -339,10 +337,10 @@ describe('Handlers for consent documents in Firebase', () => {
 
       // Mock the expected request being sent.
       const consentRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-        initiatorId: consentConsentRequest.initiatorId as string,
+        initiatorId: consentConsentRequest.initiatorId!,
         id: consentConsentRequest.id,
-        scopes: consentConsentRequest.scopes as TCredentialScope[],
-        authChannels: consentConsentRequest.authChannels as TAuthChannel[],
+        scopes: consentConsentRequest.scopes!,
+        authChannels: consentConsentRequest.authChannels!,
         callbackUri: config.get('mojaloop').callbackUri,
       }
 

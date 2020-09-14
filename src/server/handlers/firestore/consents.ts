@@ -34,11 +34,6 @@ import { Consent, ConsentStatus } from '~/models/consent'
 
 import { consentRepository } from '~/repositories/consent'
 import * as validator from './consents.validator'
-import {
-  TCredentialScope,
-  TAuthChannel,
-  TCredential,
-} from '@mojaloop/sdk-standard-components'
 import config from '~/lib/config'
 import { MissingConsentFieldsError } from '~/models/errors'
 
@@ -59,7 +54,7 @@ async function handlePartyLookup(server: StateServer, consent: Consent) {
     throw new MissingConsentFieldsError(consent)
   }
 
-  // Party is guaranteed to be non-null by the validator.
+  // Fields are guaranteed to be non-null by the validator.
   try {
     server.app.mojaloopClient.getParties(
       consent.party!.partyIdInfo.partyIdType,
@@ -75,18 +70,19 @@ async function handleAuthentication(server: StateServer, consent: Consent) {
     throw new MissingConsentFieldsError(consent)
   }
 
+  // Fields are guaranteed to be non-null by the validator.
   try {
     server.app.mojaloopClient.putConsentRequests(
       consent.id,
       {
-        initiatorId: consent.initiatorId as string,
-        authChannels: consent.authChannels as TAuthChannel[],
-        scopes: consent.scopes as TCredentialScope[],
-        authUri: consent.authUri as string,
+        initiatorId: consent.initiatorId!,
+        authChannels: consent.authChannels!,
+        scopes: consent.scopes!,
+        authUri: consent.authUri!,
         callbackUri: config.get('mojaloop').callbackUri,
-        authToken: consent.authToken as string,
+        authToken: consent.authToken!,
       },
-      consent.party!.partyIdInfo.fspId as string
+      consent.party!.partyIdInfo.fspId!
     )
   } catch (error) {
     logger.error(error)
@@ -100,17 +96,16 @@ async function handleConsentRequest(server: StateServer, consent: Consent) {
   // If the update contains all the necessary fields, process document
 
   try {
-    // The optional values are guaranteed to exist by the validator.
-
+    // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postConsentRequests(
       {
-        initiatorId: consent.initiatorId as string,
-        scopes: consent.scopes as TCredentialScope[],
-        authChannels: consent.authChannels as TAuthChannel[],
+        initiatorId: consent.initiatorId!,
+        scopes: consent.scopes!,
+        authChannels: consent.authChannels!,
         id: consent.id,
         callbackUri: config.get('mojaloop').callbackUri,
       },
-      consent.party!.partyIdInfo.fspId as string
+      consent.party!.partyIdInfo.fspId!
     )
   } catch (err) {
     logger.error(err)
@@ -123,9 +118,10 @@ async function handleChallengeGeneration(server: StateServer, consent: Consent) 
   }
 
   try {
+    // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId as string,
-      consent.party!.partyIdInfo.fspId as string
+      consent.consentId!,
+      consent.party!.partyIdInfo.fspId!
     )
   } catch (error) {
     logger.error(error)
@@ -138,16 +134,17 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
   }
 
   try {
+    // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.putConsentId(
-      consent.consentId as string,
+      consent.consentId!,
       {
         requestId: consent.id,
-        initiatorId: consent.initiatorId as string,
-        participantId: consent.participantId as string,
-        scopes: consent.scopes as TCredentialScope[],
-        credential: consent.credential as TCredential,
+        initiatorId: consent.initiatorId!,
+        participantId: consent.participantId!,
+        scopes: consent.scopes!,
+        credential: consent.credential!,
       },
-      consent.party!.partyIdInfo.fspId as string
+      consent.party!.partyIdInfo.fspId!
     )
   } catch (error) {
     logger.error(error)
@@ -160,10 +157,10 @@ async function handleRevokingConsent(server: StateServer, consent: Consent) {
   }
 
   try {
-    // Make outgoing POST consents/{ID}/revoke request to Mojaloop
+    // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postRevokeConsent(
-      consent.consentId as string,
-      consent.party!.partyIdInfo.fspId as string
+      consent.consentId!,
+      consent.party!.partyIdInfo.fspId!
     )
   } catch (error) {
     logger.error(error)
