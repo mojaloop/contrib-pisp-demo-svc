@@ -51,7 +51,7 @@ async function handleNewConsent(_: StateServer, consent: Consent) {
   })
 }
 
-async function handlePartyLookup(server: StateServer, consent: Consent) {
+async function initiatePartyLookup(server: StateServer, consent: Consent) {
   // Check whether the consent document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(consent)) {
@@ -69,7 +69,7 @@ async function handlePartyLookup(server: StateServer, consent: Consent) {
   }
 }
 
-async function handleAuthentication(server: StateServer, consent: Consent) {
+async function initiateAuthentication(server: StateServer, consent: Consent) {
   if (!validator.isValidAuthentication(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -93,7 +93,7 @@ async function handleAuthentication(server: StateServer, consent: Consent) {
   }
 }
 
-async function handleConsentRequest(server: StateServer, consent: Consent) {
+async function initiateConsentRequest(server: StateServer, consent: Consent) {
   if (!validator.isValidConsentRequest(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -116,7 +116,7 @@ async function handleConsentRequest(server: StateServer, consent: Consent) {
   }
 }
 
-async function handleChallengeGeneration(server: StateServer, consent: Consent) {
+async function initiateChallengeGeneration(server: StateServer, consent: Consent) {
   if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -155,7 +155,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
   }
 }
 
-async function handleRevokingConsent(server: StateServer, consent: Consent) {
+async function initiateRevokingConsent(server: StateServer, consent: Consent) {
   if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -199,19 +199,19 @@ export const onUpdate: ConsentHandler = async (
 
   switch (consent.status) {
     case ConsentStatus.PENDING_PARTY_LOOKUP:
-      await handlePartyLookup(server, consent)
+      await initiatePartyLookup(server, consent)
       break
 
     case ConsentStatus.PENDING_PARTY_CONFIRMATION:
-      await handleConsentRequest(server, consent)
+      await initiateConsentRequest(server, consent)
       break
 
     case ConsentStatus.AUTHENTICATION_REQUIRED:
-      await handleAuthentication(server, consent)
+      await initiateAuthentication(server, consent)
       break
 
     case ConsentStatus.CONSENT_GRANTED:
-      await handleChallengeGeneration(server, consent)
+      await initiateChallengeGeneration(server, consent)
       break
 
     case ConsentStatus.ACTIVE:
@@ -219,7 +219,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.REVOKE_REQUESTED:
-      await handleRevokingConsent(server, consent)
+      await initiateRevokingConsent(server, consent)
       break
     default:
       throw new InvalidConsentStatusError(consent.status, consent.id)
