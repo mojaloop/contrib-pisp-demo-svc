@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -34,7 +33,6 @@ export const put: Handler = async (
   _request: Request,
   h: ResponseToolkit
 ) => {
-  // @ts-ignore
   const participants = context.request.body.participants
 
   // Replace existing participants list with received list
