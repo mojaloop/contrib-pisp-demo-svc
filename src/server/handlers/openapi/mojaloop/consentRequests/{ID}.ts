@@ -26,17 +26,14 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
 
 export const put: Handler = async (
   context: Context,
-  request: Request,
+  _request: Request,
   h: ResponseToolkit
 ) => {
-  logger.logRequest(context, request, h)
-
   const { authChannels, authUri } = context.request.body
   consentRepository.updateConsentById(context.request.params.ID as string, {
     authChannels,

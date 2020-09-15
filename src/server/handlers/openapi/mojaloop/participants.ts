@@ -27,15 +27,13 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
 import { participantRepository } from '~/repositories/participants'
 
 export const put: Handler = async (
   context: Context,
-  request: Request,
+  _request: Request,
   h: ResponseToolkit
 ) => {
-  logger.logRequest(context, request, h)
   // @ts-ignore
   const participants = context.request.body.participants
 
