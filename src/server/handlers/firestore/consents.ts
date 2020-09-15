@@ -220,6 +220,6 @@ export const onUpdate: ConsentHandler = async (
       await handleRevokingConsent(server, consent)
       break
     default:
-      throw new InvalidConsentStatusError(consent.status)
+      throw new InvalidConsentStatusError(consent.status, consent.id)
   }
 }
