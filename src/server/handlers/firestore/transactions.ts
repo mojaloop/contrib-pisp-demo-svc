@@ -50,6 +50,7 @@ async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.updateById(transaction.id, {
     transactionRequestId: uuid.v4(),
     status: Status.PENDING_PARTY_LOOKUP,

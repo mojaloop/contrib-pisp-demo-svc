@@ -35,6 +35,7 @@ export const put: Handler = async (
   h: ResponseToolkit
 ) => {
   const { authChannels, authUri } = context.request.body
+  // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(context.request.params.ID as string, {
     authChannels,
     authUri,

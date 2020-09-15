@@ -36,6 +36,7 @@ export const post: Handler = async (
 ) => {
   const { id, initiatorId, participantId, scopes } = context.request.body
 
+  // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(id, {
     initiatorId,
     participantId,

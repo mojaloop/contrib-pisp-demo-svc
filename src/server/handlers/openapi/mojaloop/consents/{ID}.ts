@@ -34,6 +34,7 @@ export const put: Handler = async (
   h: ResponseToolkit
 ) => {
   // Updates consent fields
+  // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(
     context.request.params.ID as string,
     context.request.body
@@ -47,6 +48,7 @@ export const patch: Handler = async (
   h: ResponseToolkit
 ) => {
   // Updates consent fields patched
+  // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(
     context.request.params.ID as string,
     context.request.body

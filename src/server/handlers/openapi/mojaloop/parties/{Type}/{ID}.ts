@@ -60,6 +60,8 @@ export const put: Handler = async (
   if (partyIdType === PartyIdType.OPAQUE) {
     // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
     // available for linking from a pre-determined DFSP
+
+    // Not await-ing promise to resolve - code is executed asynchronously
     consentRepository.updateConsent(
       // Conditions for the documents that need to be updated
       {
@@ -76,6 +78,7 @@ export const put: Handler = async (
     )
   } else {
     // Update Transactions
+    // Not await-ing promise to resolve - code is executed asynchronously
     transactionRepository.update(
       // Conditions for the documents that need to be updated
       {

@@ -43,6 +43,8 @@ async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
+
+  // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(consent.id, {
     consentRequestId: uuid.v4(),
     status: ConsentStatus.PENDING_PARTY_LOOKUP,

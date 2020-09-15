@@ -36,6 +36,7 @@ export const put: Handler = async (
   const participants = context.request.body.participants
 
   // Replace existing participants list with received list
+  // Not await-ing promise to resolve - code is executed asynchronously
   participantRepository.replace(participants)
   return h.response().code(200)
 }
