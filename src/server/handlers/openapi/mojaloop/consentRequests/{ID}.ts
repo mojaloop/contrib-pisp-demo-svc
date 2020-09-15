@@ -37,9 +37,8 @@ export const put: Handler = async (
 ) => {
   logger.logRequest(context, request, h)
 
-  const id = context.request.params.ID as string
   const { authChannels, authUri } = context.request.body
-  consentRepository.updateConsentById(id, {
+  consentRepository.updateConsentById(context.request.params.ID as string, {
     authChannels,
     authUri,
     status: ConsentStatus.AUTHENTICATION_REQUIRED,
