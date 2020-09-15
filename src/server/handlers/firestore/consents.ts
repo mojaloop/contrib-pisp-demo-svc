@@ -37,7 +37,7 @@ import { Consent, ConsentStatus } from '~/models/consent'
 import { consentRepository } from '~/repositories/consent'
 import * as validator from './consents.validator'
 import config from '~/lib/config'
-import { MissingConsentFieldsError } from '~/models/errors'
+import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -219,5 +219,7 @@ export const onUpdate: ConsentHandler = async (
     case ConsentStatus.REVOKE_REQUESTED:
       await handleRevokingConsent(server, consent)
       break
+    default:
+      throw new InvalidConsentStatusError(consent.status)
   }
 }

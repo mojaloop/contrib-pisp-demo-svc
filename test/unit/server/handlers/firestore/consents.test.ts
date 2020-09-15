@@ -38,7 +38,7 @@ import {
 } from '~/shared/ml-thirdparty-client/models/core'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { logger } from '~/shared/logger'
-import { MissingConsentFieldsError } from '~/models/errors'
+import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -127,6 +127,21 @@ describe('Handlers for consent documents in Firebase', () => {
 
       expect(loggerErrorSpy).toBeCalledWith(
         'Invalid consent, undefined status.'
+      )
+    })
+
+    it('Should throw a InvalidConsentStatusErrro, if status field does not match any ConsentStatus enum', async () => {
+      const consentInvalidStatus = {
+        id: '111',
+        status: 'invalid' as ConsentStatus,
+        consentId: 'acv',
+        userId: 'bob123',
+      }
+
+      expect(
+        consentsHandler.onUpdate(server, consentInvalidStatus)
+      ).rejects.toThrow(
+        new InvalidConsentStatusError(consentInvalidStatus.status)
       )
     })
 
