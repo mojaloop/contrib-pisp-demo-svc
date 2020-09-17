@@ -102,25 +102,28 @@ export class FirebaseConsentRepository implements IConsentRepository {
     // Find and update all matching documents in Firebase that match the given conditions.
     firestoreQuery
       .get()
-      .then((response) => {
-        // Create a batch to perform all of the updates using a single request.
-        // Firebase will also execute the updates atomically according to the
-        // API specification.
-        const batch = firebase.firestore().batch()
+      .then(
+        async (response): Promise<void> => {
+          // Create a batch to perform all of the updates using a single request.
+          // Firebase will also execute the updates atomically according to the
+          // API specification.
+          const batch = firebase.firestore().batch()
 
-        // Iterate through all matching documents add them to the processing batch.
-        response.docs.forEach((doc) => {
-          batch.update(
-            // Put a reference to the document.
-            firebase.firestore().collection('consents').doc(doc.id),
-            // Specify the updated fields and their new values.
-            data
-          )
-        })
+          // Iterate through all matching documents add them to the processing batch.
+          response.docs.forEach((doc) => {
+            batch.update(
+              // Put a reference to the document.
+              firebase.firestore().collection('consents').doc(doc.id),
+              // Specify the updated fields and their new values.
+              data
+            )
+          })
 
-        // Commit the updates.
-        return batch.commit()
-      })
+          // Commit the updates.
+          await batch.commit()
+          return undefined
+        }
+      )
       .catch((err) => {
         logger.error(err)
       })

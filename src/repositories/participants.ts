@@ -70,7 +70,8 @@ export class FirebaseParticipantRepository implements IParticipantRepository {
         })
 
         // Commit the updates.
-        return batch.commit()
+        await batch.commit()
+        return undefined
       })
       .catch((err) => {
         logger.error(err)

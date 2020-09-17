@@ -71,7 +71,7 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
     // Find and update all matching documents in Firebase that match the given conditions.
     firestoreQuery
       .get()
-      .then((response) => {
+      .then(async (response) => {
         // Create a batch to perform all of the updates using a single request.
         // Firebase will also execute the updates atomically according to the
         // API specification.
@@ -88,7 +88,8 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
         })
 
         // Commit the updates.
-        return batch.commit()
+        await batch.commit()
+        return undefined
       })
       .catch((err) => {
         logger.error(err)
