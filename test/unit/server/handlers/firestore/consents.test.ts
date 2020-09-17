@@ -141,7 +141,10 @@ describe('Handlers for consent documents in Firebase', () => {
       expect(
         consentsHandler.onUpdate(server, consentInvalidStatus)
       ).rejects.toThrow(
-        new InvalidConsentStatusError(consentInvalidStatus.status)
+        new InvalidConsentStatusError(
+          consentInvalidStatus.status,
+          consentInvalidStatus.id
+        )
       )
     })
 

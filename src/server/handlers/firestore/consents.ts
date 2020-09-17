@@ -221,6 +221,7 @@ export const onUpdate: ConsentHandler = async (
     case ConsentStatus.REVOKE_REQUESTED:
       await initiateRevokingConsent(server, consent)
       break
+
     default:
       throw new InvalidConsentStatusError(consent.status, consent.id)
   }

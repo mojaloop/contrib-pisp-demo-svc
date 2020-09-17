@@ -38,9 +38,7 @@ export class MissingConsentFieldsError extends Error {
   }
 }
 export class InvalidConsentStatusError extends Error {
-  public constructor(consentStatus: string, consentId?: string) {
-    super(
-      `Invalid Consent Status Provided! ID: ${consentId} | Status: ${consentStatus}`
-    )
+  public constructor(status: string, id: string) {
+    super(`Invalid Consent Status Provided! ID: ${id} | Status: ${status}`)
   }
 }
