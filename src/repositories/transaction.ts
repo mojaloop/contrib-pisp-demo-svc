@@ -59,41 +59,38 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
     conditions: Record<string, unknown>,
     data: Record<string, unknown>
   ): Promise<void> {
-    let firestoreQuery: FirebaseFirestore.Query = firebase
-      .firestore()
-      .collection('transactions')
+    try {
+      let firestoreQuery: FirebaseFirestore.Query = firebase
+        .firestore()
+        .collection('transactions')
 
-    // Chain all of the given conditions to the query
-    for (const key in conditions) {
-      firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
+      // Chain all of the given conditions to the query
+      for (const key in conditions) {
+        firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
+      }
+
+      // Find and update all matching documents in Firebase that match the given conditions.
+      const response = await firestoreQuery.get()
+      // Create a batch to perform all of the updates using a single request.
+      // Firebase will also execute the updates atomically according to the
+      // API specification.
+      const batch = firebase.firestore().batch()
+
+      // Iterate through all matching documents add them to the processing batch.
+      response.docs.forEach((doc) => {
+        batch.update(
+          // Put a reference to the document.
+          firebase.firestore().collection('transactions').doc(doc.id),
+          // Specify the updated fields and their new values.
+          data
+        )
+      })
+
+      // Commit the updates.
+      await batch.commit()
+    } catch (error) {
+      logger.error(error)
     }
-
-    // Find and update all matching documents in Firebase that match the given conditions.
-    firestoreQuery
-      .get()
-      .then(async (response) => {
-        // Create a batch to perform all of the updates using a single request.
-        // Firebase will also execute the updates atomically according to the
-        // API specification.
-        const batch = firebase.firestore().batch()
-
-        // Iterate through all matching documents add them to the processing batch.
-        response.docs.forEach((doc) => {
-          batch.update(
-            // Put a reference to the document.
-            firebase.firestore().collection('transactions').doc(doc.id),
-            // Specify the updated fields and their new values.
-            data
-          )
-        })
-
-        // Commit the updates.
-        await batch.commit()
-        return undefined
-      })
-      .catch((err) => {
-        logger.error(err)
-      })
   }
 }
 

@@ -42,40 +42,37 @@ export interface IParticipantRepository {
 
 export class FirebaseParticipantRepository implements IParticipantRepository {
   async replace(data: Participant[]): Promise<void> {
-    const collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> = firebase
-      .firestore()
-      .collection('participants')
+    try {
+      const collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> = firebase
+        .firestore()
+        .collection('participants')
 
-    // Find and update all matching documents in Firebase that match the given conditions.
-    collectionRef
-      .get()
-      .then(async (response) => {
-        // Create a batch to perform all of the updates using a single request.
-        // Firebase will also execute the updates atomically according to the
-        // API specification.
-        const batch = firebase.firestore().batch()
+      // Find and update all matching documents in Firebase that match the given conditions.
+      const response = await collectionRef.get()
+      // Create a batch to perform all of the updates using a single request.
+      // Firebase will also execute the updates atomically according to the
+      // API specification.
+      const batch = firebase.firestore().batch()
 
-        const batchSize = response.size
-        if (batchSize > 0) {
-          // If previous participants list exists, delete it
+      const batchSize = response.size
+      if (batchSize > 0) {
+        // If previous participants list exists, delete it
 
-          // Iterate through all matching documents add them to the processing batch.
-          response.docs.forEach((doc) => {
-            batch.delete(doc.ref)
-          })
-        }
-        // Iterate through received participants list and add them to the processing batch.
-        data.forEach((participant: Participant) => {
-          batch.set(collectionRef.doc(), participant)
+        // Iterate through all matching documents add them to the processing batch.
+        response.docs.forEach((doc) => {
+          batch.delete(doc.ref)
         })
+      }
+      // Iterate through received participants list and add them to the processing batch.
+      data.forEach((participant: Participant) => {
+        batch.set(collectionRef.doc(), participant)
+      })
 
-        // Commit the updates.
-        await batch.commit()
-        return undefined
-      })
-      .catch((err) => {
-        logger.error(err)
-      })
+      // Commit the updates.
+      await batch.commit()
+    } catch (error) {
+      logger.error(error)
+    }
   }
 }
 
