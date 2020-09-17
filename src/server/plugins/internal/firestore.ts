@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -28,7 +29,10 @@ import { Plugin, Server } from '@hapi/hapi'
 import firebase from '~/lib/firebase'
 import { Transaction } from '~/models/transaction'
 
-export type TransactionHandler = (server: Server, transaction: Transaction) => Promise<void>
+export type TransactionHandler = (
+  server: StateServer,
+  transaction: Transaction
+) => Promise<void>
 
 /**
  * An interface definition for options that need to be specfied to use this plugin.
@@ -54,7 +58,10 @@ export interface Options {
  * @param options a configuration object for the plugin.
  * @returns a function to unsubscribe the listener.
  */
-const listenToTransactions = (server: Server, options: Options): (() => void) => {
+const listenToTransactions = (
+  server: StateServer,
+  options: Options
+): (() => void) => {
   const transactionHandlers = options.handlers.transactions
 
   return firebase
@@ -63,13 +70,20 @@ const listenToTransactions = (server: Server, options: Options): (() => void) =>
     .onSnapshot((querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
         if (change.type === 'added' && transactionHandlers.onCreate) {
-          transactionHandlers.onCreate(server, { id: change.doc.id, ...change.doc.data() })
-
+          transactionHandlers.onCreate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         } else if (change.type === 'modified' && transactionHandlers.onUpdate) {
-          transactionHandlers.onUpdate(server, { id: change.doc.id, ...change.doc.data() })
-
+          transactionHandlers.onUpdate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         } else if (change.type === 'removed' && transactionHandlers.onRemove) {
-          transactionHandlers.onRemove(server, { id: change.doc.id, ...change.doc.data() })
+          transactionHandlers.onRemove(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
         }
       })
     })
@@ -83,7 +97,10 @@ export const Firestore: Plugin<Options> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
   register: async (server: Server, options: Options) => {
-    const unsubscribeTransactions = listenToTransactions(server, options)
+    const unsubscribeTransactions = listenToTransactions(
+      server as StateServer,
+      options
+    )
 
     // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {
