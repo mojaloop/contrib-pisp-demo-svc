@@ -37,3 +37,4 @@ interface StateServer extends Server {
 }
 
 declare module '@mojaloop/central-services-shared'
+declare module 'firebase-mock'
