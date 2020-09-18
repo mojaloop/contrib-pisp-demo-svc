@@ -4,6 +4,8 @@ A server used to communicate with the Mojaloop network to facilitate account lin
 
 # Quick Setup Guide
 
+The following steps should allow you to perform a mocked out end-to-end transfer (between pisp-demo-server and pisp-demo-app).
+
 1. Firebase SDK Admin Key
 
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
@@ -69,7 +71,9 @@ You can use any info for the partyIdentifier and names but the consentId must be
 
 (You can copy the example exactly and it will work)
 
-This represents the consent that the user has given to PISP app to be able to access their account information. When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection from the account linking process.
+This represents the consent that the user has given to PISP app to be able to access their account information. 
+
+When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection from the account linking process.
 
 # Starting the server
 After all of the steps are done. Type `npm run start` in the command line in the project directory.
@@ -79,3 +83,52 @@ Go to the PISP demo app and try to send money to a payee. You should see that th
 # Configurations
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
+
+# Mock Data for Account Linking
+
+## Mocking Available Financial Service Providers 
+
+Follow these steps to display a list of available Financial Service Providers on the account linking tab.
+
+1. Create a new collection called `participants`
+2. Inside the collection `participants`, add as many different FSP documents as you want.
+
+An FSP document consists of a Map that looks like so:
+
+```
+{
+  fspId: "hsbc",
+  name: "HSBC Bank"
+}
+```
+
+When the server is fully functional, the server will periodically update this list and populate the 'participants' collection so this won't be needed anymore.
+
+## Mocking Accounts for Associated Accounts
+
+1. In the Consent object, that you are working with, add an `accounts` field of type 'array'.
+2. In that array, add as many Account documents as you want.
+
+An Account document consists of a Map that looks like so:
+
+```
+{
+  id: "account.bob.fsp",
+  currency: "SGD"
+}
+```
+
+The overall Consent object should look like this:
+
+```
+{
+   "consentId":"555",
+   ...
+   "accounts": [
+     { "id": "account.bob.fsp", "currency": "USD" },
+     { "id": "anotheraccount.bob.fsp", "currency": "SGD" },
+     ...
+   ]
+}
+```
+
