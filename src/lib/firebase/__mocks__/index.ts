@@ -32,7 +32,7 @@ const mocksdk = new firebasemock.MockFirebaseSdk(
     return null
   }
 )
-
+mocksdk.firestore().autoFlush()
 export default mocksdk
 
 // console.log(mockauth)
