@@ -39,7 +39,10 @@ import {
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
 import { Status, Transaction, ResponseType } from '~/models/transaction'
-import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import {
+  ThirdPartyTransactionRequest,
+  AuthorizationsPutIdRequest,
+} from '~/shared/ml-thirdparty-client/models/openapi'
 import { consentRepository } from '~/repositories/consent'
 import { Consent } from '~/models/consent'
 
@@ -208,12 +211,17 @@ describe('Handlers for transaction documents in Firebase', () => {
     await transactionsHandler.onUpdate(server, transactionRequestData)
 
     expect(consentRepositorySpy).toBeCalled()
-    expect(mojaloopClientSpy).toBeCalledWith(transactionRequest, expect.any(String))
+    expect(mojaloopClientSpy).toBeCalledWith(
+      transactionRequest,
+      expect.any(String)
+    )
   })
 
   it('Should send authorization when all necessary fields are set', () => {
     const documentId = '111'
-    let mojaloopClientSpy = jest.spyOn(server.app.mojaloopClient, 'putAuthorizations').mockImplementation()
+    const mojaloopClientSpy = jest
+      .spyOn(server.app.mojaloopClient, 'putAuthorizations')
+      .mockImplementation()
 
     // Mock transaction data given by Firebase
     const transactionData: Transaction = {
@@ -223,7 +231,7 @@ describe('Handlers for transaction documents in Firebase', () => {
       transactionId: '222',
       authentication: {
         type: AuthenticationType.U2F,
-        value: '12345'
+        value: '12345',
       },
       responseType: ResponseType.AUTHORIZED,
       status: Status.AUTHORIZATION_REQUIRED,
@@ -233,7 +241,7 @@ describe('Handlers for transaction documents in Firebase', () => {
     const authorization: AuthorizationsPutIdRequest = {
       authenticationInfo: {
         authentication: AuthenticationType.U2F,
-        authenticationValue: '12345'
+        authenticationValue: '12345',
       },
       responseType: AuthenticationResponseType.ENTERED,
     }
@@ -241,7 +249,9 @@ describe('Handlers for transaction documents in Firebase', () => {
     transactionsHandler.onUpdate(server, transactionData)
 
     expect(mojaloopClientSpy).toBeCalledWith(
-      transactionData.transactionRequestId!, authorization, expect.any(String)
+      transactionData.transactionRequestId!,
+      authorization,
+      expect.any(String)
     )
   })
 })
