@@ -21,7 +21,6 @@
  * Google
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  - Steven Wijaya <stevenwjy@google.com>
- - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
