@@ -110,12 +110,14 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
-    _type: PartyIdType,
-    _id: string
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new NotImplementedError()
+    if (idSubValue) {
+      return this.mojaloopRequests.getParties(idType, idValue, idSubValue)
+    }
+    return this.mojaloopRequests.getParties(idType, idValue)
   }
 
   /**
