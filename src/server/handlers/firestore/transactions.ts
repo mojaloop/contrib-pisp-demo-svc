@@ -43,7 +43,7 @@ import { transactionRepository } from '~/repositories/transaction'
 import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
 
-// TODO: Replace once decided how to implement
+// TODO: Replace once design decision made on how we should be obtaining this
 const destParticipantId = 'PLACEHOLDER'
 
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
