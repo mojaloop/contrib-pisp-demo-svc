@@ -23,6 +23,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import { ServerInjectResponse } from '@hapi/hapi'
 import * as faker from 'faker'

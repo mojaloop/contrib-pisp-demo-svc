@@ -28,10 +28,16 @@ import { Plugin, Server } from '@hapi/hapi'
 
 import firebase from '~/lib/firebase'
 import { Transaction } from '~/models/transaction'
+import { Consent } from '~/models/consent'
 
 export type TransactionHandler = (
   server: StateServer,
   transaction: Transaction
+) => Promise<void>
+
+export type ConsentHandler = (
+  server: StateServer,
+  consent: Consent
 ) => Promise<void>
 
 /**
@@ -43,6 +49,11 @@ export interface Options {
       onCreate?: TransactionHandler
       onUpdate?: TransactionHandler
       onRemove?: TransactionHandler
+    }
+    consents: {
+      onCreate?: ConsentHandler
+      onUpdate?: ConsentHandler
+      onRemove?: ConsentHandler
     }
   }
 }
@@ -90,6 +101,48 @@ const listenToTransactions = (
 }
 
 /**
+ * Listens to events that happen in the "consents" collection.
+ * Note that when the server starts running, all existing documents in Firestore
+ * will be treated as a document that is created for the first time. The handler for
+ * `onCreate` consent must be able to differentiate whether a document is created in
+ * realtime or because it has persisted in the database when the server starts.
+ *
+ * @param server a server object as defined in the hapi library.
+ * @param options a configuration object for the plugin.
+ * @returns a function to unsubscribe the listener.
+ */
+const listenToConsents = (
+  server: StateServer,
+  options: Options
+): (() => void) => {
+  const consentHandlers = options.handlers.consents
+
+  return firebase
+    .firestore()
+    .collection('consents')
+    .onSnapshot((querySnapshot) => {
+      querySnapshot.docChanges().forEach((change) => {
+        if (change.type === 'added' && consentHandlers.onCreate) {
+          consentHandlers.onCreate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        } else if (change.type === 'modified' && consentHandlers.onUpdate) {
+          consentHandlers.onUpdate(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        } else if (change.type === 'removed' && consentHandlers.onRemove) {
+          consentHandlers.onRemove(server, {
+            id: change.doc.id,
+            ...change.doc.data(),
+          })
+        }
+      })
+    })
+}
+
+/**
  * A plugin that enables the hapi server to listen to changes in the Firestore
  * collections that are relevant for the PISP demo.
  */
@@ -97,6 +150,7 @@ export const Firestore: Plugin<Options> = {
   name: 'PispDemoFirestore',
   version: '1.0.0',
   register: async (server: Server, options: Options) => {
+    const unsubscribeConsents = listenToConsents(server as StateServer, options)
     const unsubscribeTransactions = listenToTransactions(
       server as StateServer,
       options
@@ -105,6 +159,7 @@ export const Firestore: Plugin<Options> = {
     // Unsubscribe to the changes in Firebase when the server stops running.
     server.ext('onPreStop', (_: Server) => {
       unsubscribeTransactions()
+      unsubscribeConsents()
     })
   },
 }

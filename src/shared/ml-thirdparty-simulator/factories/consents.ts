@@ -23,6 +23,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: Confirm if testing necessary for factory methods
 
 import * as faker from 'faker'
 

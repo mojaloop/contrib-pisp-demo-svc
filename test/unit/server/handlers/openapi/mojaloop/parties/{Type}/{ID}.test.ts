@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /*****
  License
  --------------
@@ -27,6 +28,7 @@ import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { Enum } from '@mojaloop/central-services-shared'
 
 import { transactionRepository } from '~/repositories/transaction'
 import * as PartiesByTypeAndIdHandlers from '~/server/handlers/openapi/mojaloop/parties/{Type}/{ID}'
@@ -51,16 +53,18 @@ jest.mock('~/lib/firebase')
 
 const mockRequest = jest.fn().mockImplementation()
 
-const mockResponseToolkit = {
+// @ts-ignore
+const mockResponseToolkit: ResponseToolkit = {
   response: (): ResponseObject => {
-    return {
+    return ({
       code: (num: number): ResponseObject => {
-        return num as unknown as ResponseObject
-      }
-    } as unknown as ResponseObject
-  }
-} as unknown as ResponseToolkit
-
+        return ({
+          statusCode: num,
+        } as unknown) as ResponseObject
+      },
+    } as unknown) as ResponseObject
+  },
+}
 describe('/parties/{Type}/{ID}', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -102,7 +106,7 @@ describe('/parties/{Type}/{ID}', () => {
         }
       )
 
-      expect(response).toBe(200)
+      expect(response.statusCode).toBe(Enum.Http.ReturnCodes.OK.CODE)
     })
   })
 })

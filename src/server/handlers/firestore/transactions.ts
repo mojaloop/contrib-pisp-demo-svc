@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /*****
  License
  --------------
@@ -23,6 +24,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: Testing will covered in separate ticket
 
 import * as uuid from 'uuid'
 
@@ -40,13 +43,14 @@ import { transactionRepository } from '~/repositories/transaction'
 import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
 
-// TODO: Replace once decided how to implement
+// TODO: Replace once design decision made on how we should be obtaining this
 const destParticipantId = 'PLACEHOLDER'
 
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.updateById(transaction.id, {
     transactionRequestId: uuid.v4(),
     status: Status.PENDING_PARTY_LOOKUP,
@@ -86,7 +90,7 @@ async function handlePartyConfirmation(
       // The optional values are guaranteed to exist by the validator.
       // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      const consent = await consentRepository.getByConsentId(
+      const consent = await consentRepository.getConsentById(
         transaction.consentId!
       )
 

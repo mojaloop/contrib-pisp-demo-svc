@@ -98,6 +98,15 @@ components:
         name: 
           type: string
       description: Data model for the complex type Participant.
+    PatchConsentsByIdRequest:
+      title: PutConsentsByIdRequest
+      type: object
+      properties:
+        status:
+          type: string
+        revokedAt:
+          type: string
+      description: Data model for the complex type PatchConsentsByIdRequest.
     PostAuthorizationsRequest:
       title: PostAuthorizationsRequest
       type: object
