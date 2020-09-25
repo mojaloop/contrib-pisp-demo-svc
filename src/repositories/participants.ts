@@ -47,7 +47,6 @@ export class FirebaseParticipantRepository implements IParticipantRepository {
         .firestore()
         .collection('participants')
 
-      // Find and update all matching documents in Firebase that match the given conditions.
       const response = await collectionRef.get()
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
