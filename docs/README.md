@@ -4,11 +4,15 @@ Documentation for the PISP demo server
 
 ## Design
 
-> **_NOTE:_** PISP demo server uses [Firebase](https://firebase.google.com/) to assist in performing various tasks. For more details about the required services, you can take a look [here](./design/firebase.md).
+> **_NOTE:_** PISP demo server uses [Firebase](https://firebase.google.com/) to assist in performing various tasks. 
+For more details about the required services, you can take a look [here](./design/firebase.md).
 
 Below are the scenarios that are supported by the PISP Demo server:
 - [Transfer](./design/transfer.md)
 - [Linking](./design/linking.md)
+
+To integrate the PISP demo server with Mojaloop, you can also take a look [here](./design/mojaloop_integration.md)
+to discover all of the necessary setup.
 
 ## BDD
 
