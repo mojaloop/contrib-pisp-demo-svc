@@ -1,0 +1,46 @@
+Feature: pisp-demo-server server
+
+Scenario: putConsentRequestsById
+  Given pisp-demo-server server
+  When I sent a 'putConsentRequestsById' request
+  Then I get a 200 response
+
+Scenario: putConsentsById
+  Given pisp-demo-server server
+  When I sent a 'putConsentsById' request
+  Then I get a 200 response
+
+Scenario: putParticipants
+  Given pisp-demo-server server
+  When I sent a 'putParticipants' request
+  Then I get a 200 response
+
+Scenario: putParticipantsError
+  Given pisp-demo-server server
+  When I sent a 'putParticipantsError' request
+  Then I get a 200 response
+
+Scenario: putPartiesByTypeAndId
+  Given pisp-demo-server server
+  When I sent a 'putPartiesByTypeAndId' request
+  Then I get a 200 response
+
+Scenario: postConsents
+  Given pisp-demo-server server
+  When I sent a 'postConsents' request
+  Then I get a 202 response
+
+Scenario: putPartiesByTypeAndIdError
+  Given pisp-demo-server server
+  When I sent a 'putPartiesByTypeAndIdError' request
+  Then I get a 200 response
+
+Scenario: putTransfersById
+  Given pisp-demo-server server
+  When I sent a 'putTransfersById' request
+  Then I get a 200 response
+  
+Scenario: authorizations
+  Given pisp-demo-server server
+  When I sent a 'authorizations' request
+  Then I get a 200 response
