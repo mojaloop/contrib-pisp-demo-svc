@@ -58,8 +58,8 @@ defineFeature(feature, (test): void => {
     )
 
     when(
-      'I sent a {word} request',
-      async (operationId: string): Promise<ServerInjectResponse> => {
+      /^I sent a (.*)$ request/,
+      async (operationId): Promise<void> => {
         let request: ServerInjectOptions
         switch (operationId) {
           case 'putConsentRequestsById': {
@@ -144,14 +144,13 @@ defineFeature(feature, (test): void => {
             break
           }
           default:
-            return response
+            return
         }
         response = await server.inject(request)
-        return response
       }
     )
 
-    then('I get a {int} response', (expectedStatusCode: number): void => {
+    then(/^I should get a (\d+)$ response/, (expectedStatusCode): void => {
       expect(response.statusCode).toBe(expectedStatusCode)
     })
   })
