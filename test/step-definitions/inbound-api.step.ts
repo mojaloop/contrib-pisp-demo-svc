@@ -25,12 +25,15 @@
 
 import path from 'path'
 import { loadFeature, defineFeature } from 'jest-cucumber'
-import { Server, ServerInjectResponse } from '@hapi/hapi'
+import { Server, ServerInjectOptions, ServerInjectResponse } from '@hapi/hapi'
 import Config from '~/lib/config'
 import PispDemoServer from '~/server'
 import * as MockData from '../mockData'
 
-const featurePath = path.join(__dirname, '../features/template.scenario.feature')
+const featurePath = path.join(
+  __dirname,
+  '../features/inbound-api.scenario.feature'
+)
 const feature = loadFeature(featurePath)
 
 // Mock firebase to prevent transaction repository from opening the connection.
@@ -45,47 +48,111 @@ defineFeature(feature, (test): void => {
     server.stop()
   })
 
-  test('putConsentRequestsById', ({ given, when, then }): void => {
-    given('pisp-demo-server server', async (): Promise<Server> => {
-      server = await PispDemoServer.run(Config)
-      return server
-    })
-
-    when("I sent a 'putConsentRequestsById' request", async (): Promise<ServerInjectResponse> => {
-      const request = {
-        method: 'PUT',
-        url: '/consentRequests/1234',
-        body: MockData.putConsentRequestsByIdBody
+  test('Endpoints return 200 or 202', ({ given, when, then }): void => {
+    given(
+      'pisp-demo-server',
+      async (): Promise<Server> => {
+        server = await PispDemoServer.run(Config)
+        return server
       }
-      response = await server.inject(request)
-      return response
-    })
+    )
 
-    then('I get a 200 response', (): void => {
-      response.result
-      expect(response.statusCode).toBe(200)
-    })
-  })
-
-  test('putConsentsById', ({ given, when, then }): void => {
-    given('pisp-demo-server server', async (): Promise<Server> => {
-      server = await PispDemoServer.run(Config)
-      return server
-    })
-
-    when("I sent a 'putConsentsById' request", async (): Promise<ServerInjectResponse> => {
-      const request = {
-        method: 'PUT',
-        url: '/consentRequests/1234',
-        body: MockData.putConsentsByIdBody
+    when(
+      'I sent a (.*)$/ request',
+      async (operationId: string): Promise<ServerInjectResponse> => {
+        let request: ServerInjectOptions
+        switch (operationId) {
+          case 'putConsentRequestsById': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/consentRequests/1234',
+              payload: MockData.putConsentRequestsByIdBody,
+            }
+            break
+          }
+          case 'putConsentsById': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/consents/1234',
+              payload: MockData.putConsentsByIdBody,
+            }
+            break
+          }
+          case 'putParticipants': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/participants',
+              payload: MockData.putParticipantsBody,
+            }
+            break
+          }
+          case 'putParticipantsError': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/participants/error',
+              payload: MockData.putParticipantsErrorBody,
+            }
+            break
+          }
+          case 'putPartiesByTypeAndId': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/parties/MSISDN/1234',
+              payload: MockData.putPartiesByTypeAndIdBody,
+            }
+            break
+          }
+          case 'putPartiesByTypeAndIdError': {
+            request = {
+              headers: MockData.headers,
+              method: 'PUT',
+              url: '/parties/MSISDN/1234/error',
+              payload: MockData.putPartiesByTypeAndIdErrorBody,
+            }
+            break
+          }
+          case 'postConsents': {
+            request = {
+              headers: MockData.headers,
+              method: 'POST',
+              url: '/consents',
+              payload: MockData.postConsentBody,
+            }
+            break
+          }
+          case 'putTransfersById': {
+            request = {
+              headers: MockData.headers,
+              method: 'POST',
+              url: '/consents',
+              payload: MockData.putTransfersByIdBody,
+            }
+            break
+          }
+          case 'authorizations': {
+            request = {
+              headers: MockData.headers,
+              method: 'POST',
+              url: '/consents',
+              payload: MockData.authorizationsBody,
+            }
+            break
+          }
+          default:
+            return response
+        }
+        response = await server.inject(request)
+        return response
       }
-      response = await server.inject(request)
-      return response
-    })
+    )
 
-    then('I get a 200 response', (): void => {
-      response.result
-      expect(response.statusCode).toBe(200)
+    then('I get a $(d+)/ response', (expectedStatusCode: number): void => {
+      expect(response.statusCode).toBe(expectedStatusCode)
     })
   })
 })
