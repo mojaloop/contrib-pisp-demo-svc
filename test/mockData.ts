@@ -69,6 +69,7 @@ export const putPartiesByTypeAndIdErrorBody = {
 }
 
 export const headers = {
+  host: 'mojaloop.pisp-demo-server.local',
   'fspiop-source': 'pisp-2342-2233',
   'fspiop-destination': 'dfsp-3333-2123',
   date: 'Thu, 23 Jan 2020 10:22:12 GMT',
