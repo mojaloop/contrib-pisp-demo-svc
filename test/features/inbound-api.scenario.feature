@@ -1,6 +1,6 @@
 Feature: Mojaloop API
 
-Scenario Outline: Endpoints return 200 or 202
+Scenario Outline: <OperationId> endpoint returns <StatusCode>
   Given pisp-demo-server
   When I sent a <OperationId> request
   Then I should get a <StatusCode> response
@@ -15,4 +15,4 @@ Scenario Outline: Endpoints return 200 or 202
     | putPartiesByTypeAndIdError | 200        | 
     | postConsents               | 202        | 
     | putTransfersById           | 200        | 
-    | authorizations             | 200        | 
+    | authorizations             | 202        | 

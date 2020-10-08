@@ -43,12 +43,12 @@ defineFeature(feature, (test): void => {
   let server: Server
   let response: ServerInjectResponse
 
-  afterEach((done): void => {
+  afterEach(async (done): Promise<void> => {
     server.events.on('stop', done)
-    server.stop()
+    await server.stop()
   })
 
-  test('Endpoints return 200 or 202', ({ given, when, then }): void => {
+  test('<OperationId> endpoint returns <StatusCode>', ({ given, when, then }): void => {
     given(
       'pisp-demo-server',
       async (): Promise<Server> => {
@@ -59,7 +59,7 @@ defineFeature(feature, (test): void => {
 
     when(
       /^I sent a (.*) request$/,
-      async (operationId): Promise<void> => {
+      async (operationId: string): Promise<void> => {
         let request: ServerInjectOptions
         switch (operationId) {
           case 'putConsentRequestsById': {
@@ -128,7 +128,7 @@ defineFeature(feature, (test): void => {
           case 'putTransfersById': {
             request = {
               headers: MockData.headers,
-              method: 'POST',
+              method: 'PUT',
               url: '/consents',
               payload: MockData.putTransfersByIdBody,
             }
@@ -150,7 +150,8 @@ defineFeature(feature, (test): void => {
       }
     )
 
-    then(/^I should get a (\d+) response$/, (expectedStatusCode): void => {
+    then(/^I should get a (\d+) response$/, (statusCode: string): void => {
+      const expectedStatusCode = parseInt(statusCode)
       expect(response.statusCode).toBe(expectedStatusCode)
     })
   })
