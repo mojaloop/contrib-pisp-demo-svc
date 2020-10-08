@@ -58,7 +58,7 @@ defineFeature(feature, (test): void => {
     )
 
     when(
-      /^I sent a (.*)$ request/,
+      /^I sent a (.*) request$/,
       async (operationId): Promise<void> => {
         let request: ServerInjectOptions
         switch (operationId) {
@@ -150,7 +150,7 @@ defineFeature(feature, (test): void => {
       }
     )
 
-    then(/^I should get a (\d+)$ response/, (expectedStatusCode): void => {
+    then(/^I should get a (\d+) response$/, (expectedStatusCode): void => {
       expect(response.statusCode).toBe(expectedStatusCode)
     })
   })
