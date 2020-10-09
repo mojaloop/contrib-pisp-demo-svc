@@ -1,7 +1,7 @@
 Feature: Firestore Consent Handlers
 
 Background:
-  Given the pisp-demo-server
+  Given pisp-demo-server
 
 Scenario: Create Consent
   When I create a new Consent

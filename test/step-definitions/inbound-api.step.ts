@@ -52,10 +52,7 @@ mockUpdateById.mockResolvedValue()
 const mockUpdate = jest.spyOn(transactionRepository, 'update')
 mockUpdate.mockResolvedValue()
 
-const featurePath = path.join(
-  __dirname,
-  '../features/inbound-api.scenario.feature'
-)
+const featurePath = path.join(__dirname, '../features/inbound-api.feature')
 const feature = loadFeature(featurePath)
 
 defineFeature(feature, (test): void => {

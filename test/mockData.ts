@@ -1,10 +1,12 @@
+// TODO: Interface wrongly defines request
+// accountId in scopes does not have to be CorrelationId
 const exampleScopeArray = [
   {
-    accountId: 'testId',
+    accountId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
     actions: ['withdraw', 'viewbalance'],
   },
   {
-    accountId: 'testId2',
+    accountId: 'a51ec534-ee48-4575-b6a9-ead2955b8069',
     actions: ['viewbalance'],
   },
 ]
@@ -18,9 +20,9 @@ export const putConsentRequestsByIdBody = {
 }
 
 export const putConsentsByIdBody = {
-  requestId: '1234',
-  initiatorId: '1234',
-  participantId: '5678',
+  requestId: 'a71ec534-ee48-4575-b6a9-ead2955b8069',
+  initiatorId: 'pisp-2342-2233',
+  participantId: 'pisp-2342-2233',
   scopes: exampleScopeArray,
   credential: {
     id: 'credId',
