@@ -29,6 +29,28 @@ import { Server, ServerInjectOptions, ServerInjectResponse } from '@hapi/hapi'
 import Config from '~/lib/config'
 import PispDemoServer from '~/server'
 import * as MockData from '../mockData'
+import { Consent } from '~/models/consent'
+import { consentRepository } from '~/repositories/consent'
+import { participantRepository } from '~/repositories/participants'
+import { transactionRepository } from '~/repositories/transaction'
+
+// Mock out repo functions
+const mockUpdateConsentById = jest.spyOn(consentRepository, 'updateConsentById')
+mockUpdateConsentById.mockResolvedValue()
+const mockUpdateConsent = jest.spyOn(consentRepository, 'updateConsent')
+mockUpdateConsent.mockResolvedValue()
+const mockGetConsentById = jest.spyOn(consentRepository, 'getConsentById')
+const mockConsent: Consent = { id: '1234' }
+mockGetConsentById.mockResolvedValue(mockConsent)
+
+const mockReplace = jest.spyOn(participantRepository, 'replace')
+mockReplace.mockResolvedValue()
+
+const mockUpdateById = jest.spyOn(transactionRepository, 'updateById')
+mockUpdateById.mockResolvedValue()
+
+const mockUpdate = jest.spyOn(transactionRepository, 'update')
+mockUpdate.mockResolvedValue()
 
 const featurePath = path.join(
   __dirname,
@@ -36,19 +58,22 @@ const featurePath = path.join(
 )
 const feature = loadFeature(featurePath)
 
-// Mock firebase to prevent transaction repository from opening the connection.
-jest.mock('~/lib/firebase')
-
 defineFeature(feature, (test): void => {
   let server: Server
   let response: ServerInjectResponse
 
-  afterEach(async (done): Promise<void> => {
-    server.events.on('stop', done)
-    await server.stop()
-  })
+  afterEach(
+    async (done): Promise<void> => {
+      server.events.on('stop', done)
+      await server.stop()
+    }
+  )
 
-  test('<OperationId> endpoint returns <StatusCode>', ({ given, when, then }): void => {
+  test('<OperationId> endpoint returns <StatusCode>', ({
+    given,
+    when,
+    then,
+  }): void => {
     given(
       'pisp-demo-server',
       async (): Promise<Server> => {
