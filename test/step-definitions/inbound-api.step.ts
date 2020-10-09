@@ -151,7 +151,7 @@ defineFeature(feature, (test): void => {
             request = {
               headers: MockData.headers,
               method: 'PUT',
-              url: '/consents',
+              url: '/transfers/b51ec534-ee48-4575-b6a9-ead2955b8069',
               payload: MockData.putTransfersByIdBody,
             }
             break
@@ -160,7 +160,7 @@ defineFeature(feature, (test): void => {
             request = {
               headers: MockData.headers,
               method: 'POST',
-              url: '/consents',
+              url: '/authorization',
               payload: MockData.authorizationsBody,
             }
             break

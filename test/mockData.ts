@@ -46,7 +46,7 @@ export const putParticipantsBody = {
 export const putParticipantsErrorBody = {
   errorInformation: {
     errorCode: '1234',
-    errorInformation: 'Error fetching participants',
+    errorDescription: 'Error fetching participants',
   },
 }
 
@@ -66,7 +66,7 @@ export const putPartiesByTypeAndIdBody = {
 export const putPartiesByTypeAndIdErrorBody = {
   errorInformation: {
     errorCode: '1234',
-    errorInformation: 'Generic error',
+    errorDescription: 'Generic error',
   },
 }
 
@@ -97,9 +97,13 @@ export const putTransfersByIdBody = {
   fulfilment: 'WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8',
   completedTimestamp: '2016-05-24T08:38:08.699-04:00',
   transferState: 'RECEIVED',
-  extensionList: [{ key: 'k1', value: 'v1' }],
+  extensionList: {
+    extension: [{ key: 'k1', value: 'v1' }],
+  },
 }
 
+// TODO: Regex pattern for Amount type
+// is wrong - cannot match 1.00 etc.
 export const authorizationsBody = {
   amount: {
     currency: 'USD',
@@ -108,22 +112,22 @@ export const authorizationsBody = {
   authenticationType: 'U2F',
   quote: {
     transferAmount: {
-      currency: 'SGD',
+      currency: 'USD',
       amount: '123.45',
     },
     payeeReceiveAmount: {
-      currency: 'SGD',
+      currency: 'USD',
       amount: '122.45',
     },
     payeeFspFee: {
-      currency: 'SGD',
-      amount: '1.00',
+      currency: 'USD',
+      amount: '0',
     },
     expiration: '2016-05-24T08:38:08.699-04:00',
-    ilpPacket: 'AYIBgQAAAAAAAqUUIjpcIjkyODA2MzkxXCJ9IgA',
+    ilpPacket: 'AYIBgQAAAAAAAqUUIjpcIjkyODA2MzkxXCJ9IgA123',
     condition: 'f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA',
   },
-  retriesLeft: '2',
-  transactionRequestId: 'a51ed534-ee48-4575-b6a9-aad2955b8099',
+  retriesLeft: '5',
+  transactionRequestId: 'a51ec534-ee48-4575-b6a9-ead2955b8070',
   transactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
 }
