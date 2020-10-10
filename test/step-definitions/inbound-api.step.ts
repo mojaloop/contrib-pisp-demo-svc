@@ -19,7 +19,7 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Kenneth Zeng <kkzeng@google.com>
  --------------
  ******/
 
