@@ -124,10 +124,10 @@ export const authorizationsBody = {
       amount: '0',
     },
     expiration: '2016-05-24T08:38:08.699-04:00',
-    ilpPacket: 'AYIBgQAAAAAAAqUUIjpcIjkyODA2MzkxXCJ9IgA123',
+    ilpPacket: 'AYIBgQAAAAAAAqUUIjpcIjkyODA2MzkxXCJ9IgA',
     condition: 'f5sqb7tBTWPd5Y8BDFdMm9BJR_MNI4isf8p8n4D5pHA',
   },
-  retriesLeft: '5',
-  transactionRequestId: 'a51ec534-ee48-4575-b6a9-ead2955b8070',
+  retriesLeft: '2',
+  transactionRequestId: 'a51ed534-ee48-4575-b6a9-aad2955b8099',
   transactionId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
 }

@@ -34,6 +34,9 @@ import { consentRepository } from '~/repositories/consent'
 import { participantRepository } from '~/repositories/participants'
 import { transactionRepository } from '~/repositories/transaction'
 
+// Mock firebase to prevent opening the connection
+jest.mock('~/lib/firebase')
+
 // Mock out repo functions
 const mockUpdateConsentById = jest.spyOn(consentRepository, 'updateConsentById')
 mockUpdateConsentById.mockResolvedValue()
@@ -160,7 +163,7 @@ defineFeature(feature, (test): void => {
             request = {
               headers: MockData.headers,
               method: 'POST',
-              url: '/authorization',
+              url: '/authorizations',
               payload: MockData.authorizationsBody,
             }
             break
