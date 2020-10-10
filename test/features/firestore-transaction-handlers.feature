@@ -14,20 +14,10 @@ Scenario: Create Transaction With Defined Status
 Scenario Outline: Update Transaction With <Status> Status
   When the Transaction that has been updated has <Status> status
   Then the server should <Action> on Mojaloop
-
-  Examples:
-
-
-Scenario: Update Transaction With No Status
-
-Scenario: Update Transaction Pending Party Lookup
-  When the Transaction that has been updated is pending party lookup
-  Then initiate party lookup on Mojaloop
-
-Scenario: Update Transaction Pending Payee Confirmation
-  When the Transaction that has been updated is pending payee confirmation
-  Then initiate a post transactions request
-
-Scenario: Update Transaction Pending Authorization
-  When the Transaction that has been updated is pending authorization
-  Then initiate authorization request on Mojaloop
+  
+  Examples: 
+    | Status                     | Action                      | 
+    | undefined                  | log an error                | 
+    | PENDING_PARTY_LOOKUP       | initiate party lookup       | 
+    | PENDING_PAYEE_CONFIRMATION | initiate payee confirmation | 
+    | AUTHORIZATION_REQUIRED     | initiate authorization      |   
