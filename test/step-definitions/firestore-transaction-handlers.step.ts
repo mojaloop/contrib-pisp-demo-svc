@@ -42,6 +42,7 @@ import { transactionRepository } from '~/repositories/transaction'
 import * as utils from '~/lib/utils'
 import { Party } from '~/shared/ml-thirdparty-client/models/core/parties'
 import { Consent } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 // Mock firebase to prevent opening the connection
 jest.mock('~/lib/firebase')
@@ -71,6 +72,10 @@ const mockIsValidAuthorization = jest.spyOn(validator, 'isValidAuthorization')
 // Mock transaction repo functions
 const mockUpdateById = jest.spyOn(transactionRepository, 'updateById')
 mockUpdateById.mockResolvedValue()
+
+// Mock logger
+const mockLoggerError = jest.spyOn(logger, 'error')
+mockLoggerError.mockReturnValue()
 
 // Mock consent repo functions
 const party: Party = {
@@ -207,6 +212,10 @@ defineFeature(feature, (test): void => {
     then(/^the server should (.*) on Mojaloop$/, (action: string): void => {
       switch (action) {
         case 'log an error': {
+          expect(mockLoggerError).toBeCalledTimes(1)
+          expect(mockLoggerError).toBeCalledWith(
+            'Invalid transaction update, undefined status.'
+          )
           break
         }
         case 'initiate party lookup': {
