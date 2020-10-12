@@ -144,7 +144,7 @@ defineFeature(feature, (test): void => {
             payee: party,
           }
         }
-        onUpdate(server, transaction)
+        await onUpdate(server, transaction)
       }
     )
   }
@@ -157,12 +157,12 @@ defineFeature(feature, (test): void => {
 
     when(
       'the Transaction that has been created has an existing status',
-      (): void => {
+      async (): Promise<void> => {
         transaction = {
           id: '1234',
           status: Status.PENDING_PARTY_LOOKUP,
         }
-        onCreate(server, transaction)
+        await onCreate(server, transaction)
       }
     )
 
@@ -174,12 +174,15 @@ defineFeature(feature, (test): void => {
   test('Create New Transaction', ({ given, when, then }): void => {
     givenThePispDemoServer(given)
 
-    when('a new Transaction is created', (): void => {
-      transaction = {
-        id: '1234',
+    when(
+      'a new Transaction is created',
+      async (): Promise<void> => {
+        transaction = {
+          id: '1234',
+        }
+        await onCreate(server, transaction)
       }
-      onCreate(server, transaction)
-    })
+    )
 
     then(
       'the server should assign a transactionRequestId and a new status in the transaction repository',
