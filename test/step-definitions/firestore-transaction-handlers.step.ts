@@ -38,8 +38,11 @@ import {
   PartyIdType,
   AmountType,
 } from '~/shared/ml-thirdparty-client/models/core'
+import { consentRepository } from '~/repositories/consent'
 import { transactionRepository } from '~/repositories/transaction'
 import * as utils from '~/lib/utils'
+import { Party } from '~/shared/ml-thirdparty-client/models/core/parties'
+import { Consent } from '~/models/consent'
 
 // Mock firebase to prevent opening the connection
 jest.mock('~/lib/firebase')
@@ -71,6 +74,20 @@ const mockUpdateById = jest.spyOn(transactionRepository, 'updateById')
 mockUpdateById.mockResolvedValue()
 
 // Mock consent repo functions
+const party: Party = {
+  partyIdInfo: {
+    partyIdType: PartyIdType.MSISDN,
+    partyIdentifier: 'party_id',
+  },
+}
+
+const consent: Consent = {
+  id: 'b11ec534-ff48-4575-b6a9-ead2955b8069',
+  party: party,
+}
+
+const mockGetConsentById = jest.spyOn(consentRepository, 'getConsentById')
+mockGetConsentById.mockResolvedValue(consent)
 
 const featurePath = path.join(
   __dirname,
@@ -123,13 +140,9 @@ defineFeature(feature, (test): void => {
               amount: '12.00',
               currency: Currency.SGD,
             },
+            transactionId: 'x31ec524-gh48-4535-b6c9-ead3011b8069',
             status: status as Status,
-            payee: {
-              partyIdInfo: {
-                partyIdType: PartyIdType.MSISDN,
-                partyIdentifier: 'party_id',
-              },
-            },
+            payee: party,
           }
         }
         onUpdate(server, transaction)
@@ -199,7 +212,8 @@ defineFeature(feature, (test): void => {
           expect(mockPutAuthorizations).toBeCalledTimes(1)
           expect(mockPutAuthorizations).toBeCalledWith(
             transaction.transactionRequestId!,
-            expectedArgs
+            expectedArgs,
+            'PLACEHOLDER'
           )
           break
         }
