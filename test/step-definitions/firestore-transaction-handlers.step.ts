@@ -29,12 +29,17 @@ import Config from '~/lib/config'
 import PispDemoServer from '~/server'
 import { onUpdate } from '~/server/handlers/firestore/transactions'
 import * as validator from '~/server/handlers/firestore/transactions.validator'
-import { Transaction, Status } from '~/models/transaction'
+import { Transaction, Status, ResponseType } from '~/models/transaction'
 import Client from '~/shared/ml-thirdparty-client'
-import { Currency, PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import {
+  AuthenticationResponseType,
+  AuthenticationType,
+  Currency,
+  PartyIdType,
+  AmountType,
+} from '~/shared/ml-thirdparty-client/models/core'
 import { transactionRepository } from '~/repositories/transaction'
 import * as utils from '~/lib/utils'
-import { AmountType } from '~/shared/ml-thirdparty-client/models/core'
 
 // Mock firebase to prevent opening the connection
 jest.mock('~/lib/firebase')
@@ -42,20 +47,23 @@ jest.mock('~/lib/firebase')
 // Mock Mojaloop calls
 const mockGetParties = jest.fn()
 const mockPostTransactions = jest.fn()
-const mockHandleAuthorization = jest.fn()
+const mockPutAuthorizations = jest.fn()
 jest.mock('~/shared/ml-thirdparty-client', () => {
   return jest.fn().mockImplementation(() => {
     return {
       getParties: mockGetParties,
       postTransactions: mockPostTransactions,
-      handleAuthorization: mockHandleAuthorization
+      handleAuthorization: mockPutAuthorizations,
     }
   })
 })
 
 // Mock validator functions
 const mockIsValidPartyLookup = jest.spyOn(validator, 'isValidPartyLookup')
-const mockIsValidPayeeConfirmation = jest.spyOn(validator, 'isValidPayeeConfirmation')
+const mockIsValidPayeeConfirmation = jest.spyOn(
+  validator,
+  'isValidPayeeConfirmation'
+)
 const mockIsValidAuthorization = jest.spyOn(validator, 'isValidAuthorization')
 
 // Mock transaction repo functions
@@ -105,6 +113,11 @@ defineFeature(feature, (test): void => {
             transactionRequestId: 'request_id',
             sourceAccountId: 'a71ec534-ee48-4575-b6a9-ead2955b8069',
             consentId: 'b11ec534-ff48-4575-b6a9-ead2955b8069',
+            authentication: {
+              type: AuthenticationType.OTP,
+              value: '123456',
+            },
+            responseType: ResponseType.AUTHORIZED,
             id: '1234',
             amount: {
               amount: '12.00',
@@ -115,8 +128,8 @@ defineFeature(feature, (test): void => {
               partyIdInfo: {
                 partyIdType: PartyIdType.MSISDN,
                 partyIdentifier: 'party_id',
-              }
-            }
+              },
+            },
           }
         }
         onUpdate(server, transaction)
@@ -132,19 +145,21 @@ defineFeature(feature, (test): void => {
 
     whenTheTransactionUpdatedHasXStatus(when)
 
-    then(/^the server should (.*) on Mojaloop$/, (action: String): void => {
+    then(/^the server should (.*) on Mojaloop$/, (action: string): void => {
       switch (action) {
         case 'log an error': {
-          break;
+          break
         }
         case 'initiate party lookup': {
           expect(mockIsValidPartyLookup).toBeCalledTimes(1)
           expect(mockIsValidPartyLookup).toBeCalledWith(transaction)
           console.log((Client as jest.Mock).mock)
           expect(mockGetParties).toBeCalledTimes(1)
-          expect(mockGetParties).toBeCalledWith(transaction.payee?.partyIdInfo.partyIdType,
-            transaction.payee?.partyIdInfo.partyIdentifier)
-          break;
+          expect(mockGetParties).toBeCalledWith(
+            transaction.payee?.partyIdInfo.partyIdType,
+            transaction.payee?.partyIdInfo.partyIdentifier
+          )
+          break
         }
         case 'initiate payee confirmation': {
           expect(mockIsValidPayeeConfirmation).toBeCalledTimes(1)
@@ -165,13 +180,28 @@ defineFeature(feature, (test): void => {
             },
             expiration: utils.getTomorrowsDate().toISOString(),
           }
-          expect(mockPostTransactions).toBeCalledWith(expectedArg, 'PLACEHOLDER')
-          break;
+          expect(mockPostTransactions).toBeCalledWith(
+            expectedArg,
+            'PLACEHOLDER'
+          )
+          break
         }
         case 'initiate authorization': {
           expect(mockIsValidAuthorization).toBeCalledTimes(1)
           expect(mockIsValidAuthorization).toBeCalledWith(transaction)
-          break;
+          const expectedArgs = {
+            responseType: AuthenticationResponseType.ENTERED,
+            authenticationInfo: {
+              authentication: transaction.authentication!.type!,
+              authenticationValue: transaction.authentication!.value!,
+            },
+          }
+          expect(mockPutAuthorizations).toBeCalledTimes(1)
+          expect(mockPutAuthorizations).toBeCalledWith(
+            transaction.transactionRequestId!,
+            expectedArgs
+          )
+          break
         }
       }
     })
