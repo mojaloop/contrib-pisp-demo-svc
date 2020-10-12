@@ -1,15 +1,14 @@
 Feature: Firestore Consent Handlers
 
-Background:
+Scenario: Create Consent With Existing Status
   Given pisp-demo-server
+  When I create a Consent with an existing status
+  Then the server should do nothing
 
-Scenario: Create Consent
-  When I create a new Consent
+Scenario: Create New Consent
+  Given pisp-demo-server
+  When a new Consent is created
   Then the status should be updated and a request id should be assigned
-
-Scenario: Create Consent With Defined Status
-  When I create a Consent with a defined status
-  Then nothing should happen
 
 Scenario Outline: Update Consent With <Status> Status
   When the Consent that has been updated has <Status> status
