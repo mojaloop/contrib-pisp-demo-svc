@@ -24,7 +24,7 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import Client from '~/shared/ml-thirdparty-client'
 
 import {
   AmountType,
