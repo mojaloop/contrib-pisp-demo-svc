@@ -29,15 +29,9 @@ import Config from '~/lib/config'
 import PispDemoServer from '~/server'
 import { onCreate, onUpdate } from '~/server/handlers/firestore/consents'
 import * as validator from '~/server/handlers/firestore/consents.validator'
-import {
-  AuthenticationResponseType,
-  AuthenticationType,
-  Currency,
-  PartyIdType,
-  AmountType,
-} from '~/shared/ml-thirdparty-client/models/core'
+import { logger } from '~/shared/logger'
+import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import { consentRepository } from '~/repositories/consent'
-import { Party } from '~/shared/ml-thirdparty-client/models/core/parties'
 import { Consent, ConsentStatus } from '~/models/consent'
 
 // Mock firebase to prevent opening the connection
@@ -47,7 +41,7 @@ jest.mock('~/lib/firebase')
 const mockGetParties = jest.fn()
 const mockPutConsentRequests = jest.fn()
 const mockPostConsentRequests = jest.fn()
-const postGenerateChallengeForConsent = jest.fn()
+const mockPostGenerateChallengeForConsent = jest.fn()
 const mockPutConsentId = jest.fn()
 const mockPostRevokeConsent = jest.fn()
 jest.mock('~/shared/ml-thirdparty-client', () => {
@@ -56,7 +50,7 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
       getParties: mockGetParties,
       putConsentRequests: mockPutConsentRequests,
       postConsentRequests: mockPostConsentRequests,
-      postGenerateChallengeForConsent: postGenerateChallengeForConsent,
+      postGenerateChallengeForConsent: mockPostGenerateChallengeForConsent,
       putConsentId: mockPutConsentId,
       postRevokeConsent: mockPostRevokeConsent,
     }
@@ -64,18 +58,25 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
 })
 
 // Mock validator functions
+const mockIsValidPartyLookup = jest.spyOn(validator, 'isValidPartyLookup')
+const mockIsValidAuthentication = jest.spyOn(validator, 'isValidAuthentication')
+const mockIsValidConsentRequest = jest.spyOn(validator, 'isValidConsentRequest')
+const mockIsValidSignedChallenge = jest.spyOn(
+  validator,
+  'isValidSignedChallenge'
+)
+const mockIsValidGenerateChallengeOrRevokeConsent = jest.spyOn(
+  validator,
+  'isValidGenerateChallengeOrRevokeConsent'
+)
 
-// Mock transaction repo functions
+// Mock consent repo functions
 const mockUpdateConsentById = jest.spyOn(consentRepository, 'updateConsentById')
 mockUpdateConsentById.mockResolvedValue()
 
-// Mock consent repo functions
-const party: Party = {
-  partyIdInfo: {
-    partyIdType: PartyIdType.MSISDN,
-    partyIdentifier: 'party_id',
-  },
-}
+// Mock logger
+const mockLoggerError = jest.spyOn(logger, 'error')
+mockLoggerError.mockReturnValue()
 
 const featurePath = path.join(
   __dirname,
@@ -89,6 +90,7 @@ defineFeature(feature, (test): void => {
 
   afterEach(
     async (done): Promise<void> => {
+      jest.clearAllMocks()
       server.events.on('stop', done)
       await server.stop()
     }
@@ -116,8 +118,41 @@ defineFeature(feature, (test): void => {
         } else {
           consent = {
             id: '1234',
+            consentId: '1234',
+            consentRequestId: 'consent_request_id',
+            participantId: 'sfsfdf23',
+            initiatorId: 'pispa',
             status: status as ConsentStatus,
-            party: party,
+            party: {
+              partyIdInfo: {
+                partyIdType: PartyIdType.MSISDN,
+                partyIdentifier: 'party_id',
+                fspId: 'dfsp_a',
+              },
+            },
+            scopes: [
+              {
+                accountId: '3423',
+                actions: ['acc.getMoney', 'acc.sendMoney'],
+              },
+              {
+                accountId: '232345',
+                actions: ['acc.accessSaving'],
+              },
+            ],
+            authUri: 'auth_uri',
+            authChannels: ['OTP', 'WEB'],
+            authToken: '123456',
+            credential: {
+              id: '9876',
+              credentialType: 'FIDO',
+              status: 'PENDING',
+              challenge: {
+                payload: 'string_representing_challenge_payload',
+                signature: 'string_representing_challenge_signature',
+              },
+              payload: 'string_representing_credential_payload',
+            },
           }
         }
         await onUpdate(server, consent)
@@ -157,7 +192,7 @@ defineFeature(feature, (test): void => {
     )
 
     then(
-      'the server should assign a transactionRequestId and a new status in the transaction repository',
+      'the server should assign a consentRequestId and a new status in the consent repository',
       (): void => {
         expect(mockUpdateConsentById).toBeCalledTimes(1)
         expect(mockUpdateConsentById).toBeCalledWith(consent.id, {
@@ -175,24 +210,95 @@ defineFeature(feature, (test): void => {
     then(/^the server should (.*) on Mojaloop$/, (action: string): void => {
       switch (action) {
         case 'log an error': {
+          expect(mockLoggerError).toBeCalledTimes(1)
+          expect(mockLoggerError).toBeCalledWith(
+            'Invalid consent, undefined status.'
+          )
           break
         }
         case 'initiate party lookup': {
+          expect(mockIsValidPartyLookup).toBeCalledTimes(1)
+          expect(mockIsValidPartyLookup).toBeCalledWith(consent)
+          expect(mockGetParties).toBeCalledTimes(1)
+          expect(mockGetParties).toBeCalledWith(
+            consent.party!.partyIdInfo.partyIdType,
+            consent.party!.partyIdInfo.partyIdentifier
+          )
           break
         }
         case 'initiate consent request': {
+          expect(mockIsValidConsentRequest).toBeCalledTimes(1)
+          expect(mockIsValidConsentRequest).toBeCalledWith(consent)
+          expect(mockPostConsentRequests).toBeCalledTimes(1)
+          expect(mockPostConsentRequests).toBeCalledWith(
+            {
+              initiatorId: consent.initiatorId!,
+              scopes: consent.scopes!,
+              authChannels: consent.authChannels!,
+              id: consent.id,
+              callbackUri: expect.any(String),
+            },
+            consent.party!.partyIdInfo.fspId!
+          )
           break
         }
         case 'initiate authentication': {
+          expect(mockIsValidAuthentication).toBeCalledTimes(1)
+          expect(mockIsValidAuthentication).toBeCalledWith(consent)
+          expect(mockPutConsentRequests).toBeCalledTimes(1)
+          expect(mockPutConsentRequests).toBeCalledWith(
+            consent.id,
+            {
+              initiatorId: consent.initiatorId!,
+              authChannels: consent.authChannels!,
+              scopes: consent.scopes!,
+              authUri: consent.authUri!,
+              callbackUri: expect.any(String),
+              authToken: consent.authToken!,
+            },
+            consent.party!.partyIdInfo.fspId!
+          )
           break
         }
         case 'initiate challenge generation': {
+          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledTimes(1)
+          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledWith(
+            consent
+          )
+          expect(mockPostGenerateChallengeForConsent).toBeCalledTimes(1)
+          expect(mockPostGenerateChallengeForConsent).toBeCalledWith(
+            consent.consentId!,
+            consent.party!.partyIdInfo.fspId!
+          )
           break
         }
         case 'handle signed challenge': {
+          expect(mockIsValidSignedChallenge).toBeCalledTimes(1)
+          expect(mockIsValidSignedChallenge).toBeCalledWith(consent)
+          expect(mockPutConsentId).toBeCalledTimes(1)
+          expect(mockPutConsentId).toBeCalledWith(
+            consent.consentId!,
+            {
+              requestId: consent.id,
+              initiatorId: consent.initiatorId!,
+              participantId: consent.participantId!,
+              scopes: consent.scopes!,
+              credential: consent.credential!,
+            },
+            consent.party!.partyIdInfo.fspId!
+          )
           break
         }
         case 'initiate revocation for consent': {
+          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledTimes(1)
+          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledWith(
+            consent
+          )
+          expect(mockPostRevokeConsent).toBeCalledTimes(1)
+          expect(mockPostRevokeConsent).toBeCalledWith(
+            consent.consentId!,
+            consent.party!.partyIdInfo.fspId!
+          )
           break
         }
       }

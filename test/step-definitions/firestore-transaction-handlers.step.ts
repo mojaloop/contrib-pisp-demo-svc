@@ -105,6 +105,7 @@ defineFeature(feature, (test): void => {
 
   afterEach(
     async (done): Promise<void> => {
+      jest.clearAllMocks()
       server.events.on('stop', done)
       await server.stop()
     }

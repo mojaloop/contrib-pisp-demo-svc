@@ -8,9 +8,10 @@ Scenario: Create Consent With Existing Status
 Scenario: Create New Consent
   Given pisp-demo-server
   When a new Consent is created
-  Then the status should be updated and a request id should be assigned
+  Then the server should assign a consentRequestId and a new status in the consent repository
 
 Scenario Outline: Update Consent With <Status> Status
+  Given pisp-demo-server
   When the Consent that has been updated has <Status> status
   Then the server should <Action> on Mojaloop
   
