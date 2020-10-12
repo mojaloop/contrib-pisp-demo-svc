@@ -27,10 +27,9 @@ import path from 'path'
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber'
 import Config from '~/lib/config'
 import PispDemoServer from '~/server'
-import { onUpdate } from '~/server/handlers/firestore/transactions'
+import { onCreate, onUpdate } from '~/server/handlers/firestore/transactions'
 import * as validator from '~/server/handlers/firestore/transactions.validator'
 import { Transaction, Status, ResponseType } from '~/models/transaction'
-import Client from '~/shared/ml-thirdparty-client'
 import {
   AuthenticationResponseType,
   AuthenticationType,
@@ -56,7 +55,7 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
     return {
       getParties: mockGetParties,
       postTransactions: mockPostTransactions,
-      handleAuthorization: mockPutAuthorizations,
+      putAuthorizations: mockPutAuthorizations,
     }
   })
 })
@@ -149,6 +148,50 @@ defineFeature(feature, (test): void => {
       }
     )
   }
+  test('Create Transaction With Existing Status', ({
+    given,
+    when,
+    then,
+  }): void => {
+    givenThePispDemoServer(given)
+
+    when(
+      'the Transaction that has been created has an existing status',
+      (): void => {
+        transaction = {
+          id: '1234',
+          status: Status.PENDING_PARTY_LOOKUP,
+        }
+        onCreate(server, transaction)
+      }
+    )
+
+    then('the server should do nothing', (): void => {
+      expect(mockUpdateById).not.toBeCalled()
+    })
+  })
+
+  test('Create New Transaction', ({ given, when, then }): void => {
+    givenThePispDemoServer(given)
+
+    when('a new Transaction is created', (): void => {
+      transaction = {
+        id: '1234',
+      }
+      onCreate(server, transaction)
+    })
+
+    then(
+      'the server should assign a transactionRequestId and a new status in the transaction repository',
+      (): void => {
+        expect(mockUpdateById).toBeCalledTimes(1)
+        expect(mockUpdateById).toBeCalledWith(transaction.id, {
+          transactionRequestId: expect.any(String),
+          status: Status.PENDING_PARTY_LOOKUP,
+        })
+      }
+    )
+  })
   test('Update Transaction With <Status> Status', ({
     given,
     when,
@@ -166,7 +209,6 @@ defineFeature(feature, (test): void => {
         case 'initiate party lookup': {
           expect(mockIsValidPartyLookup).toBeCalledTimes(1)
           expect(mockIsValidPartyLookup).toBeCalledWith(transaction)
-          console.log((Client as jest.Mock).mock)
           expect(mockGetParties).toBeCalledTimes(1)
           expect(mockGetParties).toBeCalledWith(
             transaction.payee?.partyIdInfo.partyIdType,
