@@ -69,7 +69,7 @@ defineFeature(feature, (test): void => {
     }
   )
 
-  test('<OperationId> endpoint returns <StatusCode>', ({
+  test('Endpoint for <OperationId> returns 200 or 202', ({
     given,
     when,
     then,
