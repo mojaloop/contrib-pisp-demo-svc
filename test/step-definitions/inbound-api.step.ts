@@ -63,8 +63,7 @@ defineFeature(feature, (test): void => {
   let response: ServerInjectResponse
 
   afterEach(
-    async (done): Promise<void> => {
-      server.events.on('stop', done)
+    async (): Promise<void> => {
       await server.stop()
     }
   )
@@ -76,9 +75,8 @@ defineFeature(feature, (test): void => {
   }): void => {
     given(
       'pisp-demo-server',
-      async (): Promise<Server> => {
+      async (): Promise<void> => {
         server = await PispDemoServer.run(Config)
-        return server
       }
     )
 

@@ -89,9 +89,8 @@ defineFeature(feature, (test): void => {
   let consent: Consent
 
   afterEach(
-    async (done): Promise<void> => {
+    async (): Promise<void> => {
       jest.clearAllMocks()
-      server.events.on('stop', done)
       await server.stop()
     }
   )
@@ -100,9 +99,8 @@ defineFeature(feature, (test): void => {
   const givenThePispDemoServer = (given: DefineStepFunction) => {
     given(
       'pisp-demo-server',
-      async (): Promise<Server> => {
+      async (): Promise<void> => {
         server = await PispDemoServer.run(Config)
-        return server
       }
     )
   }
