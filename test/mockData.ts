@@ -24,6 +24,7 @@
  ******/
 // TODO: Interface wrongly defines request
 // accountId in scopes does not have to be CorrelationId
+// Will be fixed in #1768
 const exampleScopeArray = [
   {
     accountId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
@@ -128,6 +129,7 @@ export const putTransfersByIdBody = {
 
 // TODO: Regex pattern for Amount type
 // is wrong - cannot match 1.00 etc.
+// Will be fixed in #1769
 export const authorizationsBody = {
   amount: {
     currency: 'USD',
