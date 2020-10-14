@@ -374,8 +374,8 @@ paths:
     put:
       tags:
         - thirdpartyRequests
-      summary: '[Mojaloop Callback] Ask user to provide authorization'
-      description: Handle callback from Mojaloop to give authorization
+      summary: PUT ThirdpartyRequestsTransactions
+      description: Callback from the DFSP on the progress of a given thirdparty transaction request
       operationId: putThirdpartyRequestTransactions
       parameters:
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'

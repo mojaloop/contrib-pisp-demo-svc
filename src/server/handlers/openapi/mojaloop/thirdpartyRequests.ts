@@ -20,35 +20,37 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
- - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-import * as Health from '../health'
+import { Request, ResponseToolkit } from '@hapi/hapi'
+import { Handler, Context } from 'openapi-backend'
 
-import * as MojaloopAuthorizations from './authorizations'
-import * as MojaloopConsents from './consents'
-import * as MojaloopConsentsById from './consents/{ID}'
-import * as MojaloopConsentRequestsById from './consentRequests/{ID}'
-import * as MojaloopParticipants from './participants'
-import * as MojaloopParticipantsError from './participants/error'
-import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
-import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
-import * as MojaloopTransfersById from './transfers/{ID}'
-import * as thirdpartyRequests from './thirdpartyRequests'
+// import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-export const apiHandlers = {
-  getHealth: Health.get,
+// import { transactionRepository } from '~/repositories/transaction'
+// import { Status } from '~/models/transaction'
 
-  postAuthorizations: MojaloopAuthorizations.post,
-  postConsents: MojaloopConsents.post,
-  putConsentsById: MojaloopConsentsById.put,
-  patchConsentsById: MojaloopConsentsById.patch,
-  putConsentRequestsById: MojaloopConsentRequestsById.put,
-  putParticipants: MojaloopParticipants.put,
-  putParticipantsError: MojaloopParticipantsError.put,
-  putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
-  putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putTransfersById: MojaloopTransfersById.put,
-  putThirdpartyRequestTransactions: thirdpartyRequests.put,
+
+export const put: Handler = async (_context: Context, _: Request, h: ResponseToolkit) => {
+  // const body = context.request.body as AuthorizationsPostRequest
+
+  console.log("putThirdpartyRequestTransactions inbound")
+  // Not await-ing promise to resolve - code is executed asynchronously
+  // transactionRepository.update(
+  //   {
+  //     transactionRequestId: body.transactionRequestId,
+  //     status: Status.PENDING_PAYEE_CONFIRMATION,
+  //   },
+  //   {
+  //     authentication: {
+  //       type: body.authenticationType,
+  //     },
+  //     transactionId: body.transactionId,
+  //     quote: body.quote,
+  //     status: Status.AUTHORIZATION_REQUIRED,
+  //   }
+  // )
+
+  return h.response().code(200)
 }
