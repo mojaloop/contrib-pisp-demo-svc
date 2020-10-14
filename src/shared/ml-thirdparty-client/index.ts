@@ -24,6 +24,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
@@ -33,16 +35,13 @@ import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-// import Logger from '@mojaloop/central-services-logger'
-import { logger as Logger } from '~/shared/logger'
-
 import SDKStandardComponents, {
-  // TODO: Once implemented in sdk-standard-components, use this logger
-  // Logger,
+  Logger,
   ThirdpartyRequests,
   MojaloopRequests,
   PutThirdpartyRequestsTransactionsAuthorizationsRequest,
 } from '@mojaloop/sdk-standard-components'
+import { NotImplementedError } from '../errors'
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -112,6 +111,7 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
+<<<<<<< HEAD
     type: PartyIdType,
     id: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
@@ -119,6 +119,16 @@ export class Client {
     // @ts-ignore
     return this.mojaloopRequests.getParties(type, id)
 
+=======
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    if (idSubValue) {
+      return this.mojaloopRequests.getParties(idType, idValue, idSubValue)
+    }
+    return this.mojaloopRequests.getParties(idType, idValue)
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   }
 
   /**
@@ -150,8 +160,16 @@ export class Client {
     requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+<<<<<<< HEAD
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
+=======
+    // TODO: Replace placeholder with commented implementation
+    //       once implemented in sdk-standard-components
+
+    // Placeholder
+    throw new NotImplementedError()
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
 
     return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
       requestBody,
@@ -168,7 +186,7 @@ export class Client {
   > {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 
   /**
@@ -210,14 +228,16 @@ export class Client {
    * Performs a request to generate a challenge for FIDO registration
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 
   /**
@@ -243,13 +263,15 @@ export class Client {
    * Performs a request to revoke the Consent object and unlink
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
-    throw new Error('Not Implemented Yet')
+    throw new NotImplementedError()
   }
 }

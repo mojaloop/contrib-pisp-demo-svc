@@ -23,7 +23,8 @@
  --------------
  ******/
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
@@ -39,7 +40,7 @@ export interface ITransactionRepository {
    * @param id    Id for the transaction document that needs to be updated.
    * @param data  Document fields that are about to be updated.
    */
-  updateById(id: string, data: Record<string, any>): Promise<void>
+  updateById(id: string, data: Record<string, unknown>): Promise<void>
 
   /**
    * Updates one or more transaction documents based on the given conditions.
@@ -48,12 +49,13 @@ export interface ITransactionRepository {
    * @param data        Document fields that are about to be updated.
    */
   update(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void>
 }
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
+<<<<<<< HEAD
   // TD: Lewis hacky to get some tests working
   async insert(data: Record<string, any>): Promise<string> {
     const ref = await firebase.firestore().collection('transactions').doc()
@@ -71,16 +73,22 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
       merge: true
     }
     await firebase.firestore().collection('transactions').doc(id).set(data, options)
+=======
+  async updateById(id: string, data: Record<string, unknown>): Promise<void> {
+    await firebase.firestore().collection('transactions').doc(id).update(data)
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   }
 
   async update(
-    conditions: Record<string, any>,
-    data: Record<string, any>
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
   ): Promise<void> {
-    let firestoreQuery: FirebaseFirestore.Query = firebase
-      .firestore()
-      .collection('transactions')
+    try {
+      let firestoreQuery: FirebaseFirestore.Query = firebase
+        .firestore()
+        .collection('transactions')
 
+<<<<<<< HEAD
     // Chain all of the given conditions to the query
     for (const key in conditions) {
       firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
@@ -100,23 +108,35 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
         // Firebase will also execute the updates atomically according to the
         // API specification.
         const batch = firebase.firestore().batch()
+=======
+      // Chain all of the given conditions to the query
+      for (const key in conditions) {
+        firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
+      }
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
 
-        // Iterate through all matching documents add them to the processing batch.
-        response.docs.forEach((doc) => {
-          batch.update(
-            // Put a reference to the document.
-            firebase.firestore().collection('transactions').doc(doc.id),
-            // Specify the updated fields and their new values.
-            data
-          )
-        })
+      // Find and update all matching documents in Firebase that match the given conditions.
+      const response = await firestoreQuery.get()
+      // Create a batch to perform all of the updates using a single request.
+      // Firebase will also execute the updates atomically according to the
+      // API specification.
+      const batch = firebase.firestore().batch()
 
-        // Commit the updates.
-        return batch.commit()
+      // Iterate through all matching documents add them to the processing batch.
+      response.docs.forEach((doc) => {
+        batch.update(
+          // Put a reference to the document.
+          firebase.firestore().collection('transactions').doc(doc.id),
+          // Specify the updated fields and their new values.
+          data
+        )
       })
-      .catch((err) => {
-        logger.error(err)
-      })
+
+      // Commit the updates.
+      await batch.commit()
+    } catch (error) {
+      logger.error(error)
+    }
   }
 }
 

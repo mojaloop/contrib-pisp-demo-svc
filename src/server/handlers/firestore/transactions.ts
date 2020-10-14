@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /*****
  License
  --------------
@@ -20,11 +21,18 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: Testing will covered in separate ticket
 
+<<<<<<< HEAD
 // import * as uuid from 'uuid'
 import { Server } from '@hapi/hapi'
+=======
+import * as uuid from 'uuid'
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
 
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
@@ -40,13 +48,14 @@ import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
 import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
-// TODO: Replace once decided how to implement
+// TODO: Replace once design decision made on how we should be obtaining this
 const destParticipantId = 'PLACEHOLDER'
 
-async function handleNewTransaction(_: Server, transaction: Transaction) {
+async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
   // of the onUpdate function.
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.updateById(transaction.id, {
     // TD - LD Hack - set this to match what the testing toolkit will return
     // TODO: make configurable
@@ -56,9 +65,13 @@ async function handleNewTransaction(_: Server, transaction: Transaction) {
   })
 }
 
+<<<<<<< HEAD
 async function handlePartyLookup(server: Server, transaction: Transaction) {
   console.log('handling party lookup', transaction)
 
+=======
+async function handlePartyLookup(server: StateServer, transaction: Transaction) {
+>>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(transaction)) {
@@ -78,7 +91,7 @@ async function handlePartyLookup(server: Server, transaction: Transaction) {
 }
 
 async function handlePartyConfirmation(
-  server: Server,
+  server: StateServer,
   transaction: Transaction
 ) {
   // Upon receiving a callback from Mojaloop that contains information about
@@ -95,7 +108,7 @@ async function handlePartyConfirmation(
       // The optional values are guaranteed to exist by the validator.
       // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      const consent = await consentRepository.getByConsentId(
+      const consent = await consentRepository.getConsentById(
         transaction.consentId!
       )
 
@@ -136,7 +149,7 @@ async function handlePartyConfirmation(
 //   }
 // }
 
-async function handleAuthorization(server: Server, transaction: Transaction) {
+async function handleAuthorization(server: StateServer, transaction: Transaction) {
   if (validator.isValidAuthorization(transaction)) {
     // If the update contains all the necessary fields, process document
     // to the next step by sending an authorization to Mojaloop.
@@ -162,7 +175,7 @@ async function handleAuthorization(server: Server, transaction: Transaction) {
 }
 
 export const onCreate: TransactionHandler = async (
-  server: Server,
+  server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
   console.log('onCreateCalled', transaction)
@@ -178,7 +191,7 @@ export const onCreate: TransactionHandler = async (
 }
 
 export const onUpdate: TransactionHandler = async (
-  server: Server,
+  server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
   console.log('onUpdateCalled', transaction)

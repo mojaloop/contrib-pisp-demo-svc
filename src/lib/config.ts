@@ -108,6 +108,13 @@ const config = convict({
       default: 'pisp',
       env: 'MOJALOOP_PARTICIPANT_ID',
     },
+    // TODO: Replace placeholder
+    pispCallbackUri: {
+      doc: 'The callback URI sent by PISP deeplinked with the app',
+      format: String,
+      default: 'PLACEHOLDER',
+      env: 'MOJALOOP_CALLBACK_URI',
+    },
     endpoints: {
       default: {
         doc: 'Default endpoint to communicate with Mojaloop',

@@ -20,31 +20,29 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
+
+import { participantRepository } from '~/repositories/participants'
 import { Context } from 'openapi-backend'
 import { Enum } from '@mojaloop/central-services-shared'
 
-import { AuthenticationResponseType, AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
-import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
+import * as ParticipantHandlers from '~/server/handlers/openapi/mojaloop/participants'
 
-import * as TransfersById from '~/server/handlers/openapi/mojaloop/transfers/{ID}'
-import { transactionRepository } from '~/repositories/transaction'
-import { Status } from '~/models/transaction'
 import config from '~/lib/config'
+import { ParticipantFactory } from '~/shared/ml-thirdparty-simulator/factories/participant'
 
 // Mock the factories to consistently return the hardcoded values.
-jest.mock('~/shared/ml-thirdparty-simulator/factories/transfer')
+jest.mock('~/shared/ml-thirdparty-simulator/factories/participant')
 
 // Mock logger to prevent handlers from logging incoming request
 jest.mock('~/shared/logger', () => ({
   logger: {
-    logRequest: jest.fn().mockImplementation()
-  }
+    logRequest: jest.fn().mockImplementation(),
+  },
 }))
 
 // Mock firebase to prevent transaction repository from opening the connection.
@@ -65,52 +63,39 @@ const mockResponseToolkit: ResponseToolkit = {
   },
 }
 
-describe('/transfers/{ID}', () => {
+describe('/parties/{Type}/{ID}', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
 
   describe('PUT operation', () => {
-    const authorization: AuthorizationsPutIdRequest = {
-      authenticationInfo: {
-        authentication: AuthenticationType.U2F,
-        authenticationValue: '12345',
-      },
-      responseType: AuthenticationResponseType.ENTERED
-    }
+    const requestBody = { participants: ParticipantFactory.getParticipants() }
 
-    let requestBody = TransferFactory.createTransferIdPutRequest('111', authorization, '222')
-
-    let context = {
+    const context = ({
       request: {
         headers: {
           host: 'mojaloop.' + config.get('hostname'),
           'content-type': 'application/json',
           'content-length': JSON.stringify(requestBody).length,
         },
-        params: {
-          ID: '222',
-        },
+        params: {},
         body: requestBody,
-      }
-    } as unknown as Context
+      },
+    } as unknown) as Context
 
-    let transactionRepositorySpy = jest.spyOn(transactionRepository, 'update').mockImplementation()
+    const participantRepositorySpy = jest
+      .spyOn(participantRepository, 'replace')
+      .mockImplementation()
 
     it('Should return 200 and update data in Firebase', async () => {
-      let response = await TransfersById.put(context, mockRequest, mockResponseToolkit)
-
-      expect(transactionRepositorySpy).toBeCalledWith(
-        {
-          transactionId: requestBody.transactionId,
-          status: Status.AUTHORIZATION_REQUIRED,
-        },
-        {
-          completedTimestamp: requestBody.completedTimestamp,
-          status: Status.SUCCESS,
-        }
+      const response = await ParticipantHandlers.put(
+        context,
+        mockRequest,
+        mockResponseToolkit
       )
+
+      expect(participantRepositorySpy).toBeCalledWith(requestBody.participants)
 
       expect(response.statusCode).toBe(Enum.Http.ReturnCodes.OK.CODE)
     })

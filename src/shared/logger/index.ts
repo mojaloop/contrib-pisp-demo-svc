@@ -40,8 +40,8 @@ export interface ResponseLogged extends ResponseObject {
 }
 
 export interface BaseLogger {
-  info: (message: string, ...meta: any[]) => any
-  error: (messsage: string, ...meta: any[]) => any
+  info: (message: string, ...meta: unknown[]) => unknown
+  error: (messsage: string, ...meta: unknown[]) => unknown
 }
 
 export class Logger {
@@ -79,11 +79,11 @@ export class Logger {
     }
   }
 
-  info(message: string, ...meta: any[]) {
+  info(message: string, ...meta: unknown[]) {
     this._logger.info(message, ...meta)
   }
 
-  error(message: string, ...meta: any[]) {
+  error(message: string, ...meta: unknown[]) {
     this._logger.error(message, ...meta)
   }
 }

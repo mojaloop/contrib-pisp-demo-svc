@@ -20,14 +20,23 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
+import { participantRepository } from '~/repositories/participants'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
+export const put: Handler = async (
+  context: Context,
+  _request: Request,
+  h: ResponseToolkit
+) => {
+  const participants = context.request.body.participants
+
+  // Replace existing participants list with received list
+  // Not await-ing promise to resolve - code is executed asynchronously
+  participantRepository.replace(participants)
   return h.response().code(200)
 }
