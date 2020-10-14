@@ -24,6 +24,8 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
@@ -34,12 +36,8 @@ import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-// import Logger from '@mojaloop/central-services-logger'
-import { logger as Logger } from '~/shared/logger'
-
 import SDKStandardComponents, {
-  // TODO: Once implemented in sdk-standard-components, use this logger
-  // Logger,
+  Logger,
   ThirdpartyRequests,
   MojaloopRequests,
 } from '@mojaloop/sdk-standard-components'
@@ -112,12 +110,14 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
-    _type: PartyIdType,
-    _id: string
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new NotImplementedError()
+    if (idSubValue) {
+      return this.mojaloopRequests.getParties(idType, idValue, idSubValue)
+    }
+    return this.mojaloopRequests.getParties(idType, idValue)
   }
 
   /**
@@ -149,8 +149,10 @@ export class Client {
     _requestBody: AuthorizationsPutIdRequest,
     _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
+    // TODO: Replace placeholder with commented implementation
+    //       once implemented in sdk-standard-components
+
+    // Placeholder
     throw new NotImplementedError()
 
     // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
@@ -210,10 +212,12 @@ export class Client {
    * Performs a request to generate a challenge for FIDO registration
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
@@ -243,10 +247,12 @@ export class Client {
    * Performs a request to revoke the Consent object and unlink
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below

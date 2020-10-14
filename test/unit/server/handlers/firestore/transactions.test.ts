@@ -20,10 +20,9 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
-
-import { Server } from '@hapi/hapi'
 
 import * as utils from '~/lib/utils'
 import config from '~/lib/config'
@@ -111,7 +110,7 @@ function createStubConsentData(): Consent {
 }
 
 describe('Handlers for transaction documents in Firebase', () => {
-  let server: Server
+  let server: StateServer
 
   beforeAll(async () => {
     server = await createServer(config)
@@ -186,7 +185,7 @@ describe('Handlers for transaction documents in Firebase', () => {
     const consentData = createStubConsentData()
 
     const consentRepositorySpy = jest
-      .spyOn(consentRepository, 'getByConsentId')
+      .spyOn(consentRepository, 'getConsentById')
       .mockImplementation(() => new Promise((resolve) => resolve(consentData)))
 
     // Mock the expected transaction request being sent.

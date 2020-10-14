@@ -20,31 +20,31 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
+
+import { consentRepository } from '~/repositories/consent'
 import { Context } from 'openapi-backend'
 import { Enum } from '@mojaloop/central-services-shared'
 
-import { AuthenticationResponseType, AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
-import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
+import * as ConsentHandlers from '~/server/handlers/openapi/mojaloop/consents'
 
-import * as TransfersById from '~/server/handlers/openapi/mojaloop/transfers/{ID}'
-import { transactionRepository } from '~/repositories/transaction'
-import { Status } from '~/models/transaction'
 import config from '~/lib/config'
+import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { ConsentStatus } from '~/models/consent'
 
 // Mock the factories to consistently return the hardcoded values.
-jest.mock('~/shared/ml-thirdparty-simulator/factories/transfer')
+jest.mock('~/shared/ml-thirdparty-simulator/factories/consents')
 
 // Mock logger to prevent handlers from logging incoming request
 jest.mock('~/shared/logger', () => ({
   logger: {
-    logRequest: jest.fn().mockImplementation()
-  }
+    logRequest: jest.fn().mockImplementation(),
+  },
 }))
 
 // Mock firebase to prevent transaction repository from opening the connection.
@@ -65,54 +65,71 @@ const mockResponseToolkit: ResponseToolkit = {
   },
 }
 
-describe('/transfers/{ID}', () => {
+const consentRequestId = '111'
+
+const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
+  initiatorId: 'pispA',
+  authChannels: ['WEB', 'OTP'],
+  scopes: [
+    {
+      accountId: 'as2342',
+      actions: ['account.getAccess', 'account.transferMoney'],
+    },
+    {
+      accountId: 'as22',
+      actions: ['account.getAccess'],
+    },
+  ],
+  callbackUri: config.get('mojaloop').pispCallbackUri,
+  authUri: 'https://dfspAuth.com',
+  authToken: 'secret-token',
+}
+
+describe('/consents', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
 
-  describe('PUT operation', () => {
-    const authorization: AuthorizationsPutIdRequest = {
-      authenticationInfo: {
-        authentication: AuthenticationType.U2F,
-        authenticationValue: '12345',
-      },
-      responseType: AuthenticationResponseType.ENTERED
-    }
+  describe('POST operation', () => {
+    const requestBody = ConsentFactory.createPostConsentRequest(
+      consentRequestId,
+      putConsentRequestRequest
+    )
 
-    let requestBody = TransferFactory.createTransferIdPutRequest('111', authorization, '222')
-
-    let context = {
+    const context = ({
       request: {
         headers: {
           host: 'mojaloop.' + config.get('hostname'),
           'content-type': 'application/json',
           'content-length': JSON.stringify(requestBody).length,
         },
-        params: {
-          ID: '222',
-        },
+        params: {},
         body: requestBody,
-      }
-    } as unknown as Context
+      },
+    } as unknown) as Context
 
-    let transactionRepositorySpy = jest.spyOn(transactionRepository, 'update').mockImplementation()
+    const consentRepositorySpy = jest
+      .spyOn(consentRepository, 'updateConsentById')
+      .mockImplementation()
 
     it('Should return 200 and update data in Firebase', async () => {
-      let response = await TransfersById.put(context, mockRequest, mockResponseToolkit)
-
-      expect(transactionRepositorySpy).toBeCalledWith(
-        {
-          transactionId: requestBody.transactionId,
-          status: Status.AUTHORIZATION_REQUIRED,
-        },
-        {
-          completedTimestamp: requestBody.completedTimestamp,
-          status: Status.SUCCESS,
-        }
+      const response = await ConsentHandlers.post(
+        context,
+        mockRequest,
+        mockResponseToolkit
       )
 
-      expect(response.statusCode).toBe(Enum.Http.ReturnCodes.OK.CODE)
+      const { id, initiatorId, participantId, scopes } = context.request.body
+
+      expect(consentRepositorySpy).toBeCalledWith(id, {
+        initiatorId,
+        participantId,
+        scopes,
+        status: ConsentStatus.CONSENT_GRANTED,
+      })
+
+      expect(response.statusCode).toBe(Enum.Http.ReturnCodes.ACCEPTED.CODE)
     })
   })
 })

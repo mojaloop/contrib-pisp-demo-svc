@@ -23,12 +23,11 @@
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
 import { ServiceConfig } from '../lib/config'
 import create from './create'
 import start from './start'
 
-export default async function run(config: ServiceConfig): Promise<Server> {
+export default async function run(config: ServiceConfig): Promise<StateServer> {
   const server = await create(config)
-  return start(server)
+  return start(server) as Promise<StateServer>
 }

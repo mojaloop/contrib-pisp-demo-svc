@@ -32,8 +32,9 @@ import { transactionRepository } from '~/repositories/transaction'
 import { Status } from '~/models/transaction'
 
 export const post: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  let body = context.request.body as AuthorizationsPostRequest
+  const body = context.request.body as AuthorizationsPostRequest
 
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.update(
     {
       transactionRequestId: body.transactionRequestId,

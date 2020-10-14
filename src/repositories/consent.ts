@@ -19,11 +19,12 @@
  - Name Surname <name.surname@mojaloop.io>
 
  * Google
- - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
 import firebase from '~/lib/firebase'
 import { Consent } from '~/models/consent'
@@ -31,15 +32,34 @@ import { logger } from '~/shared/logger'
 
 export interface IConsentRepository {
   /**
+   * Updates a consent document based on a unique identifier.
+   *
+   * @param id    Id for the consent document that needs to be updated.
+   * @param data  Document fields that are about to be updated.
+   */
+  updateConsentById(id: string, data: Record<string, unknown>): Promise<void>
+
+  /**
    * Retrieves a consent document based on its consent ID.
    *
    * @param id    Consent ID of the document that needs to be retrieved.
    */
-  getByConsentId(id: string): Promise<Consent>
+  getConsentById(id: string): Promise<Consent>
+
+  /**
+   * Updates one or more consent documents based on the given conditions.
+   *
+   * @param conditions  Conditions for the documents that need to be updated.
+   * @param data        Document fields that are about to be updated.
+   */
+  updateConsent(
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
+  ): Promise<void>
 }
 
 export class FirebaseConsentRepository implements IConsentRepository {
-  async getByConsentId(id: string): Promise<Consent> {
+  async getConsentById(id: string): Promise<Consent> {
     return new Promise((resolve, reject) => {
       firebase
         .firestore()
@@ -57,6 +77,51 @@ export class FirebaseConsentRepository implements IConsentRepository {
           logger.error(err)
         })
     })
+  }
+
+  async updateConsentById(
+    id: string,
+    data: Record<string, unknown>
+  ): Promise<void> {
+    await firebase.firestore().collection('consents').doc(id).update(data)
+  }
+
+  async updateConsent(
+    conditions: Record<string, unknown>,
+    data: Record<string, unknown>
+  ): Promise<void> {
+    try {
+      let firestoreQuery: FirebaseFirestore.Query = firebase
+        .firestore()
+        .collection('consents')
+
+      // Chain all of the given conditions to the query
+      for (const key in conditions) {
+        firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
+      }
+
+      // Find and update all matching documents in Firebase that match the given conditions.
+      const response = await firestoreQuery.get()
+      // Create a batch to perform all of the updates using a single request.
+      // Firebase will also execute the updates atomically according to the
+      // API specification.
+      const batch = firebase.firestore().batch()
+
+      // Iterate through all matching documents add them to the processing batch.
+      response.docs.forEach((doc) => {
+        batch.update(
+          // Put a reference to the document.
+          firebase.firestore().collection('consents').doc(doc.id),
+          // Specify the updated fields and their new values.
+          data
+        )
+      })
+
+      // Commit the updates.
+      await batch.commit()
+    } catch (error) {
+      logger.error(error)
+    }
   }
 }
 

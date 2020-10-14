@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -34,18 +35,18 @@ export { Options }
 
 /**
  * A plugin that enables PISP demo server to pretend to communicate with Mojaloop.
- * In fact, the server only talks with a simulator that generates a random data 
+ * In fact, the server only talks with a simulator that generates a random data
  * and inject callbacks to the internal routes.
- * 
- * The 'MojaloopClient' plugin must be registered before trying to 
- * register this function as it will try to intercept the 
+ *
+ * The 'MojaloopClient' plugin must be registered before trying to
+ * register this function as it will try to intercept the
  */
 export const MojaloopSimulator: Plugin<Options> = {
   name: 'MojaloopSimulator',
   version: '1.0.0',
   register: (server: Server, options: Options) => {
-    server.app.mojaloopClient.simulator = new Simulator(
-      server,
+    (server as StateServer).app.mojaloopClient.simulator = new Simulator(
+      server as StateServer,
       { ...options },
     )
   }

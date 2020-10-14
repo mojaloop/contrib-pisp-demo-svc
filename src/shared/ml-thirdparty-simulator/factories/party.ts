@@ -23,6 +23,9 @@
  --------------
  ******/
 
+/* istanbul ignore file */
+// TODO: Confirm if testing necessary for factory methods
+
 import * as faker from 'faker'
 import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'

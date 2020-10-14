@@ -23,8 +23,10 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
+// TODO: BDD Testing will covered in separate ticket #1702
 
-import { Server, ServerInjectResponse } from '@hapi/hapi'
+import { ServerInjectResponse } from '@hapi/hapi'
 import * as faker from 'faker'
 
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
@@ -50,7 +52,7 @@ export class Simulator {
   /**
    * A server object to be used to inject the fake Mojaloop callbacks.
    */
-  private server: Server
+  private server: StateServer
 
   /**
    * An object that keeps the configuration for the simulator.
@@ -63,7 +65,7 @@ export class Simulator {
    * @param server a server object to be used to inject the fake Mojaloop callbacks.
    * @param options a configuration object for the simulator.
    */
-  constructor(server: Server, options?: Options) {
+  constructor(server: StateServer, options?: Options) {
     this.server = server
     this.options = options ?? {}
 
