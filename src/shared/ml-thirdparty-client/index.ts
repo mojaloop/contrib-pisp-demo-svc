@@ -86,7 +86,7 @@ export class Client {
 
     const configRequest = {
       dfspId: this.options.participantId,
-      logger: Logger,
+      logger: new Logger.Logger(),
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {

@@ -85,7 +85,6 @@ Go to the PISP demo app and try to send money to a payee. You should see that th
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
-<<<<<<< HEAD
 
 # API Examples:
 
@@ -118,7 +117,6 @@ export TRANSACTION_ID=yIf88LByjKGtNraZADOq
 # Confirm payee, and set amount
 ./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_02_payment_confirmation.test.ts
 ```
-=======
 # Mock Data for Account Linking
 
 ## Mocking Available Financial Service Providers 
@@ -167,4 +165,3 @@ The overall Consent object should look like this:
 }
 ```
 
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
