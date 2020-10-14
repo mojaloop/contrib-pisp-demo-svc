@@ -14,6 +14,7 @@
     "build:openapi": "npm run build:openapi:app && npm run build:openapi:mojaloop",
     "build:openapi:app": "swagger-cli bundle -t yaml -o dist/openapi/app.yaml ./src/interface/app.yaml && swagger-cli validate dist/openapi/app.yaml",
     "build:openapi:mojaloop": "swagger-cli bundle -t yaml -o dist/openapi/mojaloop.yaml ./src/interface/mojaloop.yaml && swagger-cli validate dist/openapi/mojaloop.yaml",
+    "dev": "ts-node-dev --no-notify -r tsconfig-paths/register -P ./tsconfig.json ./src/cli.ts",
     "docker:build": "docker build -t pisp-demo-server:local -f ./Dockerfile ./",
     "docker:run": "docker run -p 8080:8080 pisp-demo-server:local",
     "lint": "eslint ./src/**/*.ts *.js",
@@ -96,6 +97,7 @@
     "swagger-cli": "^4.0.3",
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
+    "ts-node-dev": "^1.0.0-pre.62",
     "tsconfig-paths": "^3.9.0",
     "typescript": "^3.9.6"
   },
@@ -111,7 +113,7 @@
     "convict": "^6.0.0",
     "dotenv": "^8.2.0",
     "faker": "^4.1.0",
-    "firebase-admin": "^8.13.0",
+    "firebase-admin": "^9.2.0",
     "openapi-backend": "^3.5.1",
     "uuid": "^8.2.0",
     "winston": "^3.3.3"
