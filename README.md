@@ -88,8 +88,22 @@ Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blo
 
 # API Examples:
 
-```
+```bash
 curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
+
+
+curl -X PUT localhost:8080/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+   -H "Host: mojaloop.pisp-demo-server.local" \
+   -H "accept: application/json"  \
+   -H "content-type: application/json" \
+   -H "date: 2020-10-14" \
+   -H "FSPIOP-Source: dfspa" \
+   -H "FSPIOP-Destination: pispa" \
+   --data '{
+      "transactionRequestState":"RECEIVED"
+   }'
+
+
 ```
 
 

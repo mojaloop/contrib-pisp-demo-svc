@@ -370,7 +370,9 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
-  /thirdpartyRequests/{id}/transactions:
+  /thirdpartyRequests/transactions/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
     put:
       tags:
         - thirdpartyRequests
@@ -378,14 +380,13 @@ paths:
       description: Callback from the DFSP on the progress of a given thirdparty transaction request
       operationId: putThirdpartyRequestTransactions
       parameters:
-        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/schemas/ThirdpartyRequestsTransactionsIDPutResponse.yaml'
+              $ref: 'shared.yaml#/components/schemas/ThirdpartyRequestsTransactionsIDPutResponse'
       responses:
         202:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'

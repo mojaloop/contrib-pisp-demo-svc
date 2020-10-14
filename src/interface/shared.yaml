@@ -333,6 +333,29 @@ components:
           items:
             $ref: '#/components/schemas/HealthServicesType'
       description: Data model for the api status.
+
+    ThirdpartyRequestsTransactionsIDPutResponse:
+      title: ThirdpartyRequestsTransactionsIDPutResponse
+      type: object
+      description: 'The object sent in the PUT /thirdPartyRequests/transactions/{ID} request.'
+      properties:
+        # TODO: tried to use api-snippets, but it didn't like this field...
+        # local renderer worked fine, but just failed when starting server
+        # transactionId:
+        #   $ref: '#/paths/~1authorizations/post/requestBody/content/application~1json/schema/properties/transactionId'
+        #   description: |
+        #     Identifies a related transaction (if a transaction has been created).
+        transactionRequestState:
+          description: State of the transaction request.
+          title: TransactionRequestState
+          type: string
+          enum:
+            - RECEIVED
+            - PENDING
+            - ACCEPTED
+            - REJECTED
+          example: RECEIVED
+
   responses:
     ResponseHealth200:
       description: OK
