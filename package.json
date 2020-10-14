@@ -63,7 +63,7 @@
   "devDependencies": {
     "@commitlint/cli": "^9.0.1",
     "@commitlint/config-conventional": "^9.0.1",
-    "@mojaloop/api-snippets": "git+https://github.com/stevenwjy/api-snippets.git#446972b2d7c8aaa6cc000ec4eb738e9b9ec14eb9",
+    "@mojaloop/api-snippets": "^11.0.18",
     "@types/convict": "^5.2.1",
     "@types/faker": "^4.1.12",
     "@types/hapi": "^18.0.3",

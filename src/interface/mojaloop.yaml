@@ -385,7 +385,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: 'shared.yaml#/components/schemas/PostAuthorizationsRequest'
+              $ref: '../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/schemas/ThirdpartyRequestsTransactionsIDPutResponse.yaml'
       responses:
         202:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
