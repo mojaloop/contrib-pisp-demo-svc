@@ -59,6 +59,22 @@
     "1556|firebase-admin>@google-cloud/storage>gaxios>node-fetch": {
       "decision": "postpone",
       "madeAt": 1599804367912
+    },
+    "1561|firebase-admin>@google-cloud/firestore>google-gax>google-auth-library>gtoken>google-p12-pem>node-forge": {
+      "decision": "fix",
+      "madeAt": 1602645055234
+    },
+    "1561|firebase-admin>@google-cloud/storage>@google-cloud/common>google-auth-library>gtoken>google-p12-pem>node-forge": {
+      "decision": "fix",
+      "madeAt": 1602645055234
+    },
+    "1561|firebase-admin>@google-cloud/storage>gcs-resumable-upload>google-auth-library>gtoken>google-p12-pem>node-forge": {
+      "decision": "fix",
+      "madeAt": 1602645055235
+    },
+    "1561|firebase-admin>node-forge": {
+      "decision": "fix",
+      "madeAt": 1602645055235
     }
   },
   "rules": {},
