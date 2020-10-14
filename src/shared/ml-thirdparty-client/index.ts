@@ -111,15 +111,6 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
-<<<<<<< HEAD
-    type: PartyIdType,
-    id: string
-  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: this needs typings added
-    // @ts-ignore
-    return this.mojaloopRequests.getParties(type, id)
-
-=======
     idType: PartyIdType,
     idValue: string,
     idSubValue?: string
@@ -128,7 +119,6 @@ export class Client {
       return this.mojaloopRequests.getParties(idType, idValue, idSubValue)
     }
     return this.mojaloopRequests.getParties(idType, idValue)
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   }
 
   /**
@@ -160,17 +150,8 @@ export class Client {
     requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-<<<<<<< HEAD
     // TODO: Implement communication with Mojaloop.
     // Placeholder below
-=======
-    // TODO: Replace placeholder with commented implementation
-    //       once implemented in sdk-standard-components
-
-    // Placeholder
-    throw new NotImplementedError()
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
-
     return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
       requestBody,
       id,
@@ -181,9 +162,7 @@ export class Client {
   /**
    * Gets a list of PISP/DFSP participants
    */
-  public async getParticipants(): Promise<
-  SDKStandardComponents.GenericRequestResponse | undefined
-  > {
+  public async getParticipants(): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
     throw new NotImplementedError()

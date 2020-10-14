@@ -55,7 +55,6 @@ export interface ITransactionRepository {
 }
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
-<<<<<<< HEAD
   // TD: Lewis hacky to get some tests working
   async insert(data: Record<string, any>): Promise<string> {
     const ref = await firebase.firestore().collection('transactions').doc()
@@ -73,10 +72,6 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
       merge: true
     }
     await firebase.firestore().collection('transactions').doc(id).set(data, options)
-=======
-  async updateById(id: string, data: Record<string, unknown>): Promise<void> {
-    await firebase.firestore().collection('transactions').doc(id).update(data)
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   }
 
   async update(
@@ -88,35 +83,18 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
         .firestore()
         .collection('transactions')
 
-<<<<<<< HEAD
-    // Chain all of the given conditions to the query
-    for (const key in conditions) {
-      firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
-    }
-
-    // Find and update all matching documents in Firebase that match the given conditions.
-    await firestoreQuery
-      .get()
-      .then((response) => {
-        console.log('transaction::update, found docs for conditions', response.docs, conditions)
-
-        if (response.docs.length === 0) {
-          console.log('transaction::update - WARNING: found no docs for conditions', conditions)
-        }
-
-        // Create a batch to perform all of the updates using a single request.
-        // Firebase will also execute the updates atomically according to the
-        // API specification.
-        const batch = firebase.firestore().batch()
-=======
       // Chain all of the given conditions to the query
       for (const key in conditions) {
         firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
       }
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
 
       // Find and update all matching documents in Firebase that match the given conditions.
       const response = await firestoreQuery.get()
+      console.log('transaction::update, found docs for conditions', response.docs, conditions)
+
+      if (response.docs.length === 0) {
+        console.log('transaction::update - WARNING: found no docs for conditions', conditions)
+      }
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
       // API specification.

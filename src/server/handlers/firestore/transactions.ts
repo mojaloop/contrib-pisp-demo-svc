@@ -27,13 +27,6 @@
 /* istanbul ignore file */
 // TODO: Testing will covered in separate ticket
 
-<<<<<<< HEAD
-// import * as uuid from 'uuid'
-import { Server } from '@hapi/hapi'
-=======
-import * as uuid from 'uuid'
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
-
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
@@ -65,13 +58,7 @@ async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   })
 }
 
-<<<<<<< HEAD
-async function handlePartyLookup(server: Server, transaction: Transaction) {
-  console.log('handling party lookup', transaction)
-
-=======
 async function handlePartyLookup(server: StateServer, transaction: Transaction) {
->>>>>>> 9445f54f648660fe588e0152f1146f09348118cb
   // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(transaction)) {
