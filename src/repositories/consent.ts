@@ -65,7 +65,7 @@ export class FirebaseConsentRepository implements IConsentRepository {
 
   // TD: Lewis hacky to get some tests working
   async insert(data: Record<string, any>): Promise<string> {
-    const ref = firebase.firestore().collection('consents').doc()
+    const ref = await firebase.firestore().collection('consents').doc()
     // Make sure we set the id correctly
     data.id = ref.id
     await ref.set(data)
