@@ -67,7 +67,6 @@ describe('02. party confirmation', () => {
 
     // Act
     await consentRepository.updateConsentById(consentCollectionId, consent)
-    // const transactionId = await transactionRepository.insert(transaction)
 
     // Assert
     await (sleep(5000))
@@ -94,7 +93,39 @@ describe('03. user authentication', () => {
 
     // Act
     await consentRepository.updateConsentById(consentCollectionId, consent)
-    // const transactionId = await transactionRepository.insert(transaction)
+
+    // Assert
+    await (sleep(5000))
+    // TODO: how can we verify that this kicked off a get parties call?
+
+  })
+})
+
+describe('04. signed challenge', () => {
+  it('sends the signed challenge and fido public key to switch', async () => {
+    console.log('starting: 04. signed challenge')
+
+    // Arrange
+    if (!consentCollectionId) {
+      consentCollectionId = process.env.CONSENT_COLLECTION_ID!
+    }
+
+    // Create the start of the consent process
+    // remember we are mocking out the device here
+    const consent = {
+      status: ConsentStatus.CHALLENGE_SIGNED,
+      authToken: '1234567890',
+      credential: {
+        id: 'keyHandleId',
+        challenge: {
+          signature: 'signedChallengebytes'
+        },
+        payload: 'publickeybytes'
+      }
+    }
+
+    // Act
+    await consentRepository.updateConsentById(consentCollectionId, consent)
 
     // Assert
     await (sleep(5000))

@@ -64,9 +64,16 @@ export enum ConsentStatus {
   CONSENT_GRANTED = 'CONSENT_GRANTED',
 
   /**
-   * The consent is ACTIVE and challenge has been generated
+   * The consent is PENDING and challenge has been generated
+   * waiting for user to sign it
    */
   CHALLENGE_GENERATED = 'CHALLENGE_GENERATED',
+
+  /**
+   * The consent is PENDING and challenge has been generated
+   * user has signed challenge
+   */
+  CHALLENGE_SIGNED = 'CHALLENGE_SIGNED',
 
   /**
    * The consent is ACTIVE and challenge has been verified

@@ -96,6 +96,7 @@ export class FirebaseConsentRepository implements IConsentRepository {
     id: string,
     data: Record<string, unknown>
   ): Promise<void> {
+    // TODO: do we need to do a merge here???
     await firebase.firestore().collection('consents').doc(id).update(data)
   }
 

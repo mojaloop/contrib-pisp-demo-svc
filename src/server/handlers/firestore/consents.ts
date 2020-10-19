@@ -224,6 +224,15 @@ export const onUpdate: ConsentHandler = async (
       await initiateChallengeGeneration(server, consent)
       break
 
+    case ConsentStatus.CHALLENGE_GENERATED:
+      console.log("no need to handle CHALLENGE_GENERATED state - waiting for user input")
+      break
+
+    case ConsentStatus.CHALLENGE_SIGNED:
+      await handleSignedChallenge(server, consent)
+      break
+
+    // TODO: I don't think this is right...
     case ConsentStatus.ACTIVE:
       await handleSignedChallenge(server, consent)
       break
