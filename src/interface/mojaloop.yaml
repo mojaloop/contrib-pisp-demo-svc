@@ -308,7 +308,7 @@ paths:
         - transfers
       summary: '[Mojaloop Callback] Result of transfer'
       description: Mojaloop callback for third party that initiated a transaction.
-      operationId: putTransfersById
+      operationId: patchThirdpartyRequestsTransactions
       parameters:
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
@@ -316,6 +316,7 @@ paths:
         content:
           application/json:
             schema:
+              # TODO: update this name to PATCH
               $ref: 'shared.yaml#/components/schemas/PutTransfersByIdRequest'
       responses:
         200:

@@ -26,12 +26,10 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-// import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-
 import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
-export const put: Handler = async (_context: Context, req: Request, h: ResponseToolkit) => {
+export const patch: Handler = async (_context: Context, req: Request, h: ResponseToolkit) => {
 
   // ttk hacks galore!
   const transactionRequestId = req.params.path.split('/').pop()
