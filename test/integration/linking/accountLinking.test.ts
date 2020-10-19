@@ -114,7 +114,6 @@ describe('04. signed challenge', () => {
     // remember we are mocking out the device here
     const consent = {
       status: ConsentStatus.CHALLENGE_SIGNED,
-      authToken: '1234567890',
       credential: {
         id: 'keyHandleId',
         challenge: {

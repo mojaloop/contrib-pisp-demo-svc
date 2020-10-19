@@ -26,6 +26,8 @@
 
 import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+import config from '~/lib/config'
+
 
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
@@ -74,6 +76,7 @@ export const put: Handler = async (
       // Update the given field by their new values
       {
         party: body.party,
+        initiatorId: config.get('mojaloop').participantId,
         // todo: do we need this?
         // The structure looks funny
         // TODO: this looks bad to me - maybe it's what the TTK is returning?
