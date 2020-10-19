@@ -56,9 +56,22 @@ export interface IConsentRepository {
     conditions: Record<string, unknown>,
     data: Record<string, unknown>
   ): Promise<void>
+
+  //TODO:add an insert
+  insert(data: Record<string, any>): Promise<string>
 }
 
 export class FirebaseConsentRepository implements IConsentRepository {
+
+  // TD: Lewis hacky to get some tests working
+  async insert(data: Record<string, any>): Promise<string> {
+    const ref = firebase.firestore().collection('consents').doc()
+    // Make sure we set the id correctly
+    data.id = ref.id
+    await ref.set(data)
+    return data.id
+  }
+
   async getConsentById(id: string): Promise<Consent> {
     return new Promise((resolve, reject) => {
       firebase
