@@ -64,13 +64,15 @@ export const isValidAuthentication = (consent: Consent): boolean => {
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
  */
+// TODO: this is wrong - checking consent object... which consent object?
 export const isValidConsentRequest = (consent: Consent): boolean => {
+  console.log('validating consentrequest object', consent)
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.authChannels &&
     consent.scopes &&
     consent.initiatorId &&
-    consent.authUri
+    consent.consentRequestId
   )
 }
 

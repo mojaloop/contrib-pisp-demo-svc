@@ -57,6 +57,8 @@ export const put: Handler = async (
   // function is expected to run asynchronously, so the server could quickly
   // give a response to Mojaloop.
 
+  console.log("handling inbount put parties")
+
   if (partyIdType === PartyIdType.OPAQUE) {
     // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
     // available for linking from a pre-determined DFSP
@@ -65,14 +67,17 @@ export const put: Handler = async (
     consentRepository.updateConsent(
       // Conditions for the documents that need to be updated
       {
-        'payee.partyIdInfo.partyIdType': partyIdType,
-        'payee.partyIdInfo.partyIdentifier': partyIdentifier,
+        'party.partyIdInfo.partyIdType': partyIdType,
+        'party.partyIdInfo.partyIdentifier': partyIdentifier,
         status: ConsentStatus.PENDING_PARTY_LOOKUP,
       },
       // Update the given field by their new values
       {
         party: body.party,
-        accounts: body.accounts,
+        // todo: do we need this?
+        // The structure looks funny
+        // @ts-ignore
+        accounts: body.party.accounts,
         status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
       }
     )

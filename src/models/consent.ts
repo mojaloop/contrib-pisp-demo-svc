@@ -44,6 +44,11 @@ export enum ConsentStatus {
   PENDING_PARTY_CONFIRMATION = 'PENDING_PARTY_CONFIRMATION',
 
   /**
+   * User has confirmed party
+   */
+  PARTY_CONFIRMED = 'PARTY_CONFIRMED',
+
+  /**
    * Waiting for the user to authorize the consent.
    */
   AUTHENTICATION_REQUIRED = 'AUTHENTICATION_REQUIRED',
@@ -119,7 +124,7 @@ export interface Consent {
 
   /**
    * If authentication channel chosed is WEB, then this is the url which a user
-   * must visit to authenticate themselves
+   * must visit to authenticate themselves. Provided by DFSP
    */
   authUri?: string
 
@@ -148,4 +153,10 @@ export interface Consent {
    * Credential object used for authentication of consent
    */
   credential?: TCredential
+
+  /**
+   * If authentication channel chosed is WEB, then this is the uri that the DFSP must
+   * redirect to after completing the login
+   */
+  callbackUri?: string
 }

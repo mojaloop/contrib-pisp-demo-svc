@@ -104,7 +104,60 @@ curl -X PUT localhost:8080/thirdpartyRequests/transactions/02e28448-3c05-4059-b5
    }'
 
 
+# OPAQUE party lookup to ttk
+
+curl -X GET localhost:15000/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+   -H "accept: application/vnd.interoperability.parties+json;version=1.1"  \
+   -H "content-type: application/vnd.interoperability.parties+json;version=1.1" \
+   -H "date: 2020-10-14" \
+   -H "FSPIOP-Source: pispa" \
+   -H "FSPIOP-Destination: dfspa"
+
+
+# opaque party lookup response example
+curl -v -X PUT localhost:8080/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+   -H "Host: mojaloop.pisp-demo-server.local" \
+   -H "accept: application/json"  \
+   -H "Content-Type: application/vnd.interoperability.parties+json;version=1.0" \
+   -H "date: 2020-10-14" \
+   --data '{
+    "party": {
+      "partyIdInfo": {
+        "partyIdType": "MSISDN",
+        "partyIdentifier": "+1-111-111-1111",
+        "fspId": "dfspA"
+      },
+      "merchantClassificationCode": "4321",
+      "name": "Alice K",
+      "personalInfo": {
+        "complexName": {
+          "firstName": "Alice",
+          "lastName": "K"
+        },
+        "dateOfBirth": "1963-06-16"
+      },
+      "accounts": {
+        "account": [
+          {
+            "address": "dfspa.alice.1234",
+            "currency": "USD",
+            "description": "savings"
+          },
+          {
+            "address": "dfspa.alice.5678",
+            "currency": "USD",
+            "description": "checking"
+          }
+        ]
+      }
+    }
+  }'
+
+
 ```
+
+
+
 
 
 ## Transaction callback

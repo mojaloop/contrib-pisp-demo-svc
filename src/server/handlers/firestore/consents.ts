@@ -94,6 +94,7 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 }
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
+  // TODO: mssing some fields... maybe we need to add them to the initial thingy
   if (!validator.isValidConsentRequest(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -106,7 +107,7 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
         initiatorId: consent.initiatorId!,
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
-        id: consent.id,
+        id: consent.consentRequestId!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
@@ -203,6 +204,10 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.PENDING_PARTY_CONFIRMATION:
+      console.log("no need to handle PENDING_PARTY_CONFIRMATION state")
+      break
+
+    case ConsentStatus.PARTY_CONFIRMED:
       await initiateConsentRequest(server, consent)
       break
 
