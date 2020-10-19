@@ -144,7 +144,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
-        requestId: consent.id,
+        requestId: consent.consentRequestId!,
         initiatorId: consent.initiatorId!,
         participantId: consent.participantId!,
         scopes: consent.scopes!,

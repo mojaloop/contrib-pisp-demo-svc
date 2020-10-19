@@ -90,6 +90,7 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
     consent.credential &&
     consent.scopes &&
     consent.initiatorId &&
+    consent.consentRequestId &&
     consent.participantId
   )
 }
