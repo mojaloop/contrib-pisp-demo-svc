@@ -171,12 +171,16 @@ export class Client {
       responseType: 'ENTERED'
     }
 
-    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-      // @ts-ignore
-      requestBody,
-      id,
-      destParticipantId
-    )
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+    //   // @ts-ignore
+    //   requestBody,
+    //   id,
+    //   destParticipantId
+    // )
+    // @ts-ignore
+    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    // TD - Hack!!! - workaround for the ttk not liking puts
+    // return this.mojaloopRequests._post(`thirdPartyAuthorizations/${id}`, 'authorizations', requestBody, destParticipantId)
   }
 
   /**
