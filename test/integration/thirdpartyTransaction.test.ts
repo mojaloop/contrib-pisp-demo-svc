@@ -1,7 +1,7 @@
 import { transactionRepository } from '~/repositories/transaction'
 
 const sleep = (timeMs: number) => new Promise((resolve) => setTimeout(resolve, timeMs))
-jest.setTimeout(10000)
+jest.setTimeout(1000 * 15)
 
 let transactionId: string;
 
@@ -23,7 +23,7 @@ describe('01. party lookup', () => {
     // Act
     transactionId = await transactionRepository.insert(transaction)
     console.log(`if running manually, make sure to set this: export TRANSACTION_ID=${transactionId}`)
-    await(sleep(3000))
+    await(sleep(5000))
 
     // Assert
     // TODO! - query the object and confirm it's state
@@ -50,7 +50,7 @@ describe('02. payment confirmation', () => {
 
 
     // Assert
-    await (sleep(3000))
+    await (sleep(5000))
     // TODO! - query the object and confirm it's state
   })
 })

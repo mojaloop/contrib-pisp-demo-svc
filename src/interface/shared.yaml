@@ -114,7 +114,7 @@ components:
         amount:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         authenticationType:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/AuthenticationType.yaml'
+          $ref: '../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/schemas/AuthorizationChannelType.yaml'
         quote:
           $ref: '#/components/schemas/Quote'
         retriesLeft:
