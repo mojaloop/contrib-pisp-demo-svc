@@ -76,8 +76,9 @@ export const put: Handler = async (
         party: body.party,
         // todo: do we need this?
         // The structure looks funny
+        // TODO: this looks bad to me - maybe it's what the TTK is returning?
         // @ts-ignore
-        accounts: body.party.accounts,
+        accounts: body.party.accounts.account,
         status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
       }
     )
