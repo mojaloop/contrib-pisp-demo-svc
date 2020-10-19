@@ -26,22 +26,22 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+// import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
-export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  const body = context.request.body as TransferIDPutRequest
+export const put: Handler = async (_context: Context, req: Request, h: ResponseToolkit) => {
 
-  // Not await-ing promise to resolve - code is executed asynchronously
+  // ttk hacks galore!
+  const transactionRequestId = req.params.path.split('/').pop()
   transactionRepository.update(
     {
-      transactionId: body.transactionId,
+      transactionRequestId,
       status: Status.AUTHORIZATION_REQUIRED,
     },
     {
-      completedTimestamp: body.completedTimestamp,
+      completedTimestamp: (new Date()).toISOString(),
       status: Status.SUCCESS,
     }
   )

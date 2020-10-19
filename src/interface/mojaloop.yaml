@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: PISP Demo Server Open API
-  description: This is part of the PISP demo server that handles communication with 
-    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size 
+  description: This is part of the PISP demo server that handles communication with
+    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size
     of 65536 bytes (64 Kilobytes) in the HTTP header.
   license:
     name: Apache 2.0
@@ -300,10 +300,10 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
-  /transfers/{ID}:
+  /thirdpartyRequests/transactions/{ID}:
     parameters:
       - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
-    put:
+    patch:
       tags:
         - transfers
       summary: '[Mojaloop Callback] Result of transfer'

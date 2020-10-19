@@ -147,12 +147,32 @@ export class Client {
    */
   public async putAuthorizations(
     id: string,
-    requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
+
+    // LD - this is the wrong method... it should just be putAuthorizations
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+    //   requestBody,
+    //   id,
+    //   destParticipantId
+    // )
+
+    const requestBody = {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'OTP',
+        // authenticationValue: {
+        //   pinValue: _requestBody.value,
+        //   counter: "1"
+        // }
+        authenticationValue: _requestBody.value,
+      },
+      responseType: 'ENTERED'
+    }
+
     return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+      // @ts-ignore
       requestBody,
       id,
       destParticipantId
