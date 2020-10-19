@@ -307,7 +307,7 @@ components:
       type: object
       properties:
         accountId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'
+          type: string
         actions:
           type: array
           items:

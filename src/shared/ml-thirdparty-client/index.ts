@@ -160,13 +160,6 @@ export class Client {
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
 
-    // LD - this is the wrong method... it should just be putAuthorizations
-    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-    //   requestBody,
-    //   id,
-    //   destParticipantId
-    // )
-
     const requestBody = {
       authenticationInfo: {
         // LD - just a hack because we need to update the TTK
@@ -180,12 +173,6 @@ export class Client {
       responseType: 'ENTERED'
     }
 
-    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-    //   // @ts-ignore
-    //   requestBody,
-    //   id,
-    //   destParticipantId
-    // )
     // @ts-ignore
     return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
     // TD - Hack!!! - workaround for the ttk not liking puts
@@ -244,12 +231,11 @@ export class Client {
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string,
-    _destParticipantId: string
+    consentId: string,
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Add once implemented in sdk-standard components
-    // Placeholder below
-    throw new NotImplementedError()
+    // TODO: implement in sdk standard components
+    // @ts-ignore
+    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', {}, undefined)
   }
 
   /**

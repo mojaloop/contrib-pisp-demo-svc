@@ -49,9 +49,14 @@ export enum ConsentStatus {
   PARTY_CONFIRMED = 'PARTY_CONFIRMED',
 
   /**
-   * Waiting for the user to authorize the consent.
+   * Waiting for the user to authorize the consentRequest.
    */
   AUTHENTICATION_REQUIRED = 'AUTHENTICATION_REQUIRED',
+
+  /**
+   * User has signed in with WEB or OTP flow and PISP has the authToken
+   */
+  AUTHENTICATION_COMPLETE = 'AUTHENTICATION_COMPLETE',
 
   /**
    * The consent is granted and active.

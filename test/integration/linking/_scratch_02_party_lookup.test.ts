@@ -75,3 +75,30 @@ describe('02. party confirmation', () => {
 
   })
 })
+
+describe('03. user authentication', () => {
+  it('sends the auth result to the switch', async () => {
+    console.log('starting: 03. user authentication')
+
+    // Arrange
+    if (!consentCollectionId) {
+      consentCollectionId = process.env.CONSENT_COLLECTION_ID!
+    }
+
+    // Create the start of the consent process
+    // remember we are mocking out the device here
+    const consent = {
+      status: ConsentStatus.AUTHENTICATION_COMPLETE,
+      authToken: '1234567890'
+    }
+
+    // Act
+    await consentRepository.updateConsentById(consentCollectionId, consent)
+    // const transactionId = await transactionRepository.insert(transaction)
+
+    // Assert
+    await (sleep(5000))
+    // TODO: how can we verify that this kicked off a get parties call?
+
+  })
+})

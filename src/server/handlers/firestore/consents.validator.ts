@@ -50,10 +50,13 @@ export const isValidAuthentication = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.consentRequestId &&
-    consent.consentId &&
     consent.initiatorId &&
     consent.authChannels &&
     consent.authToken
+    // TODO: if the channel is WEB, then we must also have an authtoken
+    // this method of validation is rather bad
+    // I mean, we are validating that data we wrote elsewhere is valid
+    // why not make sure we can't write invalid data?
   )
 }
 
@@ -64,9 +67,7 @@ export const isValidAuthentication = (consent: Consent): boolean => {
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
  */
-// TODO: this is wrong - checking consent object... which consent object?
 export const isValidConsentRequest = (consent: Consent): boolean => {
-  console.log('validating consentrequest object', consent)
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.authChannels &&
