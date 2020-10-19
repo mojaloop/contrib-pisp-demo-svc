@@ -40,6 +40,7 @@ import SDKStandardComponents, {
   ThirdpartyRequests,
   MojaloopRequests,
   PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+  BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
 
@@ -84,20 +85,21 @@ export class Client {
   public constructor(options: Options) {
     this.options = options
 
-    const configRequest = {
+    const configRequest: BaseRequestConfigType = {
       dfspId: this.options.participantId,
       logger: new Logger.Logger(),
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {
-        outbound: {
-          mutualTLS: {
-            enabled: false,
-          },
-        },
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
       },
       peerEndpoint: this.options.endpoints.default,
-      responseType: 'string',
+      // v12, this was removed
+      // responseType: 'string',
     }
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)

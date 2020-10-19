@@ -26,6 +26,7 @@ describe('01. party lookup', () => {
     await(sleep(3000))
 
     // Assert
+    // TODO! - query the object and confirm it's state
   })
 })
 
@@ -50,6 +51,7 @@ describe('02. payment confirmation', () => {
 
     // Assert
     await (sleep(3000))
+    // TODO! - query the object and confirm it's state
   })
 })
 
@@ -69,6 +71,7 @@ describe('03. payment confirmation', () => {
     await transactionRepository.updateById(transactionId, transaction)
 
     // Assert
+    // TODO! - query the object and confirm it's state
   })
 })
 
