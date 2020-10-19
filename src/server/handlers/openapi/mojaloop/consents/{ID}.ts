@@ -35,8 +35,10 @@ export const put: Handler = async (
 ) => {
   // Updates consent fields
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(
-    context.request.params.ID as string,
+  consentRepository.updateConsent(
+    {
+      consentId: context.request.params.ID
+    },
     context.request.body
   )
   return h.response().code(200)
@@ -49,8 +51,10 @@ export const patch: Handler = async (
 ) => {
   // Updates consent fields patched
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(
-    context.request.params.ID as string,
+  consentRepository.updateConsent(
+    {
+      consentId: context.request.params.ID
+    },
     context.request.body
   )
   return h.response().code(200)

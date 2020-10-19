@@ -80,7 +80,7 @@ const listenToTransactions = (
     .collection('transactions')
     .onSnapshot((querySnapshot) => {
       querySnapshot.docChanges().forEach((change) => {
-        console.log('something happened to a transaction!')
+        // console.log('something happened to a transaction!')
 
         if (change.type === 'added' && transactionHandlers.onCreate) {
           transactionHandlers.onCreate(server, {

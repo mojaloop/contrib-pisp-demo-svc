@@ -234,8 +234,10 @@ export class Client {
     consentId: string,
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: implement in sdk standard components
+    // TODO: this should just be empty!
+    const body = { type: 'FIDO'}
     // @ts-ignore
-    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', {}, undefined)
+    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', body, undefined)
   }
 
   /**

@@ -165,7 +165,7 @@ export const onCreate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
-  console.log('onCreateCalled', transaction)
+  // console.log('onCreateCalled', transaction)
   if (transaction.status) {
     // Skip transaction that has been processed previously.
     // We need this because when the server starts for the first time,
