@@ -95,7 +95,7 @@ components:
       properties:
         fspId:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/FspId.yaml'
-        name: 
+        name:
           type: string
       description: Data model for the complex type Participant.
     PatchConsentsByIdRequest:
@@ -172,7 +172,7 @@ components:
           type: string
         consentId:
           type: string
-        payee: 
+        payee:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
         payer:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Party.yaml'
@@ -247,7 +247,7 @@ components:
         scopes:
           type: array
           items:
-            $ref: '#/components/schemas/Scope'  
+            $ref: '#/components/schemas/Scope'
         credential:
           $ref: '#/components/schemas/Credential'
       description: Data model for the complex type PutConsentsByIdRequest.
@@ -276,7 +276,7 @@ components:
       type: object
       properties:
         transactionId:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'  
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/CorrelationId.yaml'
         fulfilment:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/IlpFulfilment.yaml'
         completedTimestamp:
@@ -292,7 +292,7 @@ components:
       properties:
         transferAmount:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
-        payeeReceiveAmount: 
+        payeeReceiveAmount:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'
         payeeFspFee:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/Money.yaml'

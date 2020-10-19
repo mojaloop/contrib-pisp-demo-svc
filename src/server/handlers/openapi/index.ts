@@ -50,7 +50,7 @@ export const extHandlers: ExtHandlers = {
   },
 
   validationFail: (_: Context, __: Request, h: ResponseToolkit) => {
-    return h.response().code(406)
+    return h.response().code(400)
   },
 
   notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {
