@@ -105,7 +105,7 @@ const config = convict({
     participantId: {
       doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
       format: String,
-      default: 'pisp',
+      default: 'pispa',
       env: 'MOJALOOP_PARTICIPANT_ID',
     },
     // TODO: Replace placeholder

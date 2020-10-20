@@ -41,7 +41,8 @@ export const apiHandlers = {
 }
 
 export const extHandlers: ExtHandlers = {
-  notFound: (_: Context, __: Request, h: ResponseToolkit) => {
+  notFound: (c: Context, __: Request, h: ResponseToolkit) => {
+    console.log('returning 404 for request with path:', c.request.path)
     return h.response().code(404)
   },
 

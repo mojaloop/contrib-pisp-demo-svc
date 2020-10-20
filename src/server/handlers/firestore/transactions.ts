@@ -41,8 +41,9 @@ import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
 import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
-// TODO: Replace once design decision made on how we should be obtaining this
-const destParticipantId = 'PLACEHOLDER'
+// TODO: get from the consent object
+// for now, just hardcode to dfspa
+const destParticipantId = 'dfspa'
 
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial

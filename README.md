@@ -154,7 +154,145 @@ curl -v -X PUT localhost:8080/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8e
   }'
 
 
+## POST /thirdpartyRequests/transactions
+curl -X POST http://a83b02650de2c498f9a8fad00bc3fa12-106691503.eu-west-2.elb.amazonaws.com/thirdparty-api-adapter/thirdpartyRequests/transactions \
+  -H "accept: application/vnd.interoperability.thirdparty+json;version=1" \
+  -H "content-type: application/vnd.interoperability.thirdparty+json;version=1.0" \
+  -H "date: Tue, 20 Oct 2020 04:14:50 GMT" \
+  -H "FSPIOP-Source: pispa" \
+  -H "FSPIOP-Destination: dfspa" \
+  --data '{
+    "transactionRequestId":"02e28448-3c05-4059-b5f7-d518d0a2d8ea",
+    "sourceAccountId":"bob.fspA",
+    "consentId":"9d553d59-610f-44aa-b7ec-b483af24e98a",
+    "payee": {
+      "name": "Alice Alpaca",
+      "accounts": {
+        "account":[
+          {
+            "currency":"USD",
+            "description":"savings",
+            "address":"moja.amber.53451233-b82a5456a-4fa9-838b-123456789"
+          },
+          {
+            "description":"checkings",
+            "address":"moja.amber.8f027046-b8236345a-4fa9-838b-123456789",
+            "currency":"USD"
+          }
+        ]
+      },
+      "partyIdInfo": {
+        "partyIdType":"MSISDN",
+        "partyIdentifier":"123456789",
+        "fspId":"dfspa"
+      },
+      "personalInfo": {
+        "dateOfBirth":"1970-01-01",
+        "complexName": {"middleName":"K","firstName":"Alice","lastName":"Alpaca"}
+        }
+      },
+      "payer": {
+        "merchantClassificationCode":"4321",
+        "personalInfo":{"dateOfBirth":"1963-06-16","complexName":{"firstName":"Alice","lastName":"K"}},
+        "accounts":{
+          "account":[
+            {
+              "currency":"USD",
+              "description":"savings",
+              "address":"dfspa.alice.1234"
+            },
+            {
+              "currency":"USD",
+              "address":"dfspa.alice.5678",
+              "description":"checking"
+            }
+          ]
+        },
+        "partyIdInfo": {
+          "partyIdentifier":"+1-111-111-1111",
+          "partyIdType":"MSISDN",
+          "fspId":"dfspA"
+        },
+        "name":"Alice K"
+      },
+      "amountType":"RECEIVE",
+      "amount":{
+        "currency":"USD",
+        "amount":"123"
+      },
+      "transactionType": {
+        "scenario":"TRANSFER",
+        "initiator":"PAYER",
+        "initiatorType":"CONSUMER"
+      },
+      "expiration":"1970-01-01T00:00:00.021Z"
+  }'
+
+
+# TODO: remove the accounts section to make the quoting service happy
+# Also made changes to payer/payer fspid etc.
+curl -X POST $ELB_URL/thirdparty-api-adapter/thirdpartyRequests/transactions \
+  -H "accept: application/vnd.interoperability.thirdparty+json;version=1" \
+  -H "content-type: application/vnd.interoperability.thirdparty+json;version=1.0" \
+  -H "date: Tue, 20 Oct 2020 04:14:50 GMT" \
+  -H "FSPIOP-Source: pispa" \
+  -H "FSPIOP-Destination: dfspa" \
+  --data '{
+    "transactionRequestId":"02e28448-3c05-4059-b5f7-d518d0a2d8ea",
+    "sourceAccountId":"bob.fspA",
+    "consentId":"9d553d59-610f-44aa-b7ec-b483af24e98a",
+    "payee": {
+      "name": "Alice Alpaca",
+      "partyIdInfo": {
+        "partyIdType":"MSISDN",
+        "partyIdentifier":"123456789",
+        "fspId":"dfspb"
+      },
+      "personalInfo": {
+        "dateOfBirth":"1970-01-01",
+        "complexName": {"middleName":"K","firstName":"Alice","lastName":"Alpaca"}
+      }
+    },
+    "payer": {
+      "merchantClassificationCode":"4321",
+      "personalInfo":{"dateOfBirth":"1963-06-16","complexName":{"firstName":"Alice","lastName":"K"}},
+      "partyIdInfo": {
+        "partyIdentifier":"+1-111-111-1111",
+        "partyIdType":"MSISDN",
+        "fspId":"dfspa"
+      },
+      "name":"Alice K"
+    },
+    "amountType":"RECEIVE",
+    "amount":{
+      "currency":"USD",
+      "amount":"123"
+    },
+    "transactionType": {
+      "scenario":"TRANSFER",
+      "initiator":"PAYER",
+      "initiatorType":"CONSUMER"
+    },
+    "expiration":"1970-01-01T00:00:00.021Z"
+  }'
+
+
+
+# check registered endpoints:
+curl -s $ELB_URL/central-ledger/participants/pisp/endpoints | jq
+
+
+curl -X POST $ELB_URL/central-ledger/participants/pisp/endpoints \
+  -H "accept: application/json" \
+  -H "content-type: application/json" \
+  --data '{
+    "type": "FSPIOP_CALLBACK_URL_TRANSFER_ERROR",
+    "value": "http://simulator.moja-box.vessels.tech/payerfsp/transfers/{{transferId}}/error"
+  }'
+
 ```
+
+
 
 
 

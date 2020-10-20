@@ -54,3 +54,9 @@ export const put: Handler = async (_context: Context, _: Request, h: ResponseToo
 
   return h.response().code(200)
 }
+
+export const putError: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  console.log("putThirdpartyRequestTransactions error", context.request.body)
+  // TODO: get error details...
+  return h.response().code(200)
+}

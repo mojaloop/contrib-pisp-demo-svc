@@ -50,5 +50,6 @@ export const apiHandlers = {
   putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
   putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
   putThirdpartyRequestTransactions: thirdpartyRequests.put,
+  putThirdpartyRequestTransactionsError: thirdpartyRequests.putError,
   patchThirdpartyRequestsTransactions: MojaloopTransfersById.patch,
 }
