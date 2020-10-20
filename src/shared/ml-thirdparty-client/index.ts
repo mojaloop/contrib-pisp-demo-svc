@@ -98,6 +98,7 @@ export class Client {
         }
       },
       peerEndpoint: this.options.endpoints.default,
+      // TODO: add individual endpoints...
       resourceVersions: {
         // override parties here, since the ttk doesn't have config for 1.1
         parties: {

@@ -64,7 +64,8 @@ const openApiOpts: OpenApiOptions = {
   },
   app: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    subdomain: 'app',
+    basePath: 'app',
+    // subdomain: 'app',
     handlers: {
       api: appApiHandlers,
       ext: extHandlers,
@@ -72,7 +73,8 @@ const openApiOpts: OpenApiOptions = {
   },
   mojaloop: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
-    subdomain: 'mojaloop',
+    basePath: 'mojaloop',
+    // subdomain: 'mojaloop',
     handlers: {
       api: mojaloopApiHandlers,
       ext: extHandlers,

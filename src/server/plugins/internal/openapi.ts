@@ -34,7 +34,7 @@ export interface ExtHandlers {
   notFound: Handler
 
   /**
-   * Handler when someone tries to access an endpoint that is defined in the 
+   * Handler when someone tries to access an endpoint that is defined in the
    * open API specification file, but with different method. For example, there
    * is only `GET` method available for `/health`. If someone tries to perform
    * `POST /health` request, then this handler will be called.
@@ -63,7 +63,9 @@ export interface VirtualHostOptions {
    * Subdomain for the virtual host. This value will be joined with the
    * `baseHost` with a dot character as a separator.
    */
-  subdomain: string,
+  subdomain?: string,
+
+  basePath?: string,
 
   /**
    * Path to the definition file for the open API.
@@ -98,18 +100,18 @@ export interface SharedOptions {
   baseHost: string
 
   /**
-   * In the quick mode, the backend will try to optimize startup by not waiting 
-   * for the OpenAPI specification file to be fully loaded and will not perform 
+   * In the quick mode, the backend will try to optimize startup by not waiting
+   * for the OpenAPI specification file to be fully loaded and will not perform
    * any validation to it. This might break things if a request come before the
-   * specification is fully loaded. The default value is false, which means the 
+   * specification is fully loaded. The default value is false, which means the
    * backend will wait for the document to be loaded and try to perform validation
    * upon initialization.
    */
   quick?: boolean
 
   /**
-   * In the strict mode, the open API backend will try to validate the definition 
-   * file and could throw validation errors. The default value is false, which means 
+   * In the strict mode, the open API backend will try to validate the definition
+   * file and could throw validation errors. The default value is false, which means
    * the backend will only give warnings for the errors.
    */
   strict?: boolean
@@ -120,7 +122,7 @@ export interface Options {
    * Shared options between backends that will be registered by this
    * plugin. In the future updates, the values specified in this object
    * may act as default values that could be overwritten by the options
-   * for the respective virtual host. 
+   * for the respective virtual host.
    */
   shared: SharedOptions
 
@@ -158,20 +160,24 @@ function registerBackend(server: Server, vhostOpts: VirtualHostOptions, sharedOp
   // to the open API backend.
   server.route({
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    path: '/{path*}',
-    vhost: [vhostOpts.subdomain, sharedOpts.baseHost].join('.'),
-    handler: (request: Request, h: ResponseToolkit) =>
-      api.handleRequest(
+    path: `${vhostOpts.basePath ? `/${vhostOpts.basePath}` : ''}/{path*}`,
+    // path: `/{path*}`,
+    // vhost: [vhostOpts.subdomain, sharedOpts.baseHost].join('.'),
+    // vhost: sharedOpts.baseHost,
+    handler: (request: Request, h: ResponseToolkit) => {
+      console.log("handler is being called", request.path);
+      return api.handleRequest(
         {
           method: request.method,
-          path: request.path,
+          path: request.path.replace(`/${vhostOpts.basePath}`, ''),
           query: request.query,
           body: request.payload,
           headers: request.headers,
         },
         request,
         h
-      ),
+      )
+    }
   })
 }
 
@@ -183,10 +189,10 @@ export const OpenApi: Plugin<Options> = {
   name: 'PispDemoOpenApi',
   version: '1.0.0',
   register: async (server: Server, opts: Options) => {
-    // Register open API backends that serve endpoints to communicate with 
-    // the demo app and Mojaloop. Each will use a virtual host in the format 
-    // of `{subdomain}.{baseHost}`. For example, if the base host name is 
-    // `api.example.com` and the subdomain is `app`, then this plugin will 
+    // Register open API backends that serve endpoints to communicate with
+    // the demo app and Mojaloop. Each will use a virtual host in the format
+    // of `{subdomain}.{baseHost}`. For example, if the base host name is
+    // `api.example.com` and the subdomain is `app`, then this plugin will
     // serve the APIs on `app.api.example.com`.
     registerBackend(server, opts.app, opts.shared)
     registerBackend(server, opts.mojaloop, opts.shared)

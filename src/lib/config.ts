@@ -116,6 +116,14 @@ const config = convict({
       env: 'MOJALOOP_CALLBACK_URI',
     },
     endpoints: {
+      /* TODO: we need to set this based on resources:
+        account linking: localhost:15000 (local ttk)
+        transfers:
+          - account-lookup
+          - thirdparty
+          - authorizations/transaction-request-service
+
+      */
       default: {
         doc: 'Default endpoint to communicate with Mojaloop',
         format: '*',
