@@ -290,6 +290,32 @@ curl -X POST $ELB_URL/central-ledger/participants/pisp/endpoints \
     "value": "http://simulator.moja-box.vessels.tech/payerfsp/transfers/{{transferId}}/error"
   }'
 
+
+TRANSFER_ID=$(od -x /dev/urandom | head -1 | awk '{OFS="-"; print $2$3,$4,$5,$6,$7$8$9}')
+DATE=$(echo 'nowDate = new Date(); console.log(nowDate.toGMTString());' > /tmp/date && node /tmp/date)
+EXPIRATION_DATE=$(echo 'nowDate = new Date(); nowDate.setDate(nowDate.getDate() + 1); console.log(nowDate.toISOString());' > /tmp/date && node /tmp/date)
+COMPLETED_TIMESTAMP=$(echo 'nowDate = new Date(); nowDate.setDate(nowDate.getDate()); console.log(nowDate.toISOString());' > /tmp/date && node /tmp/date)
+
+curl -X POST $ELB_URL/ml-api-adapter/transfers \
+  -H "accept: application/vnd.interoperability.transfers+json;version=1" \
+  -H "content-type: application/vnd.interoperability.transfers+json;version=1.0" \
+  -H "date: Tue, 20 Oct 2020 04:14:50 GMT" \
+  -H "FSPIOP-Source: dfspa" \
+  -H "FSPIOP-Destination: dfspb" \
+  -- data '{
+  "transferId": "02e28448-3c05-4059-b5f7-d518d0a2d8eb",
+  "transactionRequestId": "02e28448-3c05-4059-b5f7-d518d0a2d8ea",
+  "payeeFsp": "dfspb",
+  "payerFsp": "dfspa",
+  "amount": {
+    "amount": "100",
+    "currency": "USD"
+  },
+  "ilpPacket": "AQAAAAAAAADIEHByaXZhdGUucGF5ZWVmc3CCAiB7InRyYW5zYWN0aW9uSWQiOiIyZGY3NzRlMi1mMWRiLTRmZjctYTQ5NS0yZGRkMzdhZjdjMmMiLCJxdW90ZUlkIjoiMDNhNjA1NTAtNmYyZi00NTU2LThlMDQtMDcwM2UzOWI4N2ZmIiwicGF5ZWUiOnsicGFydHlJZEluZm8iOnsicGFydHlJZFR5cGUiOiJNU0lTRE4iLCJwYXJ0eUlkZW50aWZpZXIiOiIyNzcxMzgwMzkxMyIsImZzcElkIjoicGF5ZWVmc3AifSwicGVyc29uYWxJbmZvIjp7ImNvbXBsZXhOYW1lIjp7fX19LCJwYXllciI6eyJwYXJ0eUlkSW5mbyI6eyJwYXJ0eUlkVHlwZSI6Ik1TSVNETiIsInBhcnR5SWRlbnRpZmllciI6IjI3NzEzODAzOTExIiwiZnNwSWQiOiJwYXllcmZzcCJ9LCJwZXJzb25hbEluZm8iOnsiY29tcGxleE5hbWUiOnt9fX0sImFtb3VudCI6eyJjdXJyZW5jeSI6IlVTRCIsImFtb3VudCI6IjIwMCJ9LCJ0cmFuc2FjdGlvblR5cGUiOnsic2NlbmFyaW8iOiJERVBPU0lUIiwic3ViU2NlbmFyaW8iOiJERVBPU0lUIiwiaW5pdGlhdG9yIjoiUEFZRVIiLCJpbml0aWF0b3JUeXBlIjoiQ09OU1VNRVIiLCJyZWZ1bmRJbmZvIjp7fX19",
+  "condition": "HOr22-H3AfTDHrSkPjJtVPRdKouuMkDXTR4ejlQa8Ks",
+  "expiration": "2020-10-22T13:19:03.097Z"
+  }'
+
 ```
 
 

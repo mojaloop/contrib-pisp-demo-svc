@@ -44,7 +44,7 @@ import SDKStandardComponents, {
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
 
-const ELB_URL = process.env.ELB_URL!
+// const ELB_URL = process.env.ELB_URL!
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -100,15 +100,15 @@ export class Client {
         }
       },
       // TODO: make these configurable
-      // peerEndpoint: this.options.endpoints.default,
-      alsEndpoint: `${ELB_URL}/account-lookup-service/`,
-      peerEndpoint: `${ELB_URL}/`,
-      quotesEndpoint: `${ELB_URL}/quoting-service/`,
-      bulkQuotesEndpoint: `${ELB_URL}/quoting-service/`,
-      transfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      bulkTransfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      transactionRequestsEndpoint: `${ELB_URL}/transaction-requests-service/`,
-      thirdpartyRequestsEndpoint: `${ELB_URL}/thirdparty-api-adapter/`,
+      peerEndpoint: this.options.endpoints.default,
+      // alsEndpoint: `${ELB_URL}/account-lookup-service/`,
+      // peerEndpoint: `${ELB_URL}/`,
+      // quotesEndpoint: `${ELB_URL}/quoting-service/`,
+      // bulkQuotesEndpoint: `${ELB_URL}/quoting-service/`,
+      // transfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
+      // bulkTransfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
+      // transactionRequestsEndpoint: `${ELB_URL}/transaction-requests-service/`,
+      // thirdpartyRequestsEndpoint: `${ELB_URL}/thirdparty-api-adapter/`,
       resourceVersions: {
         // override parties here, since the ttk doesn't have config for 1.1
         parties: {
