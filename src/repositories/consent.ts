@@ -57,19 +57,18 @@ export interface IConsentRepository {
     data: Record<string, unknown>
   ): Promise<void>
 
-  //TODO:add an insert
-  insert(data: Record<string, any>): Promise<string>
+  // TODO:add an insert
+  insert(data: Record<string, unknown>): Promise<string>
 }
 
 export class FirebaseConsentRepository implements IConsentRepository {
-
   // TD: Lewis hacky to get some tests working
-  async insert(data: Record<string, any>): Promise<string> {
+  async insert(data: Record<string, unknown>): Promise<string> {
     const ref = await firebase.firestore().collection('consents').doc()
     // Make sure we set the id correctly
     data.id = ref.id
     await ref.set(data)
-    return data.id
+    return (data.id as unknown) as string
   }
 
   async getConsentById(id: string): Promise<Consent> {
@@ -98,7 +97,11 @@ export class FirebaseConsentRepository implements IConsentRepository {
   ): Promise<void> {
     // TODO: do we need to do a merge here???
     // await firebase.firestore().collection('consents').doc(id).update(data)
-    await firebase.firestore().collection('consents').doc(id).set(data, { merge: true})
+    await firebase
+      .firestore()
+      .collection('consents')
+      .doc(id)
+      .set(data, { merge: true })
   }
 
   async updateConsent(
@@ -117,10 +120,17 @@ export class FirebaseConsentRepository implements IConsentRepository {
 
       // Find and update all matching documents in Firebase that match the given conditions.
       const response = await firestoreQuery.get()
-      console.log('consent::updateConsent, found docs for conditions', response.docs, conditions)
+      console.log(
+        'consent::updateConsent, found docs for conditions',
+        response.docs,
+        conditions
+      )
 
       if (response.docs.length === 0) {
-        console.log('consent::updateConsent - WARNING: found no docs for conditions', conditions)
+        console.log(
+          'consent::updateConsent - WARNING: found no docs for conditions',
+          conditions
+        )
       }
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
