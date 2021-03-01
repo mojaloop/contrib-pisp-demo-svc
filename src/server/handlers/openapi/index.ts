@@ -47,18 +47,11 @@ export const extHandlers: ExtHandlers = {
     return h.response().code(405)
   },
 
-<<<<<<< HEAD
   validationFail: (c: Context, __: Request, h: ResponseToolkit) => {
     // TODO: print out error!
     console.log('validation failed!!', JSON.stringify(c.validation.errors, null, 2))
     return h.response({ status: 400, err: c.validation.errors }).code(400);
-=======
-  validationFail: (context: Context, __: Request, h: ResponseToolkit) => {
-    const error = JSON.stringify(context.validation.errors)
-    return h.response(error).code(400)
->>>>>>> d2afb43862f179608fa5b8a1633ab3460f024fa9
   },
-
   notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(501)
   },
