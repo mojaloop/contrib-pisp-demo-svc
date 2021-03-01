@@ -100,6 +100,7 @@ export class Client {
         }
       },
       // TODO: make these configurable
+      // peerEndpoint: this.options.endpoints.default,
       peerEndpoint: this.options.endpoints.default,
       // alsEndpoint: `${ELB_URL}/account-lookup-service/`,
       // peerEndpoint: `${ELB_URL}/`,

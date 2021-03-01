@@ -71,6 +71,12 @@ const config = convict({
     env: 'PORT',
     arg: 'port',
   },
+  thirdpartyAPIURL: {
+    doc: 'Default endpoint to communicate with Mojaloop',
+    format: '*',
+    default: 'localhost:15000',
+    env: 'THIRDPARTY_API_URL',
+  },
   db: {
     firebase: {
       keyPath: {
@@ -130,7 +136,6 @@ const config = convict({
         // I can't seem to be able to change this in my .env file
         // going to set manually for now
         default: 'localhost:15000',
-        env: 'MOJALOOP_ENDPOINT_DEFAULT',
       },
     },
   },
