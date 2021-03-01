@@ -286,3 +286,5 @@ export class Client {
     throw new NotImplementedError()
   }
 }
+
+export default Client

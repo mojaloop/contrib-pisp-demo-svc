@@ -39,9 +39,9 @@ defineFeature(feature, (test): void => {
   let server: Server
   let response: ServerInjectResponse
 
-  afterEach((done): void => {
+  afterEach(async (done): Promise<void> => {
     server.events.on('stop', done)
-    server.stop()
+    await server.stop()
   })
 
   test('Health Check', ({ given, when, then }): void => {

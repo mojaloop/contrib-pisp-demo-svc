@@ -25,7 +25,7 @@
  --------------
  ******/
 
-import { Client } from '~/shared/ml-thirdparty-client'
+import Client from '~/shared/ml-thirdparty-client'
 import { Plugin, Server } from '@hapi/hapi'
 import { Options } from './options'
 
