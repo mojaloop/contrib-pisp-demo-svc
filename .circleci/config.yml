@@ -257,22 +257,22 @@ jobs:
           paths:
             - ./docker-image.tar
 
-  license-scan:
-    executor: default-machine
-    steps:
-      - attach_workspace:
-          at: /tmp
-      - run:
-          name: Load the pre-built docker image from workspace
-          command: docker load -i /tmp/docker-image.tar
-      - run:
-          <<: *defaults_license_scanner
-      - run:
-          name: Run the license-scanner
-          command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
-      - store_artifacts:
-          path: /tmp/license-scanner/results
-          prefix: licenses
+  # license-scan:
+  #   executor: default-machine
+  #   steps:
+  #     - attach_workspace:
+  #         at: /tmp
+  #     - run:
+  #         name: Load the pre-built docker image from workspace
+  #         command: docker load -i /tmp/docker-image.tar
+  #     - run:
+  #         <<: *defaults_license_scanner
+  #     - run:
+  #         name: Run the license-scanner
+  #         command: cd /tmp/license-scanner && mode=docker dockerImages=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG make run
+  #     - store_artifacts:
+  #         path: /tmp/license-scanner/results
+  #         prefix: licenses
 
   # image-scan:
   #   executor: anchore/anchore_engine
@@ -444,16 +444,16 @@ workflows:
             branches:
               ignore:
                 - /.*/
-      - license-scan:
-          context: org-global
-          requires:
-            - build
-          filters:
-            tags:
-              only: /.*/
-            branches:
-              ignore:
-                - /.*/
+      # - license-scan:
+      #     context: org-global
+      #     requires:
+      #       - build
+      #     filters:
+      #       tags:
+      #         only: /.*/
+      #       branches:
+      #         ignore:
+      #           - /.*/
       # - image-scan:
       #     context: org-global
       #     requires:
@@ -468,7 +468,8 @@ workflows:
       - publish:
           context: org-global
           requires:
-            - license-scan
+            - build
+            # - license-scan
             # - image-scan
           filters:
             tags:
