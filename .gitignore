@@ -74,4 +74,5 @@ dist/
 junit.xml
 
 # Secret
-secret
+secret/**/*.json
+!secret/**/serviceAccountKeyExample.json
