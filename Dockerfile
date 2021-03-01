@@ -28,6 +28,7 @@ RUN ln -sf /dev/stdout ./logs/combined.log
 RUN apk del build-dependencies
 # RUN npm prune --production
 
-RUN npm run test:unit
+# Don't run unit tests here....
+# RUN npm run test:unit
 EXPOSE 8080
 CMD ["npm", "run", "start"]
