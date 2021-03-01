@@ -471,8 +471,6 @@ workflows:
             - license-scan
             # - image-scan
           filters:
-            tags:
-              only: /.*/
             branches:
               ignore:
                 - /.*/
