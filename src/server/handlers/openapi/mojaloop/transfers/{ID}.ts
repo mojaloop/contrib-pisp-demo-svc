@@ -32,8 +32,9 @@ import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  let body = context.request.body as TransferIDPutRequest
+  const body = context.request.body as TransferIDPutRequest
 
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.update(
     {
       transactionId: body.transactionId,

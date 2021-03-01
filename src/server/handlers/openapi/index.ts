@@ -30,14 +30,11 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { apiHandlers as appApiHandlers } from './app'
 import { apiHandlers as mojaloopApiHandlers } from './mojaloop'
 
-export {
-  appApiHandlers,
-  mojaloopApiHandlers
-}
+export { appApiHandlers, mojaloopApiHandlers }
 
 export const apiHandlers = {
   ...appApiHandlers,
-  ...mojaloopApiHandlers
+  ...mojaloopApiHandlers,
 }
 
 export const extHandlers: ExtHandlers = {
@@ -49,8 +46,9 @@ export const extHandlers: ExtHandlers = {
     return h.response().code(405)
   },
 
-  validationFail: (_: Context, __: Request, h: ResponseToolkit) => {
-    return h.response().code(406)
+  validationFail: (context: Context, __: Request, h: ResponseToolkit) => {
+    const error = JSON.stringify(context.validation.errors)
+    return h.response(error).code(400)
   },
 
   notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {

@@ -20,10 +20,10 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
-import { Server } from '@hapi/hapi'
 import * as faker from 'faker'
 
 import config from '~/lib/config'
@@ -104,7 +104,7 @@ const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsReques
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
-  callbackUri: 'https://pisp.com',
+  callbackUri: config.get('mojaloop').pispCallbackUri,
 }
 
 const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
@@ -112,7 +112,7 @@ const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest 
   initiatorId: 'pispA',
   authChannels: ['WEB', 'OTP'],
   scopes,
-  callbackUri: 'https://pisp.com',
+  callbackUri: config.get('mojaloop').pispCallbackUri,
   authUri: 'https://dfspAuth.com',
   authToken: 'secret-token',
 }
@@ -146,12 +146,12 @@ jest.mock('~/shared/ml-thirdparty-simulator/factories/transfer')
 
 describe('Mojaloop third-party simulator', () => {
   let simulator: Simulator
-  let server: Server
+  let server: StateServer
 
   beforeAll(async () => {
     server = ({
       inject: jest.fn().mockImplementation(),
-    } as unknown) as Server
+    } as unknown) as StateServer
 
     simulator = new Simulator(server, {
       host: 'mojaloop.' + config.get('hostname'),

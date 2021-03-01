@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -28,62 +29,42 @@
 
 import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
+import { Participant } from '~/shared/ml-thirdparty-client/models/core'
 
-export interface ITransactionRepository {
+export interface IParticipantRepository {
   /**
-   * Updates a transaction document based on a unique identifier.
+   * Replace existing participants list with new list.
    *
-   * @param id    Id for the transaction document that needs to be updated.
-   * @param data  Document fields that are about to be updated.
+   * @param data   Documents that are about to be added.
    */
-  updateById(id: string, data: Record<string, unknown>): Promise<void>
-
-  /**
-   * Updates one or more transaction documents based on the given conditions.
-   *
-   * @param conditions  Conditions for the documents that need to be updated.
-   * @param data        Document fields that are about to be updated.
-   */
-  update(
-    conditions: Record<string, unknown>,
-    data: Record<string, unknown>
-  ): Promise<void>
+  replace(data: Participant[]): Promise<void>
 }
 
-export class FirebaseTransactionRepository implements ITransactionRepository {
-  async updateById(id: string, data: Record<string, unknown>): Promise<void> {
-    await firebase.firestore().collection('transactions').doc(id).update(data)
-  }
-
-  async update(
-    conditions: Record<string, unknown>,
-    data: Record<string, unknown>
-  ): Promise<void> {
+export class FirebaseParticipantRepository implements IParticipantRepository {
+  async replace(data: Participant[]): Promise<void> {
     try {
-      let firestoreQuery: FirebaseFirestore.Query = firebase
+      const collectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> = firebase
         .firestore()
-        .collection('transactions')
+        .collection('participants')
 
-      // Chain all of the given conditions to the query
-      for (const key in conditions) {
-        firestoreQuery = firestoreQuery.where(key, '==', conditions[key])
-      }
-
-      // Find and update all matching documents in Firebase that match the given conditions.
-      const response = await firestoreQuery.get()
+      const response = await collectionRef.get()
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
       // API specification.
       const batch = firebase.firestore().batch()
 
-      // Iterate through all matching documents add them to the processing batch.
-      response.docs.forEach((doc) => {
-        batch.update(
-          // Put a reference to the document.
-          firebase.firestore().collection('transactions').doc(doc.id),
-          // Specify the updated fields and their new values.
-          data
-        )
+      const batchSize = response.size
+      if (batchSize > 0) {
+        // If previous participants list exists, delete it
+
+        // Iterate through all matching documents add them to the processing batch.
+        response.docs.forEach((doc) => {
+          batch.delete(doc.ref)
+        })
+      }
+      // Iterate through received participants list and add them to the processing batch.
+      data.forEach((participant: Participant) => {
+        batch.set(collectionRef.doc(), participant)
       })
 
       // Commit the updates.
@@ -94,4 +75,4 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
   }
 }
 
-export const transactionRepository: ITransactionRepository = new FirebaseTransactionRepository()
+export const participantRepository: IParticipantRepository = new FirebaseParticipantRepository()

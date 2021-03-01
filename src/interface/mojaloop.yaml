@@ -252,8 +252,8 @@ paths:
             schema:
               $ref: 'shared.yaml#/components/schemas/PutConsentsByIdRequest'
       responses:
-        202:
-          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
         400:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
         401:
@@ -270,12 +270,17 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
-    delete:
+    patch:
       tags:
         - consents
-      summary: '[Mojaloop Callback] Result of deleting the specified consent'
-      description: Result of deleting the specified consent
-      operationId: deleteConsentsById
+      summary: '[Mojaloop Callback] Result of patching the specified consent (used in unlinking)'
+      description: Result of patching the specified consent (used in unlinking)
+      operationId: patchConsentsById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PatchConsentsByIdRequest'
       responses:
         200:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
