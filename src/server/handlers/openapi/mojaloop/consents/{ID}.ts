@@ -26,6 +26,7 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+import { ConsentStatus } from '~/models/consent'
 import { consentRepository } from '~/repositories/consent'
 
 export const put: Handler = async (
@@ -35,9 +36,29 @@ export const put: Handler = async (
 ) => {
   // Updates consent fields
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(
-    context.request.params.ID as string,
-    context.request.body
+
+  // Status depends on the payload
+  // if there is no signature, then it's awaiting signature
+  let status = ConsentStatus.CHALLENGE_GENERATED
+  switch (context.request.body.credential.status) {
+    case "PENDING":
+      status = ConsentStatus.CHALLENGE_GENERATED
+      break;
+    case "VERIFIED":
+      status = ConsentStatus.ACTIVE
+      break;
+    default:
+      throw new Error(`PUT /consents/{id} had unrecognized credential.status: ${context.request.body.credential.status}`)
+  }
+
+  consentRepository.updateConsent(
+    {
+      consentId: context.request.params.ID
+    },
+    {
+      ...context.request.body,
+      status
+    }
   )
   return h.response().code(200)
 }
@@ -49,8 +70,10 @@ export const patch: Handler = async (
 ) => {
   // Updates consent fields patched
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(
-    context.request.params.ID as string,
+  consentRepository.updateConsent(
+    {
+      consentId: context.request.params.ID
+    },
     context.request.body
   )
   return h.response().code(200)

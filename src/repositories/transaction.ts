@@ -30,6 +30,9 @@ import firebase from '~/lib/firebase'
 import { logger } from '~/shared/logger'
 
 export interface ITransactionRepository {
+  // TD: Lewis hacky
+  insert(data: Record<string, unknown>): Promise<string>
+
   /**
    * Updates a transaction document based on a unique identifier.
    *
@@ -51,8 +54,26 @@ export interface ITransactionRepository {
 }
 
 export class FirebaseTransactionRepository implements ITransactionRepository {
+  // TD: Lewis hacky to get some tests working
+  async insert(data: Record<string, unknown>): Promise<string> {
+    const ref = await firebase.firestore().collection('transactions').doc()
+    // Make sure we set the id correctly
+    data.id = ref.id
+    await ref.set(data)
+    return (data.id as unknown) as string
+  }
+
   async updateById(id: string, data: Record<string, unknown>): Promise<void> {
-    await firebase.firestore().collection('transactions').doc(id).update(data)
+    // await firebase.firestore().collection('transactions').doc(id).update(data)
+    // TD - LD hack - just so we can merge things easier
+    const options: FirebaseFirestore.SetOptions = {
+      merge: true,
+    }
+    await firebase
+      .firestore()
+      .collection('transactions')
+      .doc(id)
+      .set(data, options)
   }
 
   async update(
@@ -71,6 +92,18 @@ export class FirebaseTransactionRepository implements ITransactionRepository {
 
       // Find and update all matching documents in Firebase that match the given conditions.
       const response = await firestoreQuery.get()
+      console.log(
+        'transaction::update, found docs for conditions',
+        response.docs,
+        conditions
+      )
+
+      if (response.docs.length === 0) {
+        console.log(
+          'transaction::update - WARNING: found no docs for conditions',
+          conditions
+        )
+      }
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
       // API specification.

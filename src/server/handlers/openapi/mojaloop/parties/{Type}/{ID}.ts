@@ -26,6 +26,8 @@
 
 import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+import config from '~/lib/config'
+
 
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
@@ -57,6 +59,8 @@ export const put: Handler = async (
   // function is expected to run asynchronously, so the server could quickly
   // give a response to Mojaloop.
 
+  console.log("handling inbount put parties")
+
   if (partyIdType === PartyIdType.OPAQUE) {
     // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
     // available for linking from a pre-determined DFSP
@@ -65,14 +69,19 @@ export const put: Handler = async (
     consentRepository.updateConsent(
       // Conditions for the documents that need to be updated
       {
-        'payee.partyIdInfo.partyIdType': partyIdType,
-        'payee.partyIdInfo.partyIdentifier': partyIdentifier,
+        'party.partyIdInfo.partyIdType': partyIdType,
+        'party.partyIdInfo.partyIdentifier': partyIdentifier,
         status: ConsentStatus.PENDING_PARTY_LOOKUP,
       },
       // Update the given field by their new values
       {
         party: body.party,
-        accounts: body.accounts,
+        initiatorId: config.get('mojaloop').participantId,
+        // todo: do we need this?
+        // The structure looks funny
+        // TODO: this looks bad to me - maybe it's what the TTK is returning?
+        // @ts-ignore
+        accounts: body.party.accounts.account,
         status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
       }
     )

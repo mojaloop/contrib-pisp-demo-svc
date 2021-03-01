@@ -105,7 +105,7 @@ const config = convict({
     participantId: {
       doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
       format: String,
-      default: 'pisp',
+      default: 'pispa',
       env: 'MOJALOOP_PARTICIPANT_ID',
     },
     // TODO: Replace placeholder
@@ -116,10 +116,20 @@ const config = convict({
       env: 'MOJALOOP_CALLBACK_URI',
     },
     endpoints: {
+      /* TODO: we need to set this based on resources:
+        account linking: localhost:15000 (local ttk)
+        transfers:
+          - account-lookup
+          - thirdparty
+          - authorizations/transaction-request-service
+
+      */
       default: {
         doc: 'Default endpoint to communicate with Mojaloop',
         format: '*',
-        default: '172.17.0.2:3001',
+        // I can't seem to be able to change this in my .env file
+        // going to set manually for now
+        default: 'localhost:15000',
         env: 'MOJALOOP_ENDPOINT_DEFAULT',
       },
     },

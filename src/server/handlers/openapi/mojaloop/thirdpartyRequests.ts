@@ -26,23 +26,37 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { Status } from '~/models/transaction'
-import { transactionRepository } from '~/repositories/transaction'
+// import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 
-export const patch: Handler = async (_context: Context, req: Request, h: ResponseToolkit) => {
+// import { transactionRepository } from '~/repositories/transaction'
+// import { Status } from '~/models/transaction'
 
-  // ttk hacks galore!
-  const transactionRequestId = req.params.path.split('/').pop()
-  transactionRepository.update(
-    {
-      transactionRequestId,
-      status: Status.AUTHORIZATION_REQUIRED,
-    },
-    {
-      completedTimestamp: (new Date()).toISOString(),
-      status: Status.SUCCESS,
-    }
-  )
 
+export const put: Handler = async (_context: Context, _: Request, h: ResponseToolkit) => {
+  // const body = context.request.body as AuthorizationsPostRequest
+
+  console.log("putThirdpartyRequestTransactions inbound")
+  // Not await-ing promise to resolve - code is executed asynchronously
+  // transactionRepository.update(
+  //   {
+  //     transactionRequestId: body.transactionRequestId,
+  //     status: Status.PENDING_PAYEE_CONFIRMATION,
+  //   },
+  //   {
+  //     authentication: {
+  //       type: body.authenticationType,
+  //     },
+  //     transactionId: body.transactionId,
+  //     quote: body.quote,
+  //     status: Status.AUTHORIZATION_REQUIRED,
+  //   }
+  // )
+
+  return h.response().code(200)
+}
+
+export const putError: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  console.log("putThirdpartyRequestTransactions error", context.request.body)
+  // TODO: get error details...
   return h.response().code(200)
 }

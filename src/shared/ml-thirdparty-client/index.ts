@@ -32,7 +32,6 @@ import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
-  AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
@@ -40,8 +39,12 @@ import SDKStandardComponents, {
   Logger,
   ThirdpartyRequests,
   MojaloopRequests,
+  PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+  BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
+
+// const ELB_URL = process.env.ELB_URL!
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -84,19 +87,37 @@ export class Client {
   public constructor(options: Options) {
     this.options = options
 
-    const configRequest = {
+    const configRequest: BaseRequestConfigType = {
       dfspId: this.options.participantId,
-      logger: Logger,
+      logger: new Logger.Logger(),
       // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {
-        outbound: {
-          mutualTLS: {
-            enabled: false,
-          },
-        },
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
       },
+      // TODO: make these configurable
       peerEndpoint: this.options.endpoints.default,
+      // alsEndpoint: `${ELB_URL}/account-lookup-service/`,
+      // peerEndpoint: `${ELB_URL}/`,
+      // quotesEndpoint: `${ELB_URL}/quoting-service/`,
+      // bulkQuotesEndpoint: `${ELB_URL}/quoting-service/`,
+      // transfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
+      // bulkTransfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
+      // transactionRequestsEndpoint: `${ELB_URL}/transaction-requests-service/`,
+      // thirdpartyRequestsEndpoint: `${ELB_URL}/thirdparty-api-adapter/`,
+      resourceVersions: {
+        // override parties here, since the ttk doesn't have config for 1.1
+        parties: {
+          contentVersion: '1.0',
+          acceptVersion: '1.0'
+        }
+      }
+      // v12, this was removed
+      // responseType: 'string',
     }
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
@@ -145,29 +166,34 @@ export class Client {
 
    */
   public async putAuthorizations(
-    _id: string,
-    _requestBody: AuthorizationsPutIdRequest,
-    _destParticipantId: string
+    id: string,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Replace placeholder with commented implementation
-    //       once implemented in sdk-standard-components
 
-    // Placeholder
-    throw new NotImplementedError()
+    const requestBody = {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'OTP',
+        // authenticationValue: {
+        //   pinValue: _requestBody.value,
+        //   counter: "1"
+        // }
+        authenticationValue: _requestBody.value,
+      },
+      responseType: 'ENTERED'
+    }
 
-    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-    //   requestBody,
-    //   id,
-    //   destParticipantId
-    // )
+    // @ts-ignore
+    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    // TD - Hack!!! - workaround for the ttk not liking puts
+    // return this.mojaloopRequests._post(`thirdPartyAuthorizations/${id}`, 'authorizations', requestBody, destParticipantId)
   }
 
   /**
    * Gets a list of PISP/DFSP participants
    */
-  public async getParticipants(): Promise<
-  SDKStandardComponents.GenericRequestResponse | undefined
-  > {
+  public async getParticipants(): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
     throw new NotImplementedError()
@@ -216,12 +242,13 @@ export class Client {
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string,
-    _destParticipantId: string
+    consentId: string,
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Add once implemented in sdk-standard components
-    // Placeholder below
-    throw new NotImplementedError()
+    // TODO: implement in sdk standard components
+    // TODO: this should just be empty!
+    const body = { type: 'FIDO'}
+    // @ts-ignore
+    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', body, undefined)
   }
 
   /**

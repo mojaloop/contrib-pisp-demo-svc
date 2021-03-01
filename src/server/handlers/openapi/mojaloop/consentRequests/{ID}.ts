@@ -36,7 +36,9 @@ export const put: Handler = async (
 ) => {
   const { authChannels, authUri } = context.request.body
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(context.request.params.ID as string, {
+  consentRepository.updateConsent({
+    consentRequestId: context.request.params.ID,
+  }, {
     authChannels,
     authUri,
     status: ConsentStatus.AUTHENTICATION_REQUIRED,

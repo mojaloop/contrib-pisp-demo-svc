@@ -34,10 +34,15 @@ export const post: Handler = async (
   _request: Request,
   h: ResponseToolkit
 ) => {
+  console.log("post consents handler", context.request.body)
   const { id, initiatorId, participantId, scopes } = context.request.body
 
   // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsentById(id, {
+  consentRepository.updateConsent({
+    consentRequestId: context.request.body.requestId
+  }, {
+    // ConsentId has now been provided by DFSP
+    consentId: id,
     initiatorId,
     participantId,
     scopes,

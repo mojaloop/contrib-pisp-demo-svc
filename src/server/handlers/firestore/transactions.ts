@@ -27,24 +27,23 @@
 /* istanbul ignore file */
 // TODO: Testing will covered in separate ticket
 
-import * as uuid from 'uuid'
-
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
   AmountType,
-  AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
-import { Transaction, Status, ResponseType } from '~/models/transaction'
+import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
 import { consentRepository } from '~/repositories/consent'
+import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
-// TODO: Replace once design decision made on how we should be obtaining this
-const destParticipantId = 'PLACEHOLDER'
+// TODO: get from the consent object
+// for now, just hardcode to dfspa
+const destParticipantId = 'dfspa'
 
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
@@ -52,7 +51,10 @@ async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // of the onUpdate function.
   // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.updateById(transaction.id, {
-    transactionRequestId: uuid.v4(),
+    // TD - LD Hack - set this to match what the testing toolkit will return
+    // TODO: make configurable
+    // transactionRequestId: uuid.v4(),
+    transactionRequestId: '02e28448-3c05-4059-b5f7-d518d0a2d8ea',
     status: Status.PENDING_PARTY_LOOKUP,
   })
 }
@@ -60,16 +62,20 @@ async function handleNewTransaction(_: StateServer, transaction: Transaction) {
 async function handlePartyLookup(server: StateServer, transaction: Transaction) {
   // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
-  if (validator.isValidPartyLookup(transaction)) {
-    // Payee is guaranteed to be non-null by the validator.
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const payee = transaction.payee!
-
-    server.app.mojaloopClient.getParties(
-      payee.partyIdInfo.partyIdType,
-      payee.partyIdInfo.partyIdentifier
-    )
+  if (!validator.isValidPartyLookup(transaction)) {
+    console.log('error - invalid party lookup for ', transaction)
+    return;
   }
+
+  // LD - we should be able to fix this by better using typings here
+  // Payee is guaranteed to be non-null by the validator.
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const payee = transaction.payee!
+
+  server.app.mojaloopClient.getParties(
+    payee.partyIdInfo.partyIdType,
+    payee.partyIdInfo.partyIdentifier
+  )
 }
 
 async function handlePartyConfirmation(
@@ -120,16 +126,16 @@ async function handlePartyConfirmation(
   }
 }
 
-function toMojaloopResponseType(
-  type: ResponseType
-): AuthenticationResponseType {
-  switch (type) {
-    case ResponseType.AUTHORIZED:
-      return AuthenticationResponseType.ENTERED
-    case ResponseType.REJECTED:
-      return AuthenticationResponseType.REJECTED
-  }
-}
+// function toMojaloopResponseType(
+//   type: ResponseType
+// ): AuthenticationResponseType {
+//   switch (type) {
+//     case ResponseType.AUTHORIZED:
+//       return AuthenticationResponseType.ENTERED
+//     case ResponseType.REJECTED:
+//       return AuthenticationResponseType.REJECTED
+//   }
+// }
 
 async function handleAuthorization(server: StateServer, transaction: Transaction) {
   if (validator.isValidAuthorization(transaction)) {
@@ -137,23 +143,21 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
     // to the next step by sending an authorization to Mojaloop.
 
     // Convert to a response type that is understood by Mojaloop.
-    const mojaloopResponseType = toMojaloopResponseType(
-      transaction.responseType!
-    )
+    // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
+
+    // TD - LD eww so much messy casting going on
+    const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+      challenge: JSON.stringify(transaction.quote),
+      consentId: transaction.consentId!,
+      sourceAccountId: transaction.sourceAccountId!,
+      //LD - TODO: this should be pending - but need to fix ok TTK
+      status: 'VERIFIED',
+      value: transaction.authentication?.value as string,
+    }
 
     // The optional values are guaranteed to exist by the validator.
     // eslint-disable @typescript-eslint/no-non-null-assertion
-    server.app.mojaloopClient.putAuthorizations(
-      transaction.transactionRequestId!,
-      {
-        responseType: mojaloopResponseType,
-        authenticationInfo: {
-          authentication: transaction.authentication!.type!,
-          authenticationValue: transaction.authentication!.value!,
-        },
-      },
-      destParticipantId
-    )
+    server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
     // eslint-enable @typescript-eslint/no-non-null-assertion
   }
 }
@@ -162,6 +166,7 @@ export const onCreate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
+  // console.log('onCreateCalled', transaction)
   if (transaction.status) {
     // Skip transaction that has been processed previously.
     // We need this because when the server starts for the first time,
@@ -177,6 +182,7 @@ export const onUpdate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
+  console.log('onUpdateCalled', transaction)
   if (!transaction.status) {
     // Status is expected to be null only when the document is created for the first
     // time by the user.

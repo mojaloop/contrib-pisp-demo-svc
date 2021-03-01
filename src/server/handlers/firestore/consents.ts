@@ -77,14 +77,16 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
   // Fields are guaranteed to be non-null by the validator.
   try {
     server.app.mojaloopClient.putConsentRequests(
-      consent.id,
+      consent.consentRequestId!,
       {
         initiatorId: consent.initiatorId!,
         authChannels: consent.authChannels!,
         scopes: consent.scopes!,
+        authToken: consent.authToken!,
+        // TODO: sdk standard components could be more strict here
+        // these fields aren't needed here
         authUri: consent.authUri!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
-        authToken: consent.authToken!,
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -94,6 +96,7 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 }
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
+  // TODO: mssing some fields... maybe we need to add them to the initial thingy
   if (!validator.isValidConsentRequest(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -106,7 +109,7 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
         initiatorId: consent.initiatorId!,
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
-        id: consent.id,
+        id: consent.consentRequestId!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
@@ -124,8 +127,7 @@ async function initiateChallengeGeneration(server: StateServer, consent: Consent
   try {
     // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId!,
-      consent.party!.partyIdInfo.fspId!
+      consent.consentId!
     )
   } catch (error) {
     logger.error(error)
@@ -142,7 +144,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
-        requestId: consent.id,
+        requestId: consent.consentRequestId!,
         initiatorId: consent.initiatorId!,
         participantId: consent.participantId!,
         scopes: consent.scopes!,
@@ -203,10 +205,18 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.PENDING_PARTY_CONFIRMATION:
+      console.log("no need to handle PENDING_PARTY_CONFIRMATION state - waiting for user input")
+      break
+
+    case ConsentStatus.PARTY_CONFIRMED:
       await initiateConsentRequest(server, consent)
       break
 
     case ConsentStatus.AUTHENTICATION_REQUIRED:
+      console.log("no need to handle AUTHENTICATION_REQUIRED state - waiting for user input")
+      break
+
+    case ConsentStatus.AUTHENTICATION_COMPLETE:
       await initiateAuthentication(server, consent)
       break
 
@@ -214,6 +224,15 @@ export const onUpdate: ConsentHandler = async (
       await initiateChallengeGeneration(server, consent)
       break
 
+    case ConsentStatus.CHALLENGE_GENERATED:
+      console.log("no need to handle CHALLENGE_GENERATED state - waiting for user input")
+      break
+
+    case ConsentStatus.CHALLENGE_SIGNED:
+      await handleSignedChallenge(server, consent)
+      break
+
+    // TODO: I don't think this is right...
     case ConsentStatus.ACTIVE:
       await handleSignedChallenge(server, consent)
       break

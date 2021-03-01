@@ -186,6 +186,8 @@ describe('Mojaloop third-party client', () => {
 
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
     expect(
+      // TD - bad types here...
+      // @ts-ignore
       client.putAuthorizations('111', authorizationData, '222')
     ).rejects.toThrow(new NotImplementedError())
 
@@ -259,7 +261,7 @@ describe('Mojaloop third-party client', () => {
 
   it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
     expect(
-      client.postGenerateChallengeForConsent(consentId, destParticipantId)
+      client.postGenerateChallengeForConsent(consentId)
     ).rejects.toThrow(new NotImplementedError())
 
     // TODO: Use this test once implemented

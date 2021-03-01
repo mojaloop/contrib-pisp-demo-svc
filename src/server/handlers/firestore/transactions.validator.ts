@@ -59,9 +59,9 @@ export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
 }
 
 /**
- * Checks whether a transaction document has all the necessary fields to be 
+ * Checks whether a transaction document has all the necessary fields to be
  * processed as a transaction authorization.
- * 
+ *
  * @param transaction the object representation of a transaction that is stored
  *                    on Firebase.
  */

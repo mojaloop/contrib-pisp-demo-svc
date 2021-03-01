@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: PISP Demo Server Open API
-  description: This is part of the PISP demo server that handles communication with 
-    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size 
+  description: This is part of the PISP demo server that handles communication with
+    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size
     of 65536 bytes (64 Kilobytes) in the HTTP header.
   license:
     name: Apache 2.0
@@ -300,15 +300,15 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
-  /transfers/{ID}:
+  /thirdpartyRequests/transactions/{ID}:
     parameters:
       - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
     put:
       tags:
-        - transfers
-      summary: '[Mojaloop Callback] Result of transfer'
-      description: Mojaloop callback for third party that initiated a transaction.
-      operationId: putTransfersById
+        - thirdpartyRequests
+      summary: PUT ThirdpartyRequestsTransactions
+      description: Callback from the DFSP on the progress of a given thirdparty transaction request
+      operationId: putThirdpartyRequestTransactions
       parameters:
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
         - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
@@ -316,10 +316,80 @@ paths:
         content:
           application/json:
             schema:
+              $ref: 'shared.yaml#/components/schemas/ThirdpartyRequestsTransactionsIDPutResponse'
+      responses:
+        202:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+    patch:
+      tags:
+        - transfers
+      summary: '[Mojaloop Callback] Result of transfer'
+      description: Mojaloop callback for third party that initiated a transaction.
+      operationId: patchThirdpartyRequestsTransactions
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              # TODO: update this name to PATCH
               $ref: 'shared.yaml#/components/schemas/PutTransfersByIdRequest'
       responses:
         200:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /thirdpartyRequests/transactions/{ID}/error:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - thirdpartyRequests
+      summary: PUT ThirdpartyRequestsTransactionsError
+      description: Error callback from DFSP/Switch about a thirdparty transaction request
+      operationId: putThirdpartyRequestTransactionsError
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/schemas/ErrorInformationResponse.yaml'
+      responses:
+        202:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/202'
         400:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
         401:

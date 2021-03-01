@@ -56,9 +56,21 @@ export interface IConsentRepository {
     conditions: Record<string, unknown>,
     data: Record<string, unknown>
   ): Promise<void>
+
+  // TODO:add an insert
+  insert(data: Record<string, unknown>): Promise<string>
 }
 
 export class FirebaseConsentRepository implements IConsentRepository {
+  // TD: Lewis hacky to get some tests working
+  async insert(data: Record<string, unknown>): Promise<string> {
+    const ref = await firebase.firestore().collection('consents').doc()
+    // Make sure we set the id correctly
+    data.id = ref.id
+    await ref.set(data)
+    return (data.id as unknown) as string
+  }
+
   async getConsentById(id: string): Promise<Consent> {
     return new Promise((resolve, reject) => {
       firebase
@@ -83,7 +95,13 @@ export class FirebaseConsentRepository implements IConsentRepository {
     id: string,
     data: Record<string, unknown>
   ): Promise<void> {
-    await firebase.firestore().collection('consents').doc(id).update(data)
+    // TODO: do we need to do a merge here???
+    // await firebase.firestore().collection('consents').doc(id).update(data)
+    await firebase
+      .firestore()
+      .collection('consents')
+      .doc(id)
+      .set(data, { merge: true })
   }
 
   async updateConsent(
@@ -102,12 +120,25 @@ export class FirebaseConsentRepository implements IConsentRepository {
 
       // Find and update all matching documents in Firebase that match the given conditions.
       const response = await firestoreQuery.get()
+      console.log(
+        'consent::updateConsent, found docs for conditions',
+        response.docs,
+        conditions
+      )
+
+      if (response.docs.length === 0) {
+        console.log(
+          'consent::updateConsent - WARNING: found no docs for conditions',
+          conditions
+        )
+      }
       // Create a batch to perform all of the updates using a single request.
       // Firebase will also execute the updates atomically according to the
       // API specification.
       const batch = firebase.firestore().batch()
 
       // Iterate through all matching documents add them to the processing batch.
+      console.log('updating docs with data', data)
       response.docs.forEach((doc) => {
         batch.update(
           // Put a reference to the document.

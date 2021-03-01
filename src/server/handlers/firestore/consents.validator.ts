@@ -50,10 +50,13 @@ export const isValidAuthentication = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.consentRequestId &&
-    consent.consentId &&
     consent.initiatorId &&
     consent.authChannels &&
     consent.authToken
+    // TODO: if the channel is WEB, then we must also have an authtoken
+    // this method of validation is rather bad
+    // I mean, we are validating that data we wrote elsewhere is valid
+    // why not make sure we can't write invalid data?
   )
 }
 
@@ -70,7 +73,7 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
     consent.authChannels &&
     consent.scopes &&
     consent.initiatorId &&
-    consent.authUri
+    consent.consentRequestId
   )
 }
 
@@ -87,6 +90,7 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
     consent.credential &&
     consent.scopes &&
     consent.initiatorId &&
+    consent.consentRequestId &&
     consent.participantId
   )
 }
