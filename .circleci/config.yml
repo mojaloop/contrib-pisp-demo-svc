@@ -108,32 +108,32 @@ jobs:
       - store_test_results:
           path: ./test/results
   
-  test-bdd:
-    executor: default-docker
-    steps:
-      - checkout
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-      - restore_cache:
-          keys:
-          - dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Bundle Open API files before executing tests
-          command: npm run build:openapi
-      - run:
-          name: Execute unit tests
-          command: npm run test:bdd
-      - run:
-          name: prepare test/results
-          command: |
-            mkdir -p test/results
-            mv junit.xml test/results
-      - store_artifacts:
-          path: ./test/results
-          prefix: test
-      - store_test_results:
-            path: ./test/results
+  # test-bdd:
+  #   executor: default-docker
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install general dependencies
+  #         command: *defaults_Dependencies
+  #     - restore_cache:
+  #         keys:
+  #         - dependency-cache-{{ checksum "package-lock.json" }}
+  #     - run:
+  #         name: Bundle Open API files before executing tests
+  #         command: npm run build:openapi
+  #     - run:
+  #         name: Execute unit tests
+  #         command: npm run test:bdd
+  #     - run:
+  #         name: prepare test/results
+  #         command: |
+  #           mkdir -p test/results
+  #           mv junit.xml test/results
+  #     - store_artifacts:
+  #         path: ./test/results
+  #         prefix: test
+  #     - store_test_results:
+  #           path: ./test/results
 
   # test-coverage:
   #   executor: default-docker
@@ -373,16 +373,25 @@ workflows:
     jobs:
       - setup:
           context: org-global
+          filters: 
+            tags:
+              only: /.*/
 
-      - test-bdd:
-          context: org-global
-          requires:
-            - setup
+      # - test-bdd:
+      #     context: org-global
+      #     requires:
+      #       - setup
+      #     filters: 
+      #       tags:
+      #         only: /.*/
           
       - test-unit:
           context: org-global
           requires:
             - setup
+          filters: 
+            tags:
+              only: /.*/
           
       # - test-coverage:
       #     context: org-global
@@ -398,23 +407,32 @@ workflows:
           context: org-global
           requires:
             - setup
+          filters: 
+            tags:
+              only: /.*/
          
       - test-integration:
           context: org-global
           requires:
             - setup
+          filters: 
+            tags:
+              only: /.*/
           
       - linting-check:
           context: org-global
           requires:
             - setup
+          filters: 
+            tags:
+              only: /.*/
             
       - build:
           context: org-global
           requires:
             - setup
             - test-unit
-            - test-bdd
+            # - test-bdd
             # - test-coverage
             - test-integration
             - linting-check
@@ -422,7 +440,7 @@ workflows:
             - audit-licenses
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /.*/
             branches:
               ignore:
                 - /.*/
@@ -432,7 +450,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /.*/
             branches:
               ignore:
                 - /.*/
@@ -454,7 +472,7 @@ workflows:
             # - image-scan
           filters:
             tags:
-              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+              only: /.*/
             branches:
               ignore:
                 - /.*/
