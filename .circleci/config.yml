@@ -200,24 +200,24 @@ jobs:
           name: Execute eslint
           command: npm run lint
 
-  vulnerability-check:
-    executor: default-docker
-    steps:
-      - checkout
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Create dir for test results
-          command: mkdir -p ./audit/results
-      - run:
-          name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
-      - store_artifacts:
-          path: ./audit/results
-          prefix: audit
+  # vulnerability-check:
+  #   executor: default-docker
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install general dependencies
+  #         command: *defaults_Dependencies
+  #     - restore_cache:
+  #         key: dependency-cache-{{ checksum "package-lock.json" }}
+  #     - run:
+  #         name: Create dir for test results
+  #         command: mkdir -p ./audit/results
+  #     - run:
+  #         name: Check for new npm vulnerabilities
+  #         command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
+  #     - store_artifacts:
+  #         path: ./audit/results
+  #         prefix: audit
 
   audit-licenses:
     executor: default-docker
@@ -389,10 +389,10 @@ workflows:
       #     requires:
       #       - setup
           
-      - vulnerability-check:
-          context: org-global
-          requires:
-            - setup
+      # - vulnerability-check:
+      #     context: org-global
+      #     requires:
+      #       - setup
           
       - audit-licenses:
           context: org-global
@@ -418,7 +418,7 @@ workflows:
             # - test-coverage
             - test-integration
             - linting-check
-            - vulnerability-check
+            # - vulnerability-check
             - audit-licenses
           filters:
             tags:
