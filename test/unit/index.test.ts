@@ -60,10 +60,7 @@ describe('index', (): void => {
 
       const request = {
         method: 'GET',
-        url: '/health',
-        headers: {
-          "Host": "app.pisp-demo-server.local",
-        },
+        url: '/app/health',
       }
 
       const response = await server.inject(request)
