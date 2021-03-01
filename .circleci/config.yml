@@ -200,24 +200,24 @@ jobs:
           name: Execute eslint
           command: npm run lint
 
-  vulnerability-check:
-    executor: default-docker
-    steps:
-      - checkout
-      - run:
-          name: Install general dependencies
-          command: *defaults_Dependencies
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Create dir for test results
-          command: mkdir -p ./audit/results
-      - run:
-          name: Check for new npm vulnerabilities
-          command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
-      - store_artifacts:
-          path: ./audit/results
-          prefix: audit
+  # vulnerability-check:
+  #   executor: default-docker
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: Install general dependencies
+  #         command: *defaults_Dependencies
+  #     - restore_cache:
+  #         key: dependency-cache-{{ checksum "package-lock.json" }}
+  #     - run:
+  #         name: Create dir for test results
+  #         command: mkdir -p ./audit/results
+  #     - run:
+  #         name: Check for new npm vulnerabilities
+  #         command: npm run audit:check --silent -- --json > ./audit/results/auditResults.json
+  #     - store_artifacts:
+  #         path: ./audit/results
+  #         prefix: audit
 
   audit-licenses:
     executor: default-docker
@@ -334,64 +334,33 @@ jobs:
   # TODO: setup publish & deploy if needed
   #
 
-  # publish:
-  #   executor: default-machine
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: /tmp
-  #     - run:
-  #         name: Load the pre-built docker image from workspace
-  #         command: docker load -i /tmp/docker-image.tar
-  #     - run:
-  #         name: Login to Docker Hub
-  #         command: docker login -u $DOCKER_USER -p $DOCKER_PASS
-  #     - run:
-  #         name: Re-tag pre built image
-  #         command: |
-  #           docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
-  #     - run:
-  #         name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
-  #         command: |
-  #           echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
-  #           docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
-  #           echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
-  #           docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
-  #     - slack/status:
-  #         webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
-  #         success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
+  publish:
+    executor: default-machine
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+          name: Load the pre-built docker image from workspace
+          command: docker load -i /tmp/docker-image.tar
+      - run:
+          name: Login to Docker Hub
+          command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+      - run:
+          name: Re-tag pre built image
+          command: |
+            docker tag $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+      - run:
+          name: Publish Docker image $CIRCLE_TAG & Latest tag to Docker Hub
+          command: |
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$CIRCLE_TAG
+            echo "Publishing $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG"
+            docker push $DOCKER_ORG/$CIRCLE_PROJECT_REPONAME:$RELEASE_TAG
+      # - slack/status:
+      #     webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
+      #     success_message: '*"${CIRCLE_PROJECT_REPONAME}"* - Release \`"${CIRCLE_TAG}"\` \nhttps://github.com/mojaloop/"${CIRCLE_PROJECT_REPONAME}"/releases/tag/"${CIRCLE_TAG}"'
       
-  # deploy:
-  #   executor: deploy-kube/helm-kube
-  #   steps:
-  #     - checkout
-  #     - deploy-kube/setup_and_run:
-  #         helm_set_values: |
-  #           --set central.centralledger.centralledger-service.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-service.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-transfer-prepare.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-transfer-prepare.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-admin-transfer.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-admin-transfer.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-transfer-position.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-transfer-position.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-transfer-get.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-transfer-get.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-transfer-fulfil.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-transfer-fulfil.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set central.centralledger.centralledger-handler-timeout.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set central.centralledger.centralledger-handler-timeout.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-prepare.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-prepare.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-fulfil.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-fulfil.containers.api.image.tag=$CIRCLE_TAG \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-processing.containers.api.image.repository=$DOCKER_ORG/$CIRCLE_PROJECT_REPONAME \
-  #           --set mojaloop-bulk.bulk-centralledger.cl-handler-bulk-transfer-processing.containers.api.image.tag=$CIRCLE_TAG
-  #     - slack/status:
-  #         fail_only: true
-  #         webhook: "$SLACK_WEBHOOK_ANNOUNCEMENT"
-  #         failure_message: 'Deployment failed for: \`"${DOCKER_ORG}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}"\`'
-
 
 ##
 # Workflows
@@ -420,10 +389,10 @@ workflows:
       #     requires:
       #       - setup
           
-      - vulnerability-check:
-          context: org-global
-          requires:
-            - setup
+      # - vulnerability-check:
+      #     context: org-global
+      #     requires:
+      #       - setup
           
       - audit-licenses:
           context: org-global
@@ -449,7 +418,7 @@ workflows:
             # - test-coverage
             - test-integration
             - linting-check
-            - vulnerability-check
+            # - vulnerability-check
             - audit-licenses
           filters:
             tags:
@@ -477,24 +446,15 @@ workflows:
       #       branches:
       #         ignore:
       #           - /.*/
-      # - publish:
-      #     context: org-global
-      #     requires:
-      #       - license-scan
-      #       - image-scan
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
-      # - deploy:
-      #     context: org-global
-      #     requires:
-      #       - publish
-      #     filters:
-      #       tags:
-      #         only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?/
-      #       branches:
-      #         ignore:
-      #           - /.*/
+
+      - publish:
+          context: org-global
+          requires:
+            - license-scan
+            # - image-scan
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*(\-snapshot)?(\-hotfix(\.[0-9]+))?/
+            branches:
+              ignore:
+                - /.*/

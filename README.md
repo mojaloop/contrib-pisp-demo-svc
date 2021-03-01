@@ -9,7 +9,7 @@ The following steps should allow you to perform a mocked out end-to-end transfer
 1. Firebase SDK Admin Key
 
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
-Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey`.
+Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey.json`.
 
 Note that this path is just the default path but can be configured (see [Configurations section](#configurations)).
 
