@@ -24,12 +24,13 @@
  --------------
  ******/
 
-type Client = import('~/shared/ml-thirdparty-client').Client
+
+type MojaloopClient = import('~/shared/ml-thirdparty-client').MojaloopClient
 type Server = import('@hapi/hapi').Server
 type ServerApplicationState = import('@hapi/hapi').ServerApplicationState
 
 interface PISPServerApplicationState extends ServerApplicationState {
-  mojaloopClient: Client
+  mojaloopClient: MojaloopClient
 }
 
 interface StateServer extends Server {

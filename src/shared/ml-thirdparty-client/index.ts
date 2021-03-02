@@ -44,6 +44,23 @@ import SDKStandardComponents, {
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
 
+
+export interface MojaloopClient {
+
+  /**
+  * Performs a lookup for a party with the given identifier.
+  *
+  * @param _type  the type of party identifier
+  * @param _id    the party identifier
+  */
+  getParties(
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
+  ): Promise<unknown>
+
+}
+
 /**
  * A client object that abstracts out operations that could be performed in
  * Mojaloop. With this, a service does not need to directly specify the request
@@ -53,7 +70,7 @@ import { NotImplementedError } from '../errors'
  * when it wants to perform a certain operation.
  */
 
-export class Client {
+export class Client implements MojaloopClient{
   /**
    * An optional simulator that is expected to be passed when using the
    * simulator plugin.

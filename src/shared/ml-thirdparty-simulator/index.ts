@@ -42,13 +42,14 @@ import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
+import { MojaloopClient } from '../ml-thirdparty-client'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
  * randomly generated replies. This is useful to aid the testing process when
  * Mojaloop is not deployed.
  */
-export class Simulator {
+export class Simulator implements MojaloopClient {
   /**
    * A server object to be used to inject the fake Mojaloop callbacks.
    */
@@ -83,8 +84,10 @@ export class Simulator {
    */
   public async getParties(
     type: PartyIdType,
-    id: string
-  ): Promise<ServerInjectResponse> {
+    id: string,
+    _idSubValue?: string
+  ): Promise<unknown> {
+    //TODO: handle idSubValue
     const targetUrl = '/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
@@ -96,7 +99,7 @@ export class Simulator {
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
-    return this.server.inject({
+    await this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -106,6 +109,8 @@ export class Simulator {
       },
       payload,
     })
+
+    return null;
   }
 
   /**
