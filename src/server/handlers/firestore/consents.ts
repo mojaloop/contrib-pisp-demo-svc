@@ -60,9 +60,9 @@ async function initiatePartyLookup(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
-    server.app.mojaloopClient.getParties(
+    server.app.mojaloopClient.getAccounts(
       consent.party!.partyIdInfo.partyIdType,
-      consent.party!.partyIdInfo.partyIdentifier
+      consent.participantId!
     )
   } catch (error) {
     logger.error(error)

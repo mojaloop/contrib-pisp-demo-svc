@@ -32,7 +32,6 @@ const customLevels = config.get('customLevels')
 
 const allLevels = { error: 0, warn: 1, audit: 2, trace: 3, info: 4, perf: 5, verbose: 6, debug: 7, silly: 8 }
 const customLevelsArr = customLevels.split(/ *, */) // extra white space before/after the comma is ignored
-console.log("customLevels", customLevels)
 const ignoredLevels = customLevels ? Object.keys(allLevels).filter(key => !customLevelsArr.includes(key)) : []
 
 const customFormat = printf(({ level, message, timestamp }) => {
@@ -73,7 +72,6 @@ export const createDefaultLogger = (): Logger => {
   const logger = createLogger(defaultLoggerOpts)
 
   // Modify Logger before export
-  console.log('ignored levels are:', ignoredLevels)
   ignoredLevels.map(level => {
     logger.configure({
       level,

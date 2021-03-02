@@ -48,10 +48,26 @@ import { NotImplementedError } from '../errors'
 export interface MojaloopClient {
 
   /**
+   * Looks up a list of accounts with a specific DFSP based
+   * on an opaque identifier
+   * 
+   * @param idValue - The opaque identifier known to the DFSP
+   * @param destParticipantId - The DFSP who the user selected to link with
+   * 
+   */
+  getAccounts(
+    idValue: string,
+    destParticipantId: string
+    ): Promise<unknown>
+
+
+
+  /**
   * Performs a lookup for a party with the given identifier.
   *
-  * @param _type  the type of party identifier
-  * @param _id    the party identifier
+  * @param idType     the type of party identifier
+  * @param idValue    the party identifier
+  * @param idSubValue optional sub value for the identifier
   */
   getParties(
     idType: PartyIdType,
@@ -138,6 +154,10 @@ export class Client implements MojaloopClient{
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
     this.mojaloopRequests = new MojaloopRequests(configRequest)
+  }
+  
+  getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
+    throw new Error('Method not implemented.')
   }
 
   /**
