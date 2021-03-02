@@ -42,13 +42,15 @@ import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
+import { MojaloopClient } from '../ml-thirdparty-client'
+import { logger } from '../logger'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
  * randomly generated replies. This is useful to aid the testing process when
  * Mojaloop is not deployed.
  */
-export class Simulator {
+export class Simulator implements MojaloopClient {
   /**
    * A server object to be used to inject the fake Mojaloop callbacks.
    */
@@ -74,6 +76,32 @@ export class Simulator {
     }
   }
 
+  public async getAccounts(idValue: string, _destParticipantId: string): Promise<unknown> {
+    logger.info("simulator: getAccounts")
+    const targetUrl = '/mojaloop/accounts/' + idValue
+    const payload = PartyFactory.createPutAccountsRequest(idValue)
+
+    if (this.options.delay) {
+      // Delay operations to simulate network latency in real communication
+      // with Mojaloop.
+      await this.delay(this.options.delay)
+    }
+
+    // Inject a request to the server as if it receives an inbound request
+    // from Mojaloop.
+    await this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+
+    return null;
+  }
+
   /**
    * Simulates a party lookup operation in Mojaloop, without the need of
    * sending `GET /parties/{Type}/{ID}` request.
@@ -83,9 +111,14 @@ export class Simulator {
    */
   public async getParties(
     type: PartyIdType,
-    id: string
-  ): Promise<ServerInjectResponse> {
-    const targetUrl = '/parties/' + type.toString() + '/' + id
+    id: string,
+    _idSubValue?: string
+  ): Promise<unknown> {
+
+    logger.info("simulator: getParties")
+
+    //TODO: handle idSubValue
+    const targetUrl = '/mojaloop/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
     if (this.options.delay) {
@@ -96,7 +129,7 @@ export class Simulator {
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
-    return this.server.inject({
+    await this.server.inject({
       method: 'PUT',
       url: targetUrl,
       headers: {
@@ -106,6 +139,8 @@ export class Simulator {
       },
       payload,
     })
+
+    return null;
   }
 
   /**
@@ -203,7 +238,9 @@ export class Simulator {
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consentRequests/' + requestBody.id
+    logger.info("simulator: putConsentRequests")
+
+    const targetUrl = '/mojaloop/consentRequests/' + requestBody.id
     const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
     return this.server.inject({
@@ -229,7 +266,10 @@ export class Simulator {
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consentRequests/' + consentRequestId
+    logger.info("simulator: putConsentRequests")
+
+    // const targetUrl = '/mojaloop/consentRequests/' + consentRequestId
+    const targetUrl = '/mojaloop/consents'
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
       requestBody
@@ -284,7 +324,9 @@ export class Simulator {
     consentId: string,
     requestBody: SDKStandardComponents.PutConsentsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consents/' + consentId
+    logger.info("simulator: putConsentId")
+
+    const targetUrl = '/mojaloop/consents/' + consentId
     const payload = ConsentFactory.createPutConsentIdValidationRequest(
       requestBody
     )

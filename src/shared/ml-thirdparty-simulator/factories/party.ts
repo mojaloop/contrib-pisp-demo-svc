@@ -30,11 +30,28 @@ import * as faker from 'faker'
 import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { ParticipantFactory } from './participant'
+import { v4 } from 'uuid'
 
 /**
  * A class that helps to generate random parties for the simulator.
  */
 export class PartyFactory {
+  /**
+   * Creates a `PUT /parties/{Type}/{ID}` request body that is normally sent
+   * by Mojaloop as a callback for party lookup operation.
+   * 
+   * @param type  type of the party identifier.
+   * @param id    the party identifier.
+   */
+  public static createPutAccountsRequest(_id: string): Array<Account> {
+    const accounts: Account[] = [ // hardcode two currencies
+      { accountNickname: 'ChXXXXXXXXXXunt', id: v4(), currency: Currency.USD},
+      { accountNickname: 'TraXXXXXXXXXXunt', id: v4(), currency: Currency.USD}
+    ]
+
+    return accounts
+  }
+
   /**
    * Creates a `PUT /parties/{Type}/{ID}` request body that is normally sent
    * by Mojaloop as a callback for party lookup operation.

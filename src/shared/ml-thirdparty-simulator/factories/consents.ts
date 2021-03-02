@@ -35,7 +35,8 @@ export class ConsentFactory {
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): SDKStandardComponents.PutConsentRequestsRequest {
     return {
-      authChannels: ['WEB'],
+      // TODO: make this configurable
+      authChannels: ['OTP'],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       authUri: 'https://dfspAuth.com',

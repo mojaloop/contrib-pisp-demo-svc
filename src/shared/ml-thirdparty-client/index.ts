@@ -44,7 +44,61 @@ import SDKStandardComponents, {
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
 
-// const ELB_URL = process.env.ELB_URL!
+
+export interface MojaloopClient {
+
+  /**
+   * Looks up a list of accounts with a specific DFSP based
+   * on an opaque identifier
+   * 
+   * @param idValue - The opaque identifier known to the DFSP
+   * @param destParticipantId - The DFSP who the user selected to link with
+   * 
+   */
+  getAccounts(
+    idValue: string,
+    destParticipantId: string
+    ): Promise<unknown>
+
+
+
+  /**
+  * Performs a lookup for a party with the given identifier.
+  *
+  * @param idType     the type of party identifier
+  * @param idValue    the party identifier
+  * @param idSubValue optional sub value for the identifier
+  */
+  getParties(
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
+  ): Promise<unknown>
+
+  /**
+   * Performs a request for a new consent
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+  
+  /**
+   * Performs a put request with registered consent credential
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<unknown> 
+}
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -55,7 +109,7 @@ import { NotImplementedError } from '../errors'
  * when it wants to perform a certain operation.
  */
 
-export class Client {
+export class Client implements MojaloopClient{
   /**
    * An optional simulator that is expected to be passed when using the
    * simulator plugin.
@@ -123,6 +177,10 @@ export class Client {
 
     this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
     this.mojaloopRequests = new MojaloopRequests(configRequest)
+  }
+  
+  getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
+    throw new Error('Method not implemented.')
   }
 
   /**

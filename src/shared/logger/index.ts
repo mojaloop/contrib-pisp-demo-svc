@@ -41,6 +41,7 @@ export interface ResponseLogged extends ResponseObject {
 
 export interface BaseLogger {
   info: (message: string, ...meta: unknown[]) => unknown
+  warn: (message: string, ...meta: unknown[]) => unknown
   error: (messsage: string, ...meta: unknown[]) => unknown
 }
 
@@ -83,9 +84,14 @@ export class Logger {
     this._logger.info(message, ...meta)
   }
 
+  warn(message: string, ...meta: unknown[]) {
+    this._logger.warn(message, ...meta)
+  }
+
   error(message: string, ...meta: unknown[]) {
     this._logger.error(message, ...meta)
   }
 }
 
 export const logger = new Logger()
+ 

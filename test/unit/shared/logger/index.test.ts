@@ -28,8 +28,10 @@ import { logger, RequestLogged } from '~/shared/logger'
 
 const mockLogger = {
   info: jest.fn(),
+  warn: jest.fn(),
   error: jest.fn()
 }
+
 
 logger._logger = mockLogger
 

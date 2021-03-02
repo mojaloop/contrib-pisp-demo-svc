@@ -49,11 +49,6 @@ import {
   Options as MojaloopClientOpts,
 } from '~/shared/ml-thirdparty-client/hapi-plugin'
 
-// Import necessary files to setup mojaloop simulator
-import {
-  MojaloopSimulator,
-  Options as MojaloopSimulatorOpts,
-} from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi
 const openApiOpts: OpenApiOptions = {
@@ -65,7 +60,6 @@ const openApiOpts: OpenApiOptions = {
   app: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
     basePath: 'app',
-    // subdomain: 'app',
     handlers: {
       api: appApiHandlers,
       ext: extHandlers,
@@ -74,7 +68,6 @@ const openApiOpts: OpenApiOptions = {
   mojaloop: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
     basePath: 'mojaloop',
-    // subdomain: 'mojaloop',
     handlers: {
       api: mojaloopApiHandlers,
       ext: extHandlers,
@@ -94,12 +87,6 @@ export const mojaloopClientOpts: MojaloopClientOpts = {
     // Hmm I think default is a rather confusing name here
     default: config.get('thirdpartyAPIURL'),
   },
-}
-
-// Config for Mojaloop simulator
-const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
-  host: 'mojaloop.' + config.get('hostname'),
-  delay: config.get('experimental.delay'),
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,14 +109,6 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
 
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
-
-  if (config.get('experimental.mode') === 'on') {
-    await server.register({
-      plugin: MojaloopSimulator,
-      options: mojaloopSimulatorOpts,
-    })
-  }
-
   return server
 }
 

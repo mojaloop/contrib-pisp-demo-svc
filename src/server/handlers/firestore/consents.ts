@@ -60,9 +60,9 @@ async function initiatePartyLookup(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
-    server.app.mojaloopClient.getParties(
-      consent.party!.partyIdInfo.partyIdType,
-      consent.party!.partyIdInfo.partyIdentifier
+    server.app.mojaloopClient.getAccounts(
+      consent.party!.partyIdInfo.partyIdentifier,
+      consent.participantId!
     )
   } catch (error) {
     logger.error(error)
@@ -76,6 +76,7 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentRequests(
       consent.consentRequestId!,
       {
@@ -97,7 +98,9 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
   // TODO: mssing some fields... maybe we need to add them to the initial thingy
+  console.log('initiateConsentRequest')
   if (!validator.isValidConsentRequest(consent)) {
+    console.log('initiateConsentRequest - invalid fields')
     throw new MissingConsentFieldsError(consent)
   }
   // If the update contains all the necessary fields, process document
@@ -126,6 +129,7 @@ async function initiateChallengeGeneration(server: StateServer, consent: Consent
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postGenerateChallengeForConsent(
       consent.consentId!
     )
@@ -141,6 +145,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
@@ -164,6 +169,7 @@ async function initiateRevokingConsent(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postRevokeConsent(
       consent.consentId!,
       consent.party!.partyIdInfo.fspId!

@@ -35,7 +35,8 @@ import { Consent } from '~/models/consent'
 export const isValidPartyLookup = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.partyIdType &&
-    consent.party.partyIdInfo.partyIdentifier
+    consent.party.partyIdInfo.partyIdentifier &&
+    consent.participantId
   )
 }
 

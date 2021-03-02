@@ -30,6 +30,12 @@ import { Currency } from './transactions'
  */
 export interface Account {
   /**
+   * Optional Account Nickname to identify the account to the user
+   */
+  accountNickname?: string,
+
+
+  /**
    * Address of the bank account.
    */
   id: string
