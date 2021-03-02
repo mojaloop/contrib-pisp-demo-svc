@@ -84,6 +84,44 @@ paths:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
         503:
           $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
+  /accounts/{ID}:
+    parameters:
+      - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/ID.yaml'
+    put:
+      tags:
+        - accounts
+      summary: '[Mojaloop Callback] Result of the account information lookup'
+      description: The callback PUT /accounts/<ID> is used to inform the PISP of the list of user's
+        accounts held by the DFSP
+      operationId: putAccounts
+      parameters:
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Type.yaml'
+        - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Content-Length.yaml'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: 'shared.yaml#/components/schemas/PutPartiesByTypeAndIdRequest'
+        required: true
+      responses:
+        200:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/200'
+        400:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/400'
+        401:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/401'
+        403:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/403'
+        404:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/404'
+        405:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/405'
+        406:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/406'
+        501:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/501'
+        503:
+          $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/responses/index.yaml#/503'
   /parties/{Type}/{ID}:
     parameters:
       - $ref: '../../node_modules/@mojaloop/api-snippets/v1.0/openapi3/parameters/Type.yaml'
