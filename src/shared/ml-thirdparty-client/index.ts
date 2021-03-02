@@ -75,6 +75,29 @@ export interface MojaloopClient {
     idSubValue?: string
   ): Promise<unknown>
 
+  /**
+   * Performs a request for a new consent
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+  
+  /**
+   * Performs a put request with registered consent credential
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<unknown> 
 }
 
 /**

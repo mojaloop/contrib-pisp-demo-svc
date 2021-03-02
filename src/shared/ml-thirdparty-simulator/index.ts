@@ -238,7 +238,9 @@ export class Simulator implements MojaloopClient {
   public async postConsentRequests(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consentRequests/' + requestBody.id
+    logger.info("simulator: putConsentRequests")
+
+    const targetUrl = '/mojaloop/consentRequests/' + requestBody.id
     const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
     return this.server.inject({
@@ -264,7 +266,10 @@ export class Simulator implements MojaloopClient {
     consentRequestId: string,
     requestBody: SDKStandardComponents.PutConsentRequestsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consentRequests/' + consentRequestId
+    logger.info("simulator: putConsentRequests")
+
+    // const targetUrl = '/mojaloop/consentRequests/' + consentRequestId
+    const targetUrl = '/mojaloop/consents'
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
       requestBody
@@ -319,7 +324,9 @@ export class Simulator implements MojaloopClient {
     consentId: string,
     requestBody: SDKStandardComponents.PutConsentsRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/consents/' + consentId
+    logger.info("simulator: putConsentId")
+
+    const targetUrl = '/mojaloop/consents/' + consentId
     const payload = ConsentFactory.createPutConsentIdValidationRequest(
       requestBody
     )

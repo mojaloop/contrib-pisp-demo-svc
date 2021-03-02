@@ -98,14 +98,15 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
   // TODO: mssing some fields... maybe we need to add them to the initial thingy
+  console.log('initiateConsentRequest')
   if (!validator.isValidConsentRequest(consent)) {
+    console.log('initiateConsentRequest - invalid fields')
     throw new MissingConsentFieldsError(consent)
   }
   // If the update contains all the necessary fields, process document
 
   try {
     // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postConsentRequests(
       {
         initiatorId: consent.initiatorId!,
