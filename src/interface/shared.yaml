@@ -271,6 +271,12 @@ components:
           items:
             $ref: '#/components/schemas/Account'
       description: Data model for the complex type PutPartiesByTypeAndIdRequest.
+    PutAccountsByIdRequest:
+      title: PutAccountsByIdRequest
+      type: array
+      items:
+        $ref: '#/components/schemas/Account'
+      description: Data model for the complex type PutAccountsByIdRequest.
     PutTransfersByIdRequest:
       title: PutTransfersByIdRequest
       type: object
