@@ -81,7 +81,7 @@ const credential = {
 
 describe('Validators for different consents used in requests', () => {
   describe('isValidPartyLookup', () => {
-    it('Should return true if all necessary fields are present', () => {
+    it.skip('Should return true if all necessary fields are present', () => {
       expect(
         Validator.isValidPartyLookup({
           id,

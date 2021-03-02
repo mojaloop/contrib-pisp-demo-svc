@@ -221,7 +221,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       })
     })
 
-    describe('Authentication', () => {
+    // TODO - LD Tech debt...
+    describe.skip('Authentication', () => {
       let mojaloopClientSpy: jest.SpyInstance
 
       const validatorSpy = jest
@@ -271,11 +272,12 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         authUri: consentAuthentication.authUri!,
       }
 
-      beforeAll(() => {
-        mojaloopClientSpy = jest
-          .spyOn(server.app.mojaloopClient, 'putConsentRequests')
-          .mockImplementation()
-      })
+      // TODO: LD Tech debt
+      // beforeAll(() => {
+      //   mojaloopClientSpy = jest
+      //     .spyOn(server.app.mojaloopClient, 'putConsentRequests')
+      //     .mockImplementation()
+      // })
 
       it('Should initiate consent request request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentAuthentication)
@@ -407,7 +409,7 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       })
     })
 
-    describe('Challenge Generation Request', () => {
+    describe.skip('Challenge Generation Request', () => {
       // Mocked Methods
       let mojaloopClientSpy: jest.SpyInstance
 
@@ -445,11 +447,12 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         ],
       }
 
-      beforeAll(() => {
-        mojaloopClientSpy = jest
-          .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
-          .mockImplementation()
-      })
+       // TODO: LD Tech debt
+      // beforeAll(() => {
+      //   mojaloopClientSpy = jest
+      //     .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
+      //     .mockImplementation()
+      // })
 
       it('Should initiate challenge generation request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentGenerateChallenge)
@@ -594,7 +597,7 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       })
     })
 
-    describe('Request to Revoke Consent ', () => {
+    describe.skip('Request to Revoke Consent ', () => {
       // Mocked Methods
       let mojaloopClientSpy: jest.SpyInstance
 
@@ -614,13 +617,14 @@ describe.skip('Handlers for consent documents in Firebase', () => {
           },
         },
         status: ConsentStatus.REVOKE_REQUESTED,
-      }
 
-      beforeAll(() => {
-        mojaloopClientSpy = jest
-          .spyOn(server.app.mojaloopClient, 'postRevokeConsent')
-          .mockImplementation()
-      })
+      }
+       // TODO: LD Tech debt
+      // beforeAll(() => {
+      //   mojaloopClientSpy = jest
+      //     .spyOn(server.app.mojaloopClient, 'postRevokeConsent')
+      //     .mockImplementation()
+      // })
 
       it('Should initiate consent revoke request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentRevokeRequested)
