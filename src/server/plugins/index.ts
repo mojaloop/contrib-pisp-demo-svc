@@ -24,8 +24,6 @@
  --------------
  ******/
 
-import { logger } from '~/shared/logger'
-
 import Path from 'path'
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
@@ -51,12 +49,6 @@ import {
   Options as MojaloopClientOpts,
 } from '~/shared/ml-thirdparty-client/hapi-plugin'
 
-// Import necessary files to setup mojaloop simulator
-import {
-  MojaloopSimulator,
-  Options as MojaloopSimulatorOpts,
-} from '~/shared/ml-thirdparty-simulator/hapi-plugin'
-import { Simulator } from '~/shared/ml-thirdparty-simulator'
 
 // Config for openapi
 const openApiOpts: OpenApiOptions = {
@@ -97,14 +89,6 @@ export const mojaloopClientOpts: MojaloopClientOpts = {
   },
 }
 
-// Config for Mojaloop simulator
-const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
-  // basePath: 'simulator',
-  // host: 'mojaloop.' + config.get('hostname'),
-  host: 'mojaloop.local',
-  delay: config.get('experimental.delay'),
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const plugins: Array<ServerRegisterPluginObject<any>> = [
   { plugin: Inert },
@@ -125,17 +109,6 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
 
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
-
-  if (config.get('experimental.mode') === 'on') {
-    logger.warn('EXPERIMENTAL_MODE=on - replacing live Client with Simulator')
-    const simulator = new Simulator(server as StateServer, mojaloopSimulatorOpts)
-    
-    // await server.register({
-    //   plugin: MojaloopSimulator,
-    //   options: mojaloopSimulatorOpts,
-    // })
-  }
-
   return server
 }
 

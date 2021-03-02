@@ -29,7 +29,7 @@ import Client from '~/shared/ml-thirdparty-client'
 import { Plugin, Server } from '@hapi/hapi'
 import { Options } from './options'
 import config from '~/lib/config'
-import { logger } from '~/shared/logger'
+// import { logger } from '~/shared/logger'
 import { Simulator } from '../ml-thirdparty-simulator'
 
 
@@ -49,7 +49,8 @@ export const MojaloopClient: Plugin<Options> = {
   version: '1.0.0',
   register: (server: Server, options: Options) => {
     if (config.get('experimental.mode') === 'on') {
-      logger.warn('asdasd')
+      // TODO: not sure why we can't log here...
+      // console.log('EXPERIMENTAL_MODE=on - replacing live Client with Simulator')
       (server as StateServer).app.mojaloopClient = new Simulator(server as StateServer, { delay: config.get('experimental.delay')});
       return;
     }

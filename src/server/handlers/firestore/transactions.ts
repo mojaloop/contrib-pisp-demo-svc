@@ -100,6 +100,7 @@ async function handlePartyConfirmation(
         transaction.consentId!
       )
 
+      //@ts-ignore - TODO Implement
       server.app.mojaloopClient.postTransactions(
         {
           transactionRequestId: transaction.transactionRequestId!,
@@ -157,6 +158,7 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
 
     // The optional values are guaranteed to exist by the validator.
     // eslint-disable @typescript-eslint/no-non-null-assertion
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
     // eslint-enable @typescript-eslint/no-non-null-assertion
   }

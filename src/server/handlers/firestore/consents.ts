@@ -76,6 +76,7 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentRequests(
       consent.consentRequestId!,
       {
@@ -104,6 +105,7 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postConsentRequests(
       {
         initiatorId: consent.initiatorId!,
@@ -126,6 +128,7 @@ async function initiateChallengeGeneration(server: StateServer, consent: Consent
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postGenerateChallengeForConsent(
       consent.consentId!
     )
@@ -141,6 +144,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
@@ -164,6 +168,7 @@ async function initiateRevokingConsent(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
+    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.postRevokeConsent(
       consent.consentId!,
       consent.party!.partyIdInfo.fspId!
