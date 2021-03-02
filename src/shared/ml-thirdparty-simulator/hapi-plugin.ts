@@ -39,7 +39,8 @@ export { Options }
  * and inject callbacks to the internal routes.
  *
  * The 'MojaloopClient' plugin must be registered before trying to
- * register this function as it will try to intercept the
+ * register this function as it will try to intercept the requests before they reach
+ * the simulator.
  */
 export const MojaloopSimulator: Plugin<Options> = {
   name: 'MojaloopSimulator',

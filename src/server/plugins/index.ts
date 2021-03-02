@@ -24,6 +24,8 @@
  --------------
  ******/
 
+import { logger } from '~/shared/logger'
+
 import Path from 'path'
 import Inert from '@hapi/inert'
 import Vision from '@hapi/vision'
@@ -124,6 +126,7 @@ async function register(server: Server): Promise<Server> {
   await server.register(plugins)
 
   if (config.get('experimental.mode') === 'on') {
+    logger.warn('EXPERIMENTAL_MODE=on - using simulated endpoints')
     await server.register({
       plugin: MojaloopSimulator,
       options: mojaloopSimulatorOpts,

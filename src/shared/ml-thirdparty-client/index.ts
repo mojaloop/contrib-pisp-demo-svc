@@ -44,8 +44,6 @@ import SDKStandardComponents, {
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
 
-// const ELB_URL = process.env.ELB_URL!
-
 /**
  * A client object that abstracts out operations that could be performed in
  * Mojaloop. With this, a service does not need to directly specify the request
