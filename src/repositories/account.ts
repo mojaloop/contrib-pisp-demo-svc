@@ -1,14 +1,11 @@
 import firebase from '~/lib/firebase'
 import { DemoAccount } from '~/models/demoAccount'
 
-
 export interface IAccountRepository {
-
   insert(data: DemoAccount): Promise<string>
 }
 
 export class FirebaseAccountRepository implements IAccountRepository {
-
   // TD: Lewis hacky to get some tests working
   async insert(data: DemoAccount): Promise<string> {
     const ref = await firebase.firestore().collection('accounts').doc()
