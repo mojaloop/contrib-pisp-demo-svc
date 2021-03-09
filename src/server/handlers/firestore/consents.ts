@@ -35,9 +35,12 @@ import { ConsentHandler } from '~/server/plugins/internal/firestore'
 import { Consent, ConsentStatus } from '~/models/consent'
 
 import { consentRepository } from '~/repositories/consent'
+import { accountRepository } from '~/repositories/account'
+
 import * as validator from './consents.validator'
 import config from '~/lib/config'
 import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
+import { DemoAccount } from '~/models/demoAccount'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -139,6 +142,8 @@ async function initiateChallengeGeneration(server: StateServer, consent: Consent
 }
 
 async function handleSignedChallenge(server: StateServer, consent: Consent) {
+  console.log('handleSignedChallenge')
+
   if (!validator.isValidSignedChallenge(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
@@ -157,6 +162,60 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
       },
       consent.party!.partyIdInfo.fspId!
     )
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
+async function onConsentActivated(_server: StateServer, consent: Consent) {
+  console.log('onConsentActivated')
+
+  if (!validator.isValidSignedChallenge(consent)) {
+    throw new MissingConsentFieldsError(consent)
+  }
+
+  try {
+    if (consent.accounts!.length < 2) {
+      // Create accounts for each of the linked accounts
+      // TODO: revise consent to get the proper accountNickname fields
+      const demoAccount: DemoAccount = {
+        alias: 'Transaction Account',
+        fspInfo: {
+          id: consent.party?.partyIdInfo.fspId!,
+          // TODO: load proper name!
+          name: consent.party?.partyIdInfo.fspId!
+        },
+        sourceAccountId: '1234-1234-1234-1234',
+        userId: consent.userId!,
+      }
+      await accountRepository.insert(demoAccount)
+    } else {
+      // Create accounts for each of the linked accounts
+      // TODO: revise consent to get the proper accountNickname fields
+      const demoAccount: DemoAccount = {
+        alias: 'Transaction Account',
+        fspInfo: {
+          id: consent.party?.partyIdInfo.fspId!,
+          // TODO: load proper name!
+          name: consent.party?.partyIdInfo.fspId!
+        },
+        sourceAccountId: '1234-1234-1234-1234',
+        userId: consent.userId!,
+      }
+      const demoAccount2: DemoAccount = {
+        alias: 'Chequing Account',
+        fspInfo: {
+          id: consent.party?.partyIdInfo.fspId!,
+          // TODO: load proper name!
+          name: consent.party?.partyIdInfo.fspId!
+        },
+        sourceAccountId: '1234-1234-1234-1234',
+        userId: consent.userId!,
+      }
+      await accountRepository.insert(demoAccount)
+      await accountRepository.insert(demoAccount2)
+    }
+
   } catch (error) {
     logger.error(error)
   }
@@ -238,9 +297,8 @@ export const onUpdate: ConsentHandler = async (
       await handleSignedChallenge(server, consent)
       break
 
-    // TODO: I don't think this is right...
     case ConsentStatus.ACTIVE:
-      await handleSignedChallenge(server, consent)
+      await onConsentActivated(server, consent)
       break
 
     case ConsentStatus.REVOKE_REQUESTED:
