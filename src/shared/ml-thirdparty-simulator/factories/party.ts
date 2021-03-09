@@ -45,8 +45,8 @@ export class PartyFactory {
    */
   public static createPutAccountsRequest(_id: string): Array<Account> {
     const accounts: Account[] = [ // hardcode two currencies
-      { accountNickname: 'ChXXXXXXXXXXunt', id: v4(), currency: Currency.USD},
-      { accountNickname: 'TraXXXXXXXXXXunt', id: v4(), currency: Currency.USD}
+      { accountNickname: 'Chequing Account', id: v4(), currency: Currency.USD},
+      { accountNickname: 'Transaction Account', id: v4(), currency: Currency.USD}
     ]
 
     return accounts
