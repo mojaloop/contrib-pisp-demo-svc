@@ -98,6 +98,16 @@ export interface MojaloopClient {
     requestBody: SDKStandardComponents.PutConsentsRequest,
     destParticipantId: string
   ): Promise<unknown> 
+
+  /**
+  * Performs a transaction initiation with the given transaction request object.
+  *
+  * @param _requestBody a transaction request object as defined by the Mojaloop API.
+  */
+  postTransactions(
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
+  ): Promise<unknown>
 }
 
 /**
@@ -219,6 +229,7 @@ export class Client implements MojaloopClient{
     requestBody: ThirdPartyTransactionRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    // TODO: this will need some updating
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
       destParticipantId

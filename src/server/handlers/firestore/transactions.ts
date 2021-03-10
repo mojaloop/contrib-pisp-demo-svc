@@ -30,7 +30,7 @@
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
-  AmountType,
+  AmountType, PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
@@ -38,12 +38,11 @@ import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
-import { consentRepository } from '~/repositories/consent'
 import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
 // TODO: get from the consent object
-// for now, just hardcode to dfspa
-const destParticipantId = 'dfspa'
+// for now, just hardcode to applebank
+const destParticipantId = 'applebank'
 
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
@@ -82,48 +81,61 @@ async function handlePartyConfirmation(
   server: StateServer,
   transaction: Transaction
 ) {
+  console.log('handlePartyConfirmation')
+
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
   // in the Firebase. However, we can just ignore all updates by the server
   // and wait for the user to confirm the payee by keying in more details
   // about the transaction (i.e., source account ID, consent ID, and
   // transaction amount).
-  if (validator.isValidPayeeConfirmation(transaction)) {
-    // If the update contains all the necessary fields, process document
-    // to the next step by sending a transaction request to Mojaloop.
+  if (!validator.isValidPayeeConfirmation(transaction)) {
+    console.log('payeeConfirmation is not valid')
+    return
+  }
+  // If the update contains all the necessary fields, process document
+  // to the next step by sending a transaction request to Mojaloop.
 
-    try {
-      // The optional values are guaranteed to exist by the validator.
-      // eslint-disable @typescript-eslint/no-non-null-assertion
+  try {
+    // The optional values are guaranteed to exist by the validator.
+    // eslint-disable @typescript-eslint/no-non-null-assertion
 
-      const consent = await consentRepository.getConsentById(
-        transaction.consentId!
-      )
+    // const consent = await consentRepository.getConsentById(
+    //   transaction.consentId!
+    // )
 
-      //@ts-ignore - TODO Implement
-      server.app.mojaloopClient.postTransactions(
-        {
-          transactionRequestId: transaction.transactionRequestId!,
-          sourceAccountId: transaction.sourceAccountId!,
-          consentId: transaction.consentId!,
-          payee: transaction.payee!,
-          payer: consent.party!,
-          amountType: AmountType.RECEIVE,
-          amount: transaction.amount!,
-          transactionType: {
-            scenario: 'TRANSFER',
-            initiator: 'PAYER',
-            initiatorType: 'CONSUMER',
-          },
-          expiration: utils.getTomorrowsDate().toISOString(),
+    server.app.mojaloopClient.postTransactions(
+      {
+        transactionRequestId: transaction.transactionRequestId!,
+        payee: transaction.payee!,
+        // TODO: this should JUST be a partyIdInfo, not a full party
+        payer: {
+          partyIdInfo: {
+            //TODO: add support for THIRD_PARTY_LINK
+            partyIdType: PartyIdType.MSISDN,
+            partyIdentifier: transaction.payer!.partyIdentifier,
+          }
         },
-        destParticipantId
-      )
+        amountType: AmountType.RECEIVE,
+        amount: transaction.amount!,
+        transactionType: {
+          scenario: 'TRANSFER',
+          initiator: 'PAYER',
+          initiatorType: 'CONSUMER',
+        },
+        expiration: utils.getTomorrowsDate().toISOString(),
 
-      // eslint-enable @typescript-eslint/no-non-null-assertion
-    } catch (err) {
-      logger.error(err)
-    }
+        // TODO: these should be removed...
+        sourceAccountId: '1234-1234-1234-1234',
+        consentId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+
+      },
+      destParticipantId
+    )
+
+    // eslint-enable @typescript-eslint/no-non-null-assertion
+  } catch (err) {
+    logger.error(err)
   }
 }
 
@@ -147,10 +159,11 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
     // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
 
     // TD - LD eww so much messy casting going on
+    // @ts-ignore - todo fix me!
     const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
       challenge: JSON.stringify(transaction.quote),
-      consentId: transaction.consentId!,
-      sourceAccountId: transaction.sourceAccountId!,
+      // consentId: transaction.consentId!,
+      // sourceAccountId: transaction.sourceAccountId!,
       //LD - TODO: this should be pending - but need to fix ok TTK
       status: 'VERIFIED',
       value: transaction.authentication?.value as string,

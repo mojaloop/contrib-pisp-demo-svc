@@ -51,10 +51,9 @@ export const isValidPartyLookup = (transaction: Transaction): boolean => {
 export const isValidPayeeConfirmation = (transaction: Transaction): boolean => {
   return (
     transaction.transactionRequestId != null &&
-    transaction.consentId != null &&
-    transaction.sourceAccountId != null &&
     transaction.amount != null &&
-    transaction.payee != null
+    transaction.payee != null &&
+    transaction.payer != null
   )
 }
 
