@@ -40,7 +40,7 @@ import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents, { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
 import { MojaloopClient } from '../ml-thirdparty-client'
 import { logger } from '../logger'
@@ -174,7 +174,6 @@ export class Simulator implements MojaloopClient {
       payload,
     })
   }
-
   /**
    * Simulates a transaction authorization in Mojaloop by third-party application,
    * without the need of sending `PUT /authorizations/{ID}` request.
@@ -188,12 +187,14 @@ export class Simulator implements MojaloopClient {
    */
   public async putAuthorizations(
     id: string,
-    request: AuthorizationsPutIdRequest,
+    request: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
     transactionId: string
   ): Promise<ServerInjectResponse> {
     const targetUrl = '/transfers/' + faker.random.uuid()
     const payload = TransferFactory.createTransferIdPutRequest(
       id,
+      // TODO: fix this up!
+      // @ts-ignore
       request,
       transactionId
     )

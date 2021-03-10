@@ -108,6 +108,20 @@ export interface MojaloopClient {
     requestBody: ThirdPartyTransactionRequest,
     destParticipantId: string
   ): Promise<unknown>
+
+  /**
+  * Performs a transaction authorization with the given authorization object.
+  *
+  * @param id              a transaction request id that corresponds with the
+  *                        authorization.
+  * @param requestBody     an authorization object as defined by the Mojaloop API.
+  * @param destParticipantId   ID of destination - to be used when sending request
+  */
+  putAuthorizations(
+    id: string,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
 }
 
 /**
@@ -265,9 +279,9 @@ export class Client implements MojaloopClient{
     }
 
     // @ts-ignore
-    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
-    // TD - Hack!!! - workaround for the ttk not liking puts
-    // return this.mojaloopRequests._post(`thirdPartyAuthorizations/${id}`, 'authorizations', requestBody, destParticipantId)
+    // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
+    return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
   }
 
   /**
