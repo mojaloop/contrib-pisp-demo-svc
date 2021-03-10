@@ -76,7 +76,7 @@ export const put: Handler = async (
       // Update the given field by their new values
       {
         party: body.party,
-        initiatorId: config.get('mojaloop').participantId,
+        initiatorId: config.get('participantId'),
         // todo: do we need this?
         // The structure looks funny
         // TODO: this looks bad to me - maybe it's what the TTK is returning?

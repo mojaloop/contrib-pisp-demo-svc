@@ -82,7 +82,7 @@ const firestoreOpts: FirestoreOptions = {
 
 // Config for Mojaloop client
 export const mojaloopClientOpts: MojaloopClientOpts = {
-  participantId: config.get('mojaloop.participantId'),
+  participantId: config.get('participantId'),
   endpoints: {
     fspiop: config.get('fspiopAPIURL'),
     thirdparty: config.get('thirdpartyAPIURL'),

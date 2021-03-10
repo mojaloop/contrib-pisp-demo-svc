@@ -83,6 +83,12 @@ const config = convict({
     default: 'localhost:15000',
     env: 'FSPIOP_API_URL',
   },
+  participantId: {
+    doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
+    format: String,
+    default: 'pispa',
+    env: 'PARTICIPANT_ID',
+  },
   db: {
     firebase: {
       keyPath: {
@@ -114,12 +120,6 @@ const config = convict({
     },
   },
   mojaloop: {
-    participantId: {
-      doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
-      format: String,
-      default: 'pispa',
-      env: 'MOJALOOP_PARTICIPANT_ID',
-    },
     // TODO: Replace placeholder
     pispCallbackUri: {
       doc: 'The callback URI sent by PISP deeplinked with the app',

@@ -71,7 +71,7 @@ export const put: Handler = async (
     },
     // Update the given field by their new values
     {
-      initiatorId: config.get('mojaloop').participantId,
+      initiatorId: config.get('participantId'),
       accounts: body,
       status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
     }
