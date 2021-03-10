@@ -53,5 +53,6 @@ export interface EndpointOptions {
    * scheme since it will be automatically configured based on the config of 
    * using mutual TLS or not. Example value: `api.mojaloop.io`.
    */
-  default: string
+  fspiop: string,
+  thirdparty: string,
 }

@@ -77,6 +77,12 @@ const config = convict({
     default: 'localhost:15000',
     env: 'THIRDPARTY_API_URL',
   },
+  fspiopAPIURL: {
+    doc: 'Default endpoint to communicate with Mojaloop',
+    format: '*',
+    default: 'localhost:15000',
+    env: 'FSPIOP_API_URL',
+  },
   db: {
     firebase: {
       keyPath: {

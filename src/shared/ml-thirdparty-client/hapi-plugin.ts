@@ -49,8 +49,6 @@ export const MojaloopClient: Plugin<Options> = {
   version: '1.0.0',
   register: (server: Server, options: Options) => {
     if (config.get('experimental.mode') === 'on') {
-      // TODO: not sure why we can't log here...
-      // console.log('EXPERIMENTAL_MODE=on - replacing live Client with Simulator')
       (server as StateServer).app.mojaloopClient = new Simulator(server as StateServer, { delay: config.get('experimental.delay')});
       return;
     }

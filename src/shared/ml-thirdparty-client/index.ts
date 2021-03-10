@@ -141,7 +141,7 @@ export class Client implements MojaloopClient{
   public constructor(options: Options) {
     this.options = options
 
-    const configRequest: BaseRequestConfigType = {
+    const fspiopRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
       logger: new Logger.Logger(),
       // TODO: Fix TLS and jwsSigningKey
@@ -153,17 +153,7 @@ export class Client implements MojaloopClient{
           cert: ''
         }
       },
-      // TODO: make these configurable
-      // peerEndpoint: this.options.endpoints.default,
-      peerEndpoint: this.options.endpoints.default,
-      // alsEndpoint: `${ELB_URL}/account-lookup-service/`,
-      // peerEndpoint: `${ELB_URL}/`,
-      // quotesEndpoint: `${ELB_URL}/quoting-service/`,
-      // bulkQuotesEndpoint: `${ELB_URL}/quoting-service/`,
-      // transfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      // bulkTransfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      // transactionRequestsEndpoint: `${ELB_URL}/transaction-requests-service/`,
-      // thirdpartyRequestsEndpoint: `${ELB_URL}/thirdparty-api-adapter/`,
+      peerEndpoint: this.options.endpoints.fspiop,
       resourceVersions: {
         // override parties here, since the ttk doesn't have config for 1.1
         parties: {
@@ -171,12 +161,32 @@ export class Client implements MojaloopClient{
           acceptVersion: '1.0'
         }
       }
-      // v12, this was removed
-      // responseType: 'string',
     }
 
-    this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
-    this.mojaloopRequests = new MojaloopRequests(configRequest)
+    const thirdpartyRequestsConfig: BaseRequestConfigType = {
+      dfspId: this.options.participantId,
+      logger: new Logger.Logger(),
+      // TODO: Fix TLS and jwsSigningKey
+      jwsSign: false,
+      tls: {
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
+      },
+      peerEndpoint: this.options.endpoints.thirdparty,
+      resourceVersions: {
+        // override parties here, since the ttk doesn't have config for 1.1
+        parties: {
+          contentVersion: '1.0',
+          acceptVersion: '1.0'
+        }
+      }
+    }
+
+    this.thirdpartyRequests = new ThirdpartyRequests(thirdpartyRequestsConfig)
+    this.mojaloopRequests = new MojaloopRequests(fspiopRequestsConfig)
   }
   
   getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
