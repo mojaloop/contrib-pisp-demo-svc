@@ -24,7 +24,6 @@
  ******/
 
 /* istanbul ignore file */
-// TODO: BDD Testing will covered in separate ticket #1702
 
 import firebase from '~/lib/firebase'
 import { Consent } from '~/models/consent'

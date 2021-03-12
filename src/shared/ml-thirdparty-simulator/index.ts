@@ -24,15 +24,11 @@
  --------------
  ******/
 /* istanbul ignore file */
-// TODO: BDD Testing will covered in separate ticket #1702
 
 import { ServerInjectResponse } from '@hapi/hapi'
-import * as faker from 'faker'
-
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {
   ThirdPartyTransactionRequest,
-  AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { ParticipantFactory } from './factories/participant'
@@ -40,7 +36,7 @@ import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents, { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
 import { MojaloopClient } from '../ml-thirdparty-client'
 import { logger } from '../logger'
@@ -69,7 +65,7 @@ export class Simulator implements MojaloopClient {
    */
   constructor(server: StateServer, options?: Options) {
     this.server = server
-    this.options = options ?? {}
+    this.options = options ?? { delay: 0 }
 
     if (this.options.numOfParticipants) {
       ParticipantFactory.numOfParticipants = this.options.numOfParticipants
@@ -81,11 +77,10 @@ export class Simulator implements MojaloopClient {
     const targetUrl = '/mojaloop/accounts/' + idValue
     const payload = PartyFactory.createPutAccountsRequest(idValue)
 
-    if (this.options.delay) {
-      // Delay operations to simulate network latency in real communication
-      // with Mojaloop.
-      await this.delay(this.options.delay)
-    }
+    // Delay operations to simulate network latency in real communication
+    // with Mojaloop.
+    await this.delay(this.options.delay)
+
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
@@ -121,11 +116,8 @@ export class Simulator implements MojaloopClient {
     const targetUrl = '/mojaloop/parties/' + type.toString() + '/' + id
     const payload = PartyFactory.createPutPartiesRequest(type, id)
 
-    if (this.options.delay) {
-      // Delay operations to simulate network latency in real communication
-      // with Mojaloop.
-      await this.delay(this.options.delay)
-    }
+    await this.delay(this.options.delay)
+    
 
     // Inject a request to the server as if it receives an inbound request
     // from Mojaloop.
@@ -152,16 +144,18 @@ export class Simulator implements MojaloopClient {
   public async postTransactions(
     request: ThirdPartyTransactionRequest
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/authorizations'
+    // TODO: there should be both a PUT /thirdpartyRequests/transactions and
+    // POST /authorizations call here.
+    const targetUrl = '/mojaloop/authorizations'
     const payload = AuthorizationFactory.createPostAuthorizationsRequest(
       request
     )
 
-    if (this.options.delay) {
-      // Delay operations to simulate network latency in real communication
-      // with Mojaloop.
-      await this.delay(this.options.delay)
-    }
+    logger.info("simulator: postTransactions")
+
+    // Delay operations to simulate network latency in real communication
+    // with Mojaloop.
+    await this.delay(this.options.delay)
 
     return this.server.inject({
       method: 'POST',
@@ -174,7 +168,6 @@ export class Simulator implements MojaloopClient {
       payload,
     })
   }
-
   /**
    * Simulates a transaction authorization in Mojaloop by third-party application,
    * without the need of sending `PUT /authorizations/{ID}` request.
@@ -188,18 +181,18 @@ export class Simulator implements MojaloopClient {
    */
   public async putAuthorizations(
     id: string,
-    request: AuthorizationsPutIdRequest,
-    transactionId: string
+    _request: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    _transactionId: string
   ): Promise<ServerInjectResponse> {
-    const targetUrl = '/transfers/' + faker.random.uuid()
-    const payload = TransferFactory.createTransferIdPutRequest(
+    // const targetUrl = '/mojaloop/transfers/' + faker.random.uuid()
+    // TODO: this id should be already known... and 
+    const targetUrl = `/mojaloop/thirdpartyRequests/transactions/${id}`
+    const payload = TransferFactory.createTransactionRequestPatchRequest(
       id,
-      request,
-      transactionId
     )
 
     return this.server.inject({
-      method: 'PUT',
+      method: 'PATCH',
       url: targetUrl,
       headers: {
         host: this.options.host ?? '',

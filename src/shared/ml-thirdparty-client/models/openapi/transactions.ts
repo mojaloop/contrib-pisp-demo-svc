@@ -39,18 +39,6 @@ export interface ThirdPartyTransactionRequest {
   transactionRequestId: string
 
   /**
-   * DFSP specific account identifier to identify the source account used by 
-   * the payer for the proposed financial transaction.
-   */
-  sourceAccountId: string
-
-  /**
-   * Common ID between the PISP and FSP for the Consent object. This tells 
-   * DFSP and auth-service which constent allows the PISP to initiate transaction.
-   */
-  consentId: string
-
-  /**
    * Information about the Payee in the proposed financial transaction.
    */
   payee: Party
@@ -58,6 +46,7 @@ export interface ThirdPartyTransactionRequest {
   /**
    * Information about the Payer in the proposed financial transaction.
    */
+  // TODO: this should just be a PartyIdInfo - we don't need the other stuff here.
   payer: Party
 
   /**
@@ -80,4 +69,19 @@ export interface ThirdPartyTransactionRequest {
    * to get a quick failure in case the peer FSP takes too long to respond.
    */
   expiration: string
+
+
+  // TODO: remove these in latest draft:
+  /**
+   * DFSP specific account identifier to identify the source account used by 
+   * the payer for the proposed financial transaction.
+   */
+  sourceAccountId: string
+
+  /**
+   * Common ID between the PISP and FSP for the Consent object. This tells 
+   * DFSP and auth-service which constent allows the PISP to initiate transaction.
+   */
+  consentId: string
+
 }

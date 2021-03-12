@@ -34,7 +34,7 @@ The contents of the JSON file should look like
 Create a `.env` file in your local environment.
 Put these lines into that file:
 ```
-EXPERIMENTAL_MODE=on
+LOCAL_SIMULATOR=true
 EXPERIMENTAL_DELAY=2000
 ```
 These will enable the Mojaloop simulator until the relevant features on the real Mojaloop network are implemented.

@@ -148,7 +148,8 @@ describe('Mojaloop third-party client', () => {
     client = new Client({
       participantId: 'pisp',
       endpoints: {
-        default: 'api.mojaloop.io',
+        fspiop: 'api.mojaloop.io',
+        thirdparty: 'api.mojaloop.io',
       },
     })
   })

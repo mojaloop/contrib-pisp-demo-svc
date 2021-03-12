@@ -25,7 +25,6 @@
  --------------
  ******/
 /* istanbul ignore file */
-// TODO: BDD Testing will covered in separate ticket #1702
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
@@ -98,6 +97,30 @@ export interface MojaloopClient {
     requestBody: SDKStandardComponents.PutConsentsRequest,
     destParticipantId: string
   ): Promise<unknown> 
+
+  /**
+  * Performs a transaction initiation with the given transaction request object.
+  *
+  * @param _requestBody a transaction request object as defined by the Mojaloop API.
+  */
+  postTransactions(
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+
+  /**
+  * Performs a transaction authorization with the given authorization object.
+  *
+  * @param id              a transaction request id that corresponds with the
+  *                        authorization.
+  * @param requestBody     an authorization object as defined by the Mojaloop API.
+  * @param destParticipantId   ID of destination - to be used when sending request
+  */
+  putAuthorizations(
+    id: string,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
 }
 
 /**
@@ -141,10 +164,9 @@ export class Client implements MojaloopClient{
   public constructor(options: Options) {
     this.options = options
 
-    const configRequest: BaseRequestConfigType = {
+    const fspiopRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
       logger: new Logger.Logger(),
-      // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {
         mutualTLS: { enabled: false },
@@ -153,17 +175,7 @@ export class Client implements MojaloopClient{
           cert: ''
         }
       },
-      // TODO: make these configurable
-      // peerEndpoint: this.options.endpoints.default,
-      peerEndpoint: this.options.endpoints.default,
-      // alsEndpoint: `${ELB_URL}/account-lookup-service/`,
-      // peerEndpoint: `${ELB_URL}/`,
-      // quotesEndpoint: `${ELB_URL}/quoting-service/`,
-      // bulkQuotesEndpoint: `${ELB_URL}/quoting-service/`,
-      // transfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      // bulkTransfersEndpoint: `${ELB_URL}/ml-api-adapter/`,
-      // transactionRequestsEndpoint: `${ELB_URL}/transaction-requests-service/`,
-      // thirdpartyRequestsEndpoint: `${ELB_URL}/thirdparty-api-adapter/`,
+      peerEndpoint: this.options.endpoints.fspiop,
       resourceVersions: {
         // override parties here, since the ttk doesn't have config for 1.1
         parties: {
@@ -171,12 +183,31 @@ export class Client implements MojaloopClient{
           acceptVersion: '1.0'
         }
       }
-      // v12, this was removed
-      // responseType: 'string',
     }
 
-    this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
-    this.mojaloopRequests = new MojaloopRequests(configRequest)
+    const thirdpartyRequestsConfig: BaseRequestConfigType = {
+      dfspId: this.options.participantId,
+      logger: new Logger.Logger(),
+      jwsSign: false,
+      tls: {
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
+      },
+      peerEndpoint: this.options.endpoints.thirdparty,
+      resourceVersions: {
+        // override parties here, since the ttk doesn't have config for 1.1
+        parties: {
+          contentVersion: '1.0',
+          acceptVersion: '1.0'
+        }
+      }
+    }
+
+    this.thirdpartyRequests = new ThirdpartyRequests(thirdpartyRequestsConfig)
+    this.mojaloopRequests = new MojaloopRequests(fspiopRequestsConfig)
   }
   
   getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
@@ -209,6 +240,7 @@ export class Client implements MojaloopClient{
     requestBody: ThirdPartyTransactionRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    // TODO: this will need some updating
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
       destParticipantId
@@ -244,9 +276,9 @@ export class Client implements MojaloopClient{
     }
 
     // @ts-ignore
-    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
-    // TD - Hack!!! - workaround for the ttk not liking puts
-    // return this.mojaloopRequests._post(`thirdPartyAuthorizations/${id}`, 'authorizations', requestBody, destParticipantId)
+    // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
+    return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
   }
 
   /**

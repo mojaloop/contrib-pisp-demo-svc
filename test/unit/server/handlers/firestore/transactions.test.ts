@@ -63,8 +63,8 @@ function createStubTransactionRequestData(): Transaction {
   return {
     id: '111',
     transactionRequestId: '888',
-    sourceAccountId: '111',
-    consentId: '222',
+    // sourceAccountId: '111',
+    // consentId: '222',
     amount: {
       amount: '20',
       currency: Currency.USD,
@@ -193,8 +193,9 @@ describe('Handlers for transaction documents in Firebase', () => {
     // Mock the expected transaction request being sent.
     const transactionRequest: ThirdPartyTransactionRequest = {
       transactionRequestId: transactionRequestData.transactionRequestId!,
-      sourceAccountId: transactionRequestData.sourceAccountId!,
-      consentId: transactionRequestData.consentId!,
+      // TODO:  remove these once we have updated the defs
+      sourceAccountId: `abcd-abcd-abcd-abcd`,
+      consentId: `1234-1234-1234-1234`,
       payee: transactionRequestData.payee!,
       payer: consentData.party!,
       amountType: AmountType.RECEIVE,

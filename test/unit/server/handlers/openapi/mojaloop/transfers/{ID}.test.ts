@@ -32,7 +32,7 @@ import { AuthenticationResponseType, AuthenticationType } from '~/shared/ml-thir
 import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 
-import * as TransfersById from '~/server/handlers/openapi/mojaloop/transfers/{ID}'
+import * as TransfersById from '~/server/handlers/openapi/mojaloop/thirdpartyRequests';
 import { transactionRepository } from '~/repositories/transaction'
 import { Status } from '~/models/transaction'
 import config from '~/lib/config'

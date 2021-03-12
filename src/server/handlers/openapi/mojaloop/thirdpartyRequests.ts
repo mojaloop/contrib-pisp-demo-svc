@@ -26,10 +26,8 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-// import { AuthorizationsPostRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-
-// import { transactionRepository } from '~/repositories/transaction'
-// import { Status } from '~/models/transaction'
+import { transactionRepository } from '~/repositories/transaction'
+import { Status } from '~/models/transaction'
 
 
 export const put: Handler = async (_context: Context, _: Request, h: ResponseToolkit) => {
@@ -51,6 +49,27 @@ export const put: Handler = async (_context: Context, _: Request, h: ResponseToo
   //     status: Status.AUTHORIZATION_REQUIRED,
   //   }
   // )
+
+  return h.response().code(200)
+}
+
+// TODO: some of these ids are getting mixed up here.
+export const patch: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  const transactionRequestId = context.request.params.ID
+  // const body = context.request.body as AuthorizationsPostRequest
+
+  console.log("patchThirdpartyRequestTransactions inbound")
+  // Not await-ing promise to resolve - code is executed asynchronously
+  transactionRepository.update(
+    {
+      transactionRequestId: transactionRequestId,
+      status: Status.AUTHORIZATION_REQUIRED,
+    },
+    {
+      completedTimestamp: (new Date()).toISOString(),
+      status: Status.SUCCESS,
+    }
+  )
 
   return h.response().code(200)
 }

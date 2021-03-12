@@ -82,10 +82,10 @@ const firestoreOpts: FirestoreOptions = {
 
 // Config for Mojaloop client
 export const mojaloopClientOpts: MojaloopClientOpts = {
-  participantId: config.get('mojaloop.participantId'),
+  participantId: config.get('participantId'),
   endpoints: {
-    // Hmm I think default is a rather confusing name here
-    default: config.get('thirdpartyAPIURL'),
+    fspiop: config.get('fspiopAPIURL'),
+    thirdparty: config.get('thirdpartyAPIURL'),
   },
 }
 

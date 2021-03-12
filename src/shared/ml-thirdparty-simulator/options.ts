@@ -45,7 +45,7 @@ export interface Options {
    * This is useful to simulate network latency that may happen when 
    * communicating with the real Mojaloop services.
    */
-  delay?: number
+  delay: number
 
   /**
    * Number of DFSP participants that the simulator will generate.
