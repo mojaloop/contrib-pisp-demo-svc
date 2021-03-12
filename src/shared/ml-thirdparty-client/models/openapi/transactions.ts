@@ -28,7 +28,6 @@ import {
   Money,
   TransactionType,
   Party,
-  PartyIdInfo,
 } from '../core'
 
 export interface ThirdPartyTransactionRequest {
