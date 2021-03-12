@@ -40,7 +40,7 @@ import { transactionRepository } from '~/repositories/transaction'
 import * as validator from './transactions.validator'
 import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
-// TODO: get from the consent object
+// TODO: get from the consent/account object
 // for now, just hardcode to applebank
 const destParticipantId = 'applebank'
 
@@ -95,15 +95,7 @@ async function handlePartyConfirmation(
   }
   // If the update contains all the necessary fields, process document
   // to the next step by sending a transaction request to Mojaloop.
-
   try {
-    // The optional values are guaranteed to exist by the validator.
-    // eslint-disable @typescript-eslint/no-non-null-assertion
-
-    // const consent = await consentRepository.getConsentById(
-    //   transaction.consentId!
-    // )
-
     server.app.mojaloopClient.postTransactions(
       {
         transactionRequestId: transaction.transactionRequestId!,
@@ -151,30 +143,34 @@ async function handlePartyConfirmation(
 // }
 
 async function handleAuthorization(server: StateServer, transaction: Transaction) {
-  if (validator.isValidAuthorization(transaction)) {
-    // If the update contains all the necessary fields, process document
-    // to the next step by sending an authorization to Mojaloop.
+  console.log('handleAuthorization')
 
-    // Convert to a response type that is understood by Mojaloop.
-    // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
-
-    // TD - LD eww so much messy casting going on
-    // @ts-ignore - todo fix me!
-    const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
-      challenge: JSON.stringify(transaction.quote),
-      // consentId: transaction.consentId!,
-      // sourceAccountId: transaction.sourceAccountId!,
-      //LD - TODO: this should be pending - but need to fix ok TTK
-      status: 'VERIFIED',
-      value: transaction.authentication?.value as string,
-    }
-
-    // The optional values are guaranteed to exist by the validator.
-    // eslint-disable @typescript-eslint/no-non-null-assertion
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
-    // eslint-enable @typescript-eslint/no-non-null-assertion
+  if (!validator.isValidAuthorization(transaction)) {
+    console.log('handleAuthorization is not valid')
+    return
   }
+
+  // If the update contains all the necessary fields, process document
+  // to the next step by sending an authorization to Mojaloop.
+
+  // Convert to a response type that is understood by Mojaloop.
+  // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
+
+  // TD - LD eww so much messy casting going on
+  // @ts-ignore - todo fix me!
+  const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+    challenge: JSON.stringify(transaction.quote),
+    // consentId: transaction.consentId!,
+    // sourceAccountId: transaction.sourceAccountId!,
+    //LD - TODO: this should be pending - but need to fix ok TTK
+    status: 'VERIFIED',
+    value: transaction.authentication?.value as string,
+  }
+
+  // The optional values are guaranteed to exist by the validator.
+  // eslint-disable @typescript-eslint/no-non-null-assertion
+  server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
+  // eslint-enable @typescript-eslint/no-non-null-assertion
 }
 
 export const onCreate: TransactionHandler = async (

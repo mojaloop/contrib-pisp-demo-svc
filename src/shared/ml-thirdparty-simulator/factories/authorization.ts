@@ -51,6 +51,10 @@ export class AuthorizationFactory {
         expiration: request.expiration,
         ilpPacket: faker.random.alphaNumeric(70),
         condition: faker.random.alphaNumeric(43),
+        payeeFspFee: {
+          amount: "1",
+          currency: request.amount.currency
+        }
       }
     }
   }

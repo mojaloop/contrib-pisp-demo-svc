@@ -54,3 +54,28 @@ export interface TransferIDPutRequest {
    */
   extensionList?: ExtensionList
 }
+
+// TODO: double check api format...
+export interface TransferIDPatchRequest {
+  /**
+ * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 
+ * object. The actual transaction will be created as part of a successful transfer 
+ * process.
+ */
+  transactionId: string
+
+  /**
+   * Time and date when the transaction was completed.
+   */
+  completedTimestamp: string
+
+  /**
+   * State of the transfer.
+   */
+  transferState: TransferState
+
+  /**
+   * Optional extension, specific to deployment.
+   */
+  extensionList?: ExtensionList
+}
