@@ -25,7 +25,6 @@
  --------------
  ******/
 /* istanbul ignore file */
-// TODO: Testing will covered in separate ticket
 
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'

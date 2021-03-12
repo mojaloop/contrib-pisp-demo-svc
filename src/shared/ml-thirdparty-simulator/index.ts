@@ -24,11 +24,8 @@
  --------------
  ******/
 /* istanbul ignore file */
-// TODO: BDD Testing will covered in separate ticket #1702
 
 import { ServerInjectResponse } from '@hapi/hapi'
-// import * as faker from 'faker'
-
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {
   ThirdPartyTransactionRequest,

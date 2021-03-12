@@ -97,8 +97,6 @@ export interface PartyComplexName {
  * The allowed values for the enumeration of party identifier type.
  */
 export enum PartyIdType {
-  // TODO: Confirm other possible uses for OPAQUE and 
-  //       fill out docstring
   /**
    * Type for Consent Requests
    */

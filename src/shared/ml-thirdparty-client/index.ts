@@ -25,7 +25,6 @@
  --------------
  ******/
 /* istanbul ignore file */
-// TODO: BDD Testing will covered in separate ticket #1702
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
@@ -168,7 +167,6 @@ export class Client implements MojaloopClient{
     const fspiopRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
       logger: new Logger.Logger(),
-      // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {
         mutualTLS: { enabled: false },
@@ -190,7 +188,6 @@ export class Client implements MojaloopClient{
     const thirdpartyRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
       logger: new Logger.Logger(),
-      // TODO: Fix TLS and jwsSigningKey
       jwsSign: false,
       tls: {
         mutualTLS: { enabled: false },
