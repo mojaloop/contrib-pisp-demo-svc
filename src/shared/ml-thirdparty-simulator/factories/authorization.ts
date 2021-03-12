@@ -32,6 +32,10 @@ import {
 
 import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
 
+
+function roundFloatTo2Places(float: number): string {
+  return `${Math.round((float + Number.EPSILON) * 100) / 100}`
+}
 export class AuthorizationFactory {
   /**
    * Creates a `POST /authorizations` request body that is normally sent
@@ -40,6 +44,10 @@ export class AuthorizationFactory {
    * @param request  The transaction request object as defined by the Mojaloop API.
    */
   public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+    const payerSendAmountFloat = parseFloat(request.amount.amount)
+    const feeFloat = payerSendAmountFloat * 0.01
+    const payeeReceiveAmountFloat = payerSendAmountFloat - feeFloat
+  
     return {
       authenticationType: AuthenticationType.U2F,
       retriesLeft: '1',
@@ -52,7 +60,11 @@ export class AuthorizationFactory {
         ilpPacket: faker.random.alphaNumeric(70),
         condition: faker.random.alphaNumeric(43),
         payeeFspFee: {
-          amount: "1",
+          amount: roundFloatTo2Places(feeFloat),
+          currency: request.amount.currency
+        },
+        payeeReceiveAmount: {
+          amount: roundFloatTo2Places(payeeReceiveAmountFloat),
           currency: request.amount.currency
         }
       }
