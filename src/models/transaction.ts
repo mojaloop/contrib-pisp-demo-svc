@@ -44,7 +44,6 @@ export enum Status {
    */
   PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
 
-
   /**
    * User has confirmed the payee
    */
@@ -93,8 +92,7 @@ export interface Transaction {
   /**
    * Information about the payer in the proposed financial transaction.
    */
-  payer?: PartyIdInfo,
-
+  payer?: PartyIdInfo
 
   /**
    * Requested amount to be transferred from the Payer to Payee.

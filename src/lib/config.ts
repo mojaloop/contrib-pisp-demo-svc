@@ -106,10 +106,11 @@ const config = convict({
     },
   },
   localSimulator: {
-    doc: 'If true, will use the internal simulator instead of calling the Mojaloop APIs',
+    doc:
+      'If true, will use the internal simulator instead of calling the Mojaloop APIs',
     format: [true, false],
     default: false,
-    env: 'LOCAL_SIMULATOR'
+    env: 'LOCAL_SIMULATOR',
   },
   experimental: {
     delay: {
