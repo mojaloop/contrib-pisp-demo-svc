@@ -32,7 +32,6 @@ import * as faker from 'faker'
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {
   ThirdPartyTransactionRequest,
-  AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { ParticipantFactory } from './factories/participant'

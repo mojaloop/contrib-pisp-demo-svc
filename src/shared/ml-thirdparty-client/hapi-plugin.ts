@@ -48,7 +48,7 @@ export const MojaloopClient: Plugin<Options> = {
   name: 'MojaloopClient',
   version: '1.0.0',
   register: (server: Server, options: Options) => {
-    if (config.get('experimental.mode') === 'on') {
+    if (config.get('localSimulator') === true) {
       (server as StateServer).app.mojaloopClient = new Simulator(server as StateServer, { delay: config.get('experimental.delay')});
       return;
     }

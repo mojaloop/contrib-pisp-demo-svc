@@ -105,13 +105,13 @@ const config = convict({
       },
     },
   },
+  localSimulator: {
+    doc: 'If true, will use the internal simulator instead of calling the Mojaloop APIs',
+    format: [true, false],
+    default: false,
+    env: 'LOCAL_SIMULATOR'
+  },
   experimental: {
-    mode: {
-      doc: 'On/off switch for the PISP demo server experimental mode',
-      format: ['on', 'off'],
-      default: 'off',
-      env: 'EXPERIMENTAL_MODE',
-    },
     delay: {
       doc: 'Delay time to be used in the experimental mode',
       format: 'int',
@@ -126,23 +126,6 @@ const config = convict({
       format: String,
       default: 'PLACEHOLDER',
       env: 'MOJALOOP_CALLBACK_URI',
-    },
-    endpoints: {
-      /* TODO: we need to set this based on resources:
-        account linking: localhost:15000 (local ttk)
-        transfers:
-          - account-lookup
-          - thirdparty
-          - authorizations/transaction-request-service
-
-      */
-      default: {
-        doc: 'Default endpoint to communicate with Mojaloop',
-        format: '*',
-        // I can't seem to be able to change this in my .env file
-        // going to set manually for now
-        default: 'localhost:15000',
-      },
     },
   },
 })
