@@ -63,7 +63,7 @@ export const patch: Handler = async (context: Context, _: Request, h: ResponseTo
   transactionRepository.update(
     {
       transactionRequestId: transactionRequestId,
-      status: Status.PENDING_PAYEE_CONFIRMATION,
+      status: Status.AUTHORIZATION_REQUIRED,
     },
     {
       completedTimestamp: (new Date()).toISOString(),
