@@ -186,6 +186,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
+        keyHandleId: consent.keyHandleId!,
       }
       await accountRepository.insert(demoAccount)
     } else {
@@ -200,6 +201,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
+        keyHandleId: consent.keyHandleId!,
       }
       const demoAccount2: DemoAccount = {
         alias: 'Chequing Account',
@@ -210,6 +212,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
+        keyHandleId: consent.keyHandleId!,
       }
       await accountRepository.insert(demoAccount)
       await accountRepository.insert(demoAccount2)

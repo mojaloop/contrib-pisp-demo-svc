@@ -24,6 +24,11 @@ export interface DemoAccount {
   userId: string
 
   /**
+   * The id of the credential associated with this account
+   */
+  keyHandleId: Array<number>
+
+  /**
    * internal Id of the DemoAccount
    */
   id?: string

@@ -6,7 +6,6 @@ export interface IAccountRepository {
 }
 
 export class FirebaseAccountRepository implements IAccountRepository {
-  // TD: Lewis hacky to get some tests working
   async insert(data: DemoAccount): Promise<string> {
     const ref = await firebase.firestore().collection('accounts').doc()
     // Make sure we set the id correctly
