@@ -172,7 +172,6 @@ export interface Consent {
    */
   callbackUri?: string
 
-
   /**
    * keyHandleId
    * A locally stored (PISP Server + Client) credentialId/keyHandleId of the
