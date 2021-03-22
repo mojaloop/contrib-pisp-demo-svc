@@ -174,6 +174,11 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
   }
 
   try {
+    if (config.get('overwriteExistingAccountsForUser')) {
+      //replace the existing accounts for this user
+      await accountRepository.deleteForUser(consent.userId!)
+    }
+
     if (consent.accounts!.length < 2) {
       // Create accounts for each of the linked accounts
       // TODO: revise consent to get the proper accountNickname fields
