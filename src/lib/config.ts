@@ -128,7 +128,7 @@ const config = convict({
       default: 'PLACEHOLDER',
       env: 'MOJALOOP_CALLBACK_URI',
     },
-  }, 
+  },
   overwriteExistingAccountsForUser: {
     doc:
       'If true, when a user links a new account, the old accounts will be removed. This is useful for demo purposes. Defaults to `false`',
