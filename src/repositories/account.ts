@@ -31,7 +31,7 @@ export class FirebaseAccountRepository implements IAccountRepository {
       // Iterate through all matching documents add them to the processing batch.
       response.docs.forEach((doc) => {
         batch.delete(
-          firebase.firestore().collection('transactions').doc(doc.id),
+          firebase.firestore().collection('accounts').doc(doc.id),
           )
         })
         
