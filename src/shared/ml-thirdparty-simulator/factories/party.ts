@@ -30,6 +30,7 @@ import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-cl
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { ParticipantFactory } from './participant'
 import { v4 } from 'uuid'
+import config from '~/lib/config'
 
 /**
  * A class that helps to generate random parties for the simulator.
@@ -44,8 +45,8 @@ export class PartyFactory {
    */
   public static createPutAccountsRequest(_id: string): Array<Account> {
     const accounts: Account[] = [ // hardcode two currencies
-      { accountNickname: 'Chequing Account', id: v4(), currency: Currency.USD},
-      { accountNickname: 'Transaction Account', id: v4(), currency: Currency.USD}
+      { accountNickname: 'Chequing Account', id: v4(), currency: config.get('demoCurrency') as Currency},
+      { accountNickname: 'Transaction Account', id: v4(), currency: config.get('demoCurrency') as Currency}
     ]
 
     return accounts
