@@ -112,6 +112,13 @@ const config = convict({
     default: false,
     env: 'LOCAL_SIMULATOR',
   },
+  demoCurrency: {
+    doc:
+      'An ISO 4217 currency code to replace other values with for demo purposes',
+    format: '*',
+    default: 'XTS',
+    env: 'DEMO_CURRENCY',
+  },
   experimental: {
     delay: {
       doc: 'Delay time to be used in the experimental mode',
