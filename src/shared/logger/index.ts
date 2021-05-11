@@ -40,8 +40,9 @@ export interface ResponseLogged extends ResponseObject {
 }
 
 export interface BaseLogger {
-  info: (message: string, ...meta: any[]) => any
-  error: (messsage: string, ...meta: any[]) => any
+  info: (message: string, ...meta: unknown[]) => unknown
+  warn: (message: string, ...meta: unknown[]) => unknown
+  error: (messsage: string, ...meta: unknown[]) => unknown
 }
 
 export class Logger {
@@ -49,6 +50,11 @@ export class Logger {
 
   constructor() {
     this._logger = createDefaultLogger()
+  }
+
+  // TODO: this is what sdk-standard-components wants...
+  log(things: any): void {
+    console.log(things)
   }
 
   logRequest(context: Context, _: Request, __: ResponseToolkit): void {
@@ -74,13 +80,18 @@ export class Logger {
     }
   }
 
-  info(message: string, ...meta: any[]) {
+  info(message: string, ...meta: unknown[]) {
     this._logger.info(message, ...meta)
   }
 
-  error(message: string, ...meta: any[]) {
+  warn(message: string, ...meta: unknown[]) {
+    this._logger.warn(message, ...meta)
+  }
+
+  error(message: string, ...meta: unknown[]) {
     this._logger.error(message, ...meta)
   }
 }
 
 export const logger = new Logger()
+ 

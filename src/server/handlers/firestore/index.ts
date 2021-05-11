@@ -20,11 +20,14 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import * as transactionHandlers from './transactions'
+import * as consentHandlers from './consents'
 
 export default {
-  transactions: transactionHandlers
+  transactions: transactionHandlers,
+  consents: consentHandlers,
 }

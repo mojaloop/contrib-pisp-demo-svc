@@ -30,18 +30,16 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { apiHandlers as appApiHandlers } from './app'
 import { apiHandlers as mojaloopApiHandlers } from './mojaloop'
 
-export {
-  appApiHandlers,
-  mojaloopApiHandlers
-}
+export { appApiHandlers, mojaloopApiHandlers }
 
 export const apiHandlers = {
   ...appApiHandlers,
-  ...mojaloopApiHandlers
+  ...mojaloopApiHandlers,
 }
 
 export const extHandlers: ExtHandlers = {
-  notFound: (_: Context, __: Request, h: ResponseToolkit) => {
+  notFound: (c: Context, __: Request, h: ResponseToolkit) => {
+    console.log('returning 404 for request with path:', c.request.path)
     return h.response().code(404)
   },
 
@@ -49,10 +47,12 @@ export const extHandlers: ExtHandlers = {
     return h.response().code(405)
   },
 
-  validationFail: (_: Context, __: Request, h: ResponseToolkit) => {
-    return h.response().code(406)
+  validationFail: (c: Context, r: Request, h: ResponseToolkit) => {
+    // TODO: print out error!
+    console.log('validation failed!!', JSON.stringify(c.validation.errors, null, 2))
+    console.log('Request payload was:', r.payload)
+    return h.response({ status: 400, err: c.validation.errors }).code(400);
   },
-
   notImplemented: (_: Context, __: Request, h: ResponseToolkit) => {
     return h.response().code(501)
   },

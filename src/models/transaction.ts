@@ -28,6 +28,7 @@ import {
   AuthenticationValue,
   Money,
   Party,
+  PartyIdInfo,
   Quote,
 } from '~/shared/ml-thirdparty-client/models/core'
 
@@ -42,6 +43,11 @@ export enum Status {
    * details about the transaction.
    */
   PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
+
+  /**
+   * User has confirmed the payee
+   */
+  PAYEE_CONFIRMED = 'PAYEE_CONFIRMED',
 
   /**
    * Waiting for the user to authorize the transaction.
@@ -86,19 +92,7 @@ export interface Transaction {
   /**
    * Information about the payer in the proposed financial transaction.
    */
-  payer?: Party
-
-  /**
-   * DFSP specific account identifier to identify the source account used by
-   * the payer for the proposed financial transaction.
-   */
-  sourceAccountId?: string
-
-  /**
-   * Common ID between the PISP and FSP for the Consent object. This tells
-   * DFSP and auth-service which constent allows the PISP to initiate transaction.
-   */
-  consentId?: string
+  payer?: PartyIdInfo
 
   /**
    * Requested amount to be transferred from the Payer to Payee.

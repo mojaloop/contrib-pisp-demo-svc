@@ -26,24 +26,56 @@
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 
-import { TransferIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-
-import { Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
+import { Status } from '~/models/transaction'
 
-export const put: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
-  let body = context.request.body as TransferIDPutRequest
 
+export const put: Handler = async (_context: Context, _: Request, h: ResponseToolkit) => {
+  // const body = context.request.body as AuthorizationsPostRequest
+
+  console.log("putThirdpartyRequestTransactions inbound")
+  // Not await-ing promise to resolve - code is executed asynchronously
+  // transactionRepository.update(
+  //   {
+  //     transactionRequestId: body.transactionRequestId,
+  //     status: Status.PENDING_PAYEE_CONFIRMATION,
+  //   },
+  //   {
+  //     authentication: {
+  //       type: body.authenticationType,
+  //     },
+  //     transactionId: body.transactionId,
+  //     quote: body.quote,
+  //     status: Status.AUTHORIZATION_REQUIRED,
+  //   }
+  // )
+
+  return h.response().code(200)
+}
+
+// TODO: some of these ids are getting mixed up here.
+export const patch: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  const transactionRequestId = context.request.params.ID
+  // const body = context.request.body as AuthorizationsPostRequest
+
+  console.log("patchThirdpartyRequestTransactions inbound")
+  // Not await-ing promise to resolve - code is executed asynchronously
   transactionRepository.update(
     {
-      transactionId: body.transactionId,
+      transactionRequestId: transactionRequestId,
       status: Status.AUTHORIZATION_REQUIRED,
     },
     {
-      completedTimestamp: body.completedTimestamp,
+      completedTimestamp: (new Date()).toISOString(),
       status: Status.SUCCESS,
     }
   )
 
+  return h.response().code(200)
+}
+
+export const putError: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  console.log("putThirdpartyRequestTransactions error", context.request.body)
+  // TODO: get error details...
   return h.response().code(200)
 }

@@ -23,15 +23,35 @@
  --------------
  ******/
 
+/* istanbul ignore file */
+
 import * as faker from 'faker'
 import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { ParticipantFactory } from './participant'
+import { v4 } from 'uuid'
+import config from '~/lib/config'
 
 /**
  * A class that helps to generate random parties for the simulator.
  */
 export class PartyFactory {
+  /**
+   * Creates a `PUT /parties/{Type}/{ID}` request body that is normally sent
+   * by Mojaloop as a callback for party lookup operation.
+   * 
+   * @param type  type of the party identifier.
+   * @param id    the party identifier.
+   */
+  public static createPutAccountsRequest(_id: string): Array<Account> {
+    const accounts: Account[] = [ // hardcode two currencies
+      { accountNickname: 'Chequing Account', id: v4(), currency: config.get('demoCurrency') as Currency},
+      { accountNickname: 'Transaction Account', id: v4(), currency: config.get('demoCurrency') as Currency}
+    ]
+
+    return accounts
+  }
+
   /**
    * Creates a `PUT /parties/{Type}/{ID}` request body that is normally sent
    * by Mojaloop as a callback for party lookup operation.

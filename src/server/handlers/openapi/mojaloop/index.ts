@@ -20,11 +20,13 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import * as Health from '../health'
 
+import * as MojaloopAccounts from './accounts/{ID}'
 import * as MojaloopAuthorizations from './authorizations'
 import * as MojaloopConsents from './consents'
 import * as MojaloopConsentsById from './consents/{ID}'
@@ -33,19 +35,21 @@ import * as MojaloopParticipants from './participants'
 import * as MojaloopParticipantsError from './participants/error'
 import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
 import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
-import * as MojaloopTransfersById from './transfers/{ID}'
+import * as thirdpartyRequests from './thirdpartyRequests'
 
 export const apiHandlers = {
   getHealth: Health.get,
-
+  putAccounts: MojaloopAccounts.put,
   postAuthorizations: MojaloopAuthorizations.post,
   postConsents: MojaloopConsents.post,
   putConsentsById: MojaloopConsentsById.put,
-  deleteConsentsById: MojaloopConsentsById.remove,
+  patchConsentsById: MojaloopConsentsById.patch,
   putConsentRequestsById: MojaloopConsentRequestsById.put,
   putParticipants: MojaloopParticipants.put,
   putParticipantsError: MojaloopParticipantsError.put,
   putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
   putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putTransfersById: MojaloopTransfersById.put,
+  putThirdpartyRequestTransactions: thirdpartyRequests.put,
+  putThirdpartyRequestTransactionsError: thirdpartyRequests.putError,
+  patchThirdpartyRequestsTransactions: thirdpartyRequests.patch,
 }

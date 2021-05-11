@@ -20,6 +20,7 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
@@ -40,15 +41,42 @@ export enum ConsentStatus {
    * Waiting for the user to confirm payee information and provide more
    * details about the transaction.
    */
-  PENDING_PAYEE_CONFIRMATION = 'PENDING_PAYEE_CONFIRMATION',
+  PENDING_PARTY_CONFIRMATION = 'PENDING_PARTY_CONFIRMATION',
 
   /**
-   * Waiting for the user to authorize the consent.
+   * User has confirmed party
    */
-  AUTHORIZATION_REQUIRED = 'AUTHORIZATION_REQUIRED',
+  PARTY_CONFIRMED = 'PARTY_CONFIRMED',
 
   /**
-   * The consent is authorized and active.
+   * Waiting for the user to authorize the consentRequest.
+   */
+  AUTHENTICATION_REQUIRED = 'AUTHENTICATION_REQUIRED',
+
+  /**
+   * User has signed in with WEB or OTP flow and PISP has the authToken
+   */
+  AUTHENTICATION_COMPLETE = 'AUTHENTICATION_COMPLETE',
+
+  /**
+   * The consent is granted and active.
+   */
+  CONSENT_GRANTED = 'CONSENT_GRANTED',
+
+  /**
+   * The consent is PENDING and challenge has been generated
+   * waiting for user to sign it
+   */
+  CHALLENGE_GENERATED = 'CHALLENGE_GENERATED',
+
+  /**
+   * The consent is PENDING and challenge has been generated
+   * user has signed challenge
+   */
+  CHALLENGE_SIGNED = 'CHALLENGE_SIGNED',
+
+  /**
+   * The consent is ACTIVE and challenge has been verified
    */
   ACTIVE = 'ACTIVE',
 
@@ -56,6 +84,11 @@ export enum ConsentStatus {
    * The consent is revoked and no longer valid.
    */
   REVOKED = 'REVOKED',
+
+  /**
+   * The consent is requested to be revoked for unlinking.
+   */
+  REVOKE_REQUESTED = 'REVOKE_REQUESTED',
 }
 
 export interface Consent {
@@ -103,7 +136,7 @@ export interface Consent {
 
   /**
    * If authentication channel chosed is WEB, then this is the url which a user
-   * must visit to authenticate themselves
+   * must visit to authenticate themselves. Provided by DFSP
    */
   authUri?: string
 
@@ -132,4 +165,17 @@ export interface Consent {
    * Credential object used for authentication of consent
    */
   credential?: TCredential
+
+  /**
+   * If authentication channel chosed is WEB, then this is the uri that the DFSP must
+   * redirect to after completing the login
+   */
+  callbackUri?: string
+
+  /**
+   * keyHandleId
+   * A locally stored (PISP Server + Client) credentialId/keyHandleId of the
+   * authenticator device. Used to identify the credential on the user's device
+   */
+  keyHandleId?: Array<number>
 }

@@ -23,12 +23,18 @@
  --------------
  ******/
 
-import { Currency } from './transactions';
+import { Currency } from './transactions'
 
 /**
  * Data model for the complex type Account.
  */
 export interface Account {
+  /**
+   * Optional Account Nickname to identify the account to the user
+   */
+  accountNickname?: string,
+
+
   /**
    * Address of the bank account.
    */
@@ -91,6 +97,11 @@ export interface PartyComplexName {
  * The allowed values for the enumeration of party identifier type.
  */
 export enum PartyIdType {
+  /**
+   * Type for Consent Requests
+   */
+  OPAQUE = 'OPAQUE',
+
   /**
    * An MSISDN (Mobile Station International Subscriber Directory Number,
    * that is, the phone number) is used as reference to a participant.

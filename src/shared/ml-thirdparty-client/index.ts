@@ -24,26 +24,104 @@
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
+/* istanbul ignore file */
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
-  AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
-// import Logger from '@mojaloop/central-services-logger'
-import { logger as Logger } from '~/shared/logger'
-
 import SDKStandardComponents, {
-  // TODO: Once implemented in sdk-standard-components, use this logger
-  // Logger,
+  Logger,
   ThirdpartyRequests,
   MojaloopRequests,
+  PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+  BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
+
+
+export interface MojaloopClient {
+
+  /**
+   * Looks up a list of accounts with a specific DFSP based
+   * on an opaque identifier
+   * 
+   * @param idValue - The opaque identifier known to the DFSP
+   * @param destParticipantId - The DFSP who the user selected to link with
+   * 
+   */
+  getAccounts(
+    idValue: string,
+    destParticipantId: string
+    ): Promise<unknown>
+
+
+
+  /**
+  * Performs a lookup for a party with the given identifier.
+  *
+  * @param idType     the type of party identifier
+  * @param idValue    the party identifier
+  * @param idSubValue optional sub value for the identifier
+  */
+  getParties(
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
+  ): Promise<unknown>
+
+  /**
+   * Performs a request for a new consent
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  postConsentRequests(
+    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+  
+  /**
+   * Performs a put request with registered consent credential
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  putConsentId(
+    consentId: string,
+    requestBody: SDKStandardComponents.PutConsentsRequest,
+    destParticipantId: string
+  ): Promise<unknown> 
+
+  /**
+  * Performs a transaction initiation with the given transaction request object.
+  *
+  * @param _requestBody a transaction request object as defined by the Mojaloop API.
+  */
+  postTransactions(
+    requestBody: ThirdPartyTransactionRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+
+  /**
+  * Performs a transaction authorization with the given authorization object.
+  *
+  * @param id              a transaction request id that corresponds with the
+  *                        authorization.
+  * @param requestBody     an authorization object as defined by the Mojaloop API.
+  * @param destParticipantId   ID of destination - to be used when sending request
+  */
+  putAuthorizations(
+    id: string,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
+  ): Promise<unknown>
+}
 
 /**
  * A client object that abstracts out operations that could be performed in
@@ -54,7 +132,7 @@ import { NotImplementedError } from '../errors'
  * when it wants to perform a certain operation.
  */
 
-export class Client {
+export class Client implements MojaloopClient{
   /**
    * An optional simulator that is expected to be passed when using the
    * simulator plugin.
@@ -86,23 +164,54 @@ export class Client {
   public constructor(options: Options) {
     this.options = options
 
-    const configRequest = {
+    const fspiopRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
-      logger: Logger,
-      // TODO: Fix TLS and jwsSigningKey
+      logger: new Logger.Logger(),
       jwsSign: false,
       tls: {
-        outbound: {
-          mutualTLS: {
-            enabled: false,
-          },
-        },
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
       },
-      peerEndpoint: this.options.endpoints.default,
+      peerEndpoint: this.options.endpoints.fspiop,
+      resourceVersions: {
+        // override parties here, since the ttk doesn't have config for 1.1
+        parties: {
+          contentVersion: '1.0',
+          acceptVersion: '1.0'
+        }
+      }
     }
 
-    this.thirdpartyRequests = new ThirdpartyRequests(configRequest)
-    this.mojaloopRequests = new MojaloopRequests(configRequest)
+    const thirdpartyRequestsConfig: BaseRequestConfigType = {
+      dfspId: this.options.participantId,
+      logger: new Logger.Logger(),
+      jwsSign: false,
+      tls: {
+        mutualTLS: { enabled: false },
+        creds: {
+          ca: '',
+          cert: ''
+        }
+      },
+      peerEndpoint: this.options.endpoints.thirdparty,
+      resourceVersions: {
+        // override parties here, since the ttk doesn't have config for 1.1
+        parties: {
+          contentVersion: '1.0',
+          acceptVersion: '1.0'
+        }
+      }
+    }
+
+    this.thirdpartyRequests = new ThirdpartyRequests(thirdpartyRequestsConfig)
+    this.mojaloopRequests = new MojaloopRequests(fspiopRequestsConfig)
+  }
+  
+  getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
+    throw new Error('Method not implemented.')
   }
 
   /**
@@ -112,12 +221,14 @@ export class Client {
    * @param _id    the party identifier
    */
   public async getParties(
-    _type: PartyIdType,
-    _id: string
+    idType: PartyIdType,
+    idValue: string,
+    idSubValue?: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new NotImplementedError()
+    if (idSubValue) {
+      return this.mojaloopRequests.getParties(idType, idValue, idSubValue)
+    }
+    return this.mojaloopRequests.getParties(idType, idValue)
   }
 
   /**
@@ -129,6 +240,7 @@ export class Client {
     requestBody: ThirdPartyTransactionRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+    // TODO: this will need some updating
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
       destParticipantId
@@ -145,27 +257,34 @@ export class Client {
 
    */
   public async putAuthorizations(
-    _id: string,
-    _requestBody: AuthorizationsPutIdRequest,
-    _destParticipantId: string
+    id: string,
+    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Implement communication with Mojaloop.
-    // Placeholder below
-    throw new NotImplementedError()
 
-    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-    //   requestBody,
-    //   id,
-    //   destParticipantId
-    // )
+    const requestBody = {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'OTP',
+        // authenticationValue: {
+        //   pinValue: _requestBody.value,
+        //   counter: "1"
+        // }
+        authenticationValue: _requestBody.value,
+      },
+      responseType: 'ENTERED'
+    }
+
+    // @ts-ignore
+    // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
+    return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
   }
 
   /**
    * Gets a list of PISP/DFSP participants
    */
-  public async getParticipants(): Promise<
-  SDKStandardComponents.GenericRequestResponse | undefined
-  > {
+  public async getParticipants(): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
     throw new NotImplementedError()
@@ -210,14 +329,17 @@ export class Client {
    * Performs a request to generate a challenge for FIDO registration
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async postGenerateChallengeForConsent(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _consentId: string
+    consentId: string,
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: Add once implemented in sdk-standard components
-    // Placeholder below
-    throw new NotImplementedError()
+    // TODO: implement in sdk standard components
+    // TODO: this should just be empty!
+    const body = { type: 'FIDO'}
+    // @ts-ignore
+    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', body, undefined)
   }
 
   /**
@@ -243,13 +365,17 @@ export class Client {
    * Performs a request to revoke the Consent object and unlink
    *
    * @param _consentId     identifier of consent as defined by Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async postRevokeConsent(
-    _consentId: string
+    _consentId: string,
+    _destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: Add once implemented in sdk-standard components
     // Placeholder below
     throw new NotImplementedError()
   }
 }
+
+export default Client

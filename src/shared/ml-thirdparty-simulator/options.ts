@@ -28,6 +28,11 @@
  */
 export interface Options {
   /**
+   * An optional base path of the server
+   */
+  basePath?: string,
+
+  /**
    * An optional field to set the host value in the request header. 
    * This is useful for a service that handles Mojaloop callback using
    * a virtual host, because it will require the host field in the request
@@ -40,7 +45,7 @@ export interface Options {
    * This is useful to simulate network latency that may happen when 
    * communicating with the real Mojaloop services.
    */
-  delay?: number
+  delay: number
 
   /**
    * Number of DFSP participants that the simulator will generate.

@@ -71,6 +71,24 @@ const config = convict({
     env: 'PORT',
     arg: 'port',
   },
+  thirdpartyAPIURL: {
+    doc: 'Default endpoint to communicate with Mojaloop',
+    format: '*',
+    default: 'localhost:15000',
+    env: 'THIRDPARTY_API_URL',
+  },
+  fspiopAPIURL: {
+    doc: 'Default endpoint to communicate with Mojaloop',
+    format: '*',
+    default: 'localhost:15000',
+    env: 'FSPIOP_API_URL',
+  },
+  participantId: {
+    doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
+    format: String,
+    default: 'pispa',
+    env: 'PARTICIPANT_ID',
+  },
   db: {
     firebase: {
       keyPath: {
@@ -87,13 +105,21 @@ const config = convict({
       },
     },
   },
+  localSimulator: {
+    doc:
+      'If true, will use the internal simulator instead of calling the Mojaloop APIs',
+    format: [true, false],
+    default: false,
+    env: 'LOCAL_SIMULATOR',
+  },
+  demoCurrency: {
+    doc:
+      'An ISO 4217 currency code to replace other values with for demo purposes',
+    format: '*',
+    default: 'XTS',
+    env: 'DEMO_CURRENCY',
+  },
   experimental: {
-    mode: {
-      doc: 'On/off switch for the PISP demo server experimental mode',
-      format: ['on', 'off'],
-      default: 'off',
-      env: 'EXPERIMENTAL_MODE',
-    },
     delay: {
       doc: 'Delay time to be used in the experimental mode',
       format: 'int',
@@ -102,20 +128,20 @@ const config = convict({
     },
   },
   mojaloop: {
-    participantId: {
-      doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
+    // TODO: Replace placeholder
+    pispCallbackUri: {
+      doc: 'The callback URI sent by PISP deeplinked with the app',
       format: String,
-      default: 'pisp',
-      env: 'MOJALOOP_PARTICIPANT_ID',
+      default: 'PLACEHOLDER',
+      env: 'MOJALOOP_CALLBACK_URI',
     },
-    endpoints: {
-      default: {
-        doc: 'Default endpoint to communicate with Mojaloop',
-        format: '*',
-        default: '172.17.0.2:3001',
-        env: 'MOJALOOP_ENDPOINT_DEFAULT',
-      },
-    },
+  },
+  overwriteExistingAccountsForUser: {
+    doc:
+      'If true, when a user links a new account, the old accounts will be removed. This is useful for demo purposes. Defaults to `false`',
+    format: [true, false],
+    default: false,
+    env: 'OVERWRITE_EXISTING_ACCOUNTS_FOR_USER',
   },
 })
 

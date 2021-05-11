@@ -25,7 +25,6 @@
 
 import index from '~/index'
 import Config from '~/lib/config'
-import { Server } from '@hapi/hapi'
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -37,10 +36,10 @@ describe('index', (): void => {
   })
 
   describe('api routes', (): void => {
-    let server: Server
+    let server: StateServer
 
     beforeAll(
-      async (): Promise<Server> => {
+      async (): Promise<StateServer> => {
         server = await index.server.run(Config)
         return server
       }
@@ -61,10 +60,7 @@ describe('index', (): void => {
 
       const request = {
         method: 'GET',
-        url: '/health',
-        headers: {
-          "Host": "app.pisp-demo-server.local",
-        },
+        url: '/app/health',
       }
 
       const response = await server.inject(request)

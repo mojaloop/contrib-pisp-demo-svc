@@ -49,11 +49,6 @@ import {
   Options as MojaloopClientOpts,
 } from '~/shared/ml-thirdparty-client/hapi-plugin'
 
-// Import necessary files to setup mojaloop simulator
-import {
-  MojaloopSimulator,
-  Options as MojaloopSimulatorOpts,
-} from '~/shared/ml-thirdparty-simulator/hapi-plugin'
 
 // Config for openapi
 const openApiOpts: OpenApiOptions = {
@@ -64,7 +59,7 @@ const openApiOpts: OpenApiOptions = {
   },
   app: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
-    subdomain: 'app',
+    basePath: 'app',
     handlers: {
       api: appApiHandlers,
       ext: extHandlers,
@@ -72,7 +67,7 @@ const openApiOpts: OpenApiOptions = {
   },
   mojaloop: {
     definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
-    subdomain: 'mojaloop',
+    basePath: 'mojaloop',
     handlers: {
       api: mojaloopApiHandlers,
       ext: extHandlers,
@@ -87,16 +82,11 @@ const firestoreOpts: FirestoreOptions = {
 
 // Config for Mojaloop client
 export const mojaloopClientOpts: MojaloopClientOpts = {
-  participantId: config.get('mojaloop.participantId'),
+  participantId: config.get('participantId'),
   endpoints: {
-    default: config.get('mojaloop.endpoints.default'),
+    fspiop: config.get('fspiopAPIURL'),
+    thirdparty: config.get('thirdpartyAPIURL'),
   },
-}
-
-// Config for Mojaloop simulator
-const mojaloopSimulatorOpts: MojaloopSimulatorOpts = {
-  host: 'mojaloop.' + config.get('hostname'),
-  delay: config.get('experimental.delay'),
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -119,14 +109,6 @@ const plugins: Array<ServerRegisterPluginObject<any>> = [
 
 async function register(server: Server): Promise<Server> {
   await server.register(plugins)
-
-  if (config.get('experimental.mode') === 'on') {
-    await server.register({
-      plugin: MojaloopSimulator,
-      options: mojaloopSimulatorOpts,
-    })
-  }
-
   return server
 }
 

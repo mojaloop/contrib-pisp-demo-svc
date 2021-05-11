@@ -20,14 +20,28 @@
 
  * Google
  - Steven Wijaya <stevenwjy@google.com>
+ - Abhimanyu Kapur <abhi.kapur09@gmail.com>
  --------------
  ******/
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
-import { logger } from '~/shared/logger'
+import { consentRepository } from '~/repositories/consent'
+import { ConsentStatus } from '~/models/consent'
 
-export const put: Handler = async (context: Context, request: Request, h: ResponseToolkit) => {
-  logger.logRequest(context, request, h)
+export const put: Handler = async (
+  context: Context,
+  _request: Request,
+  h: ResponseToolkit
+) => {
+  const { authChannels, authUri } = context.request.body
+  // Not await-ing promise to resolve - code is executed asynchronously
+  consentRepository.updateConsent({
+    consentRequestId: context.request.params.ID,
+  }, {
+    authChannels,
+    authUri,
+    status: ConsentStatus.AUTHENTICATION_REQUIRED,
+  })
   return h.response().code(200)
 }
