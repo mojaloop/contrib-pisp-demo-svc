@@ -335,21 +335,6 @@ curl -X POST $ELB_URL/ml-api-adapter/transfers \
 ```
 
 
-
-
-
-
-
-## Transaction callback
-
-## LD Testing notes:
-
-- consentId must be valid uuid, otherwise mojaloop will reject, eg `e94b9110-f6c9-44cf-bdc0-895430f1ca9c`
-   - had to hack around in the app to get this to work
-
-- for `transactionRepository.update(conditions, body)`, I'm pretty sure we're going to need some firestore indicies
-
-
 ## TTK Steps:
 
 ```bash
@@ -364,9 +349,9 @@ export TRANSACTION_ID=yIf88LByjKGtNraZADOq
 # Confirm payee, and set amount
 ./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_02_payment_confirmation.test.ts
 ```
-# Mock Data for Account Linking
+## Mock Data for Account Linking
 
-## Mocking Available Financial Service Providers 
+### Mocking Available Financial Service Providers 
 
 Follow these steps to display a list of available Financial Service Providers on the account linking tab.
 
@@ -384,7 +369,7 @@ An FSP document consists of a Map that looks like so:
 
 When the server is fully functional, the server will periodically update this list and populate the 'participants' collection so this won't be needed anymore.
 
-## Mocking Accounts for Associated Accounts
+### Mocking Accounts for Associated Accounts
 
 1. In the Consent object, that you are working with, add an `accounts` field of type 'array'.
 2. In that array, add as many Account documents as you want.
