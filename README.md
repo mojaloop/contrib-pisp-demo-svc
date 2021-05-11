@@ -1,8 +1,21 @@
-# PISP Demo Server (Work in Progress)
+# contrib-pisp-demo-svc
 
-A server used to communicate with the Mojaloop network to facilitate account linking and transactions for the [PISP demo app](https://github.com/mojaloop/pisp-demo-app-flutter).
+### NodeJS/Firebase backend for the [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui)
 
-# Quick Setup Guide
+
+## Introduction
+
+This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui). It uses Firebase Cloud Firestore to 
+
+It uses t
+
+**For more information about Mojaloop and PISP with Mojaloop, see:**
+- [mojaloop/pisp](https://github.com/mojaloop/pisp)
+- [mojaloop/mojaloop](https://github.com/mojaloop/mojaloop)
+- [mojaloop.io](https://mojaloop.io/)
+
+
+## Setup
 
 The following steps should allow you to perform a mocked out end-to-end transfer (between pisp-demo-server and pisp-demo-app).
 
@@ -89,7 +102,7 @@ You can also start the server in "dev mode", where the server will restart on fi
 npm run dev
 ```
 
-# Configurations
+## Config
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
