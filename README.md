@@ -2,12 +2,9 @@
 
 ### NodeJS/Firebase backend for the [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui)
 
-
 ## Introduction
 
-This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui). It uses Firebase Cloud Firestore to 
-
-It uses t
+This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui). It uses Firebase Cloud Firestore to store state and communicate with the UI.
 
 **For more information about Mojaloop and PISP with Mojaloop, see:**
 - [mojaloop/pisp](https://github.com/mojaloop/pisp)
@@ -19,7 +16,7 @@ It uses t
 
 The following steps should allow you to perform a mocked out end-to-end transfer (between pisp-demo-server and pisp-demo-app).
 
-1. Firebase SDK Admin Key
+### 1. Firebase SDK Admin Key
 
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
 Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey.json`.
@@ -42,7 +39,7 @@ The contents of the JSON file should look like
 }
 ```
 
-2. Environment Variables
+### 2. Environment Variables
 
 Create a `.env` file in your local environment.
 Put these lines into that file:
@@ -54,7 +51,7 @@ These will enable the Mojaloop simulator until the relevant features on the real
 To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations)).
 
 
-3. Mock Consent Objects
+### 3. Mock Consent Objects
 
 You need to create a collection in your Firestore named "consents" and then create an object in that collection like so: 
 
@@ -78,7 +75,7 @@ You need to create a collection in your Firestore named "consents" and then crea
 }
 ```
 
-Note: The nested structure can be replicated by using the Map data type in Firestore.
+> Note: The nested structure can be replicated by using the Map data type in Firestore.
 
 You can use any info for the partyIdentifier and names but the consentId must be 555 or 985 for now - this is hardcoded in the mobile app so the consentId must match.
 
@@ -88,26 +85,89 @@ This represents the consent that the user has given to PISP app to be able to ac
 
 When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection from the account linking process.
 
-# Starting the server
+## Running Locally
 
-After all of the steps are done. Type `npm run start` in the command line in the project directory.
-
-Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
-
-## Start in Dev mode
-
-You can also start the server in "dev mode", where the server will restart on file changes.
 
 ```bash
+# start the server
+npm run start
+
+# alternatively, run in dev mode to restart on file changes 
 npm run dev
 ```
+
+Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
 
 ## Config
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
+## TTK Steps:
 
-# API Examples:
+```bash
+# start a lookup
+./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_01_party_lookup.test.ts
+
+# Then look for the line:
+#     make sure to set this: export TRANSACTION_ID=<some id>
+
+export TRANSACTION_ID=yIf88LByjKGtNraZADOq
+
+# Confirm payee, and set amount
+./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_02_payment_confirmation.test.ts
+```
+## Mock Data for Account Linking
+
+### Mocking Available Financial Service Providers 
+
+Follow these steps to display a list of available Financial Service Providers on the account linking tab.
+
+1. Create a new collection called `participants`
+2. Inside the collection `participants`, add as many different FSP documents as you want.
+
+An FSP document consists of a Map that looks like so:
+
+```
+{
+  fspId: "hsbc",
+  name: "HSBC Bank"
+}
+```
+
+When the server is fully functional, the server will periodically update this list and populate the 'participants' collection so this won't be needed anymore.
+
+### Mocking Accounts for Associated Accounts
+
+1. In the Consent object, that you are working with, add an `accounts` field of type 'array'.
+2. In that array, add as many Account documents as you want.
+
+An Account document consists of a Map that looks like so:
+
+```
+{
+  id: "account.bob.fsp",
+  currency: "SGD"
+}
+```
+
+The overall Consent object should look like this:
+
+```
+{
+   "consentId":"555",
+   ...
+   "accounts": [
+     { "id": "account.bob.fsp", "currency": "USD" },
+     { "id": "anotheraccount.bob.fsp", "currency": "SGD" },
+     ...
+   ]
+}
+```
+
+
+
+## API Example Snippets:
+These curl snippets may be useful when debugging this service.
 
 ```bash
 curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
@@ -338,82 +398,3 @@ curl -X POST $ELB_URL/ml-api-adapter/transfers \
   }'
 
 ```
-
-
-
-
-
-
-
-## Transaction callback
-
-## LD Testing notes:
-
-- consentId must be valid uuid, otherwise mojaloop will reject, eg `e94b9110-f6c9-44cf-bdc0-895430f1ca9c`
-   - had to hack around in the app to get this to work
-
-- for `transactionRepository.update(conditions, body)`, I'm pretty sure we're going to need some firestore indicies
-
-
-## TTK Steps:
-
-```bash
-# start a lookup
-./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_01_party_lookup.test.ts
-
-# Then look for the line:
-#     make sure to set this: export TRANSACTION_ID=<some id>
-
-export TRANSACTION_ID=yIf88LByjKGtNraZADOq
-
-# Confirm payee, and set amount
-./node_modules/.bin/jest --collectCoverage=false test/integration/_scratch_02_payment_confirmation.test.ts
-```
-# Mock Data for Account Linking
-
-## Mocking Available Financial Service Providers 
-
-Follow these steps to display a list of available Financial Service Providers on the account linking tab.
-
-1. Create a new collection called `participants`
-2. Inside the collection `participants`, add as many different FSP documents as you want.
-
-An FSP document consists of a Map that looks like so:
-
-```
-{
-  fspId: "hsbc",
-  name: "HSBC Bank"
-}
-```
-
-When the server is fully functional, the server will periodically update this list and populate the 'participants' collection so this won't be needed anymore.
-
-## Mocking Accounts for Associated Accounts
-
-1. In the Consent object, that you are working with, add an `accounts` field of type 'array'.
-2. In that array, add as many Account documents as you want.
-
-An Account document consists of a Map that looks like so:
-
-```
-{
-  id: "account.bob.fsp",
-  currency: "SGD"
-}
-```
-
-The overall Consent object should look like this:
-
-```
-{
-   "consentId":"555",
-   ...
-   "accounts": [
-     { "id": "account.bob.fsp", "currency": "USD" },
-     { "id": "anotheraccount.bob.fsp", "currency": "SGD" },
-     ...
-   ]
-}
-```
-
