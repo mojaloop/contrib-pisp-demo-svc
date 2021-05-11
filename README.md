@@ -16,7 +16,7 @@ This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contr
 
 The following steps should allow you to perform a mocked out end-to-end transfer (between pisp-demo-server and pisp-demo-app).
 
-1. Firebase SDK Admin Key
+### 1. Firebase SDK Admin Key
 
 Follow the instructions outlined [here](https://firebase.google.com/docs/admin/setup) to obtain a JSON file containing your secret key.
 Rename it to be `serviceAccountKey.json` and put it in `{project-directory}/secret/` so that the path to the file is: `{project-directory}/secret/serviceAccountKey.json`.
@@ -39,7 +39,7 @@ The contents of the JSON file should look like
 }
 ```
 
-2. Environment Variables
+### 2. Environment Variables
 
 Create a `.env` file in your local environment.
 Put these lines into that file:
@@ -51,7 +51,7 @@ These will enable the Mojaloop simulator until the relevant features on the real
 To see other environment variables that you can use to customize the server configuration (see [Configurations section](#configurations)).
 
 
-3. Mock Consent Objects
+### 3. Mock Consent Objects
 
 You need to create a collection in your Firestore named "consents" and then create an object in that collection like so: 
 
@@ -75,7 +75,7 @@ You need to create a collection in your Firestore named "consents" and then crea
 }
 ```
 
-Note: The nested structure can be replicated by using the Map data type in Firestore.
+> Note: The nested structure can be replicated by using the Map data type in Firestore.
 
 You can use any info for the partyIdentifier and names but the consentId must be 555 or 985 for now - this is hardcoded in the mobile app so the consentId must match.
 
