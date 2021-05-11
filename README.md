@@ -2,12 +2,9 @@
 
 ### NodeJS/Firebase backend for the [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui)
 
-
 ## Introduction
 
-This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui). It uses Firebase Cloud Firestore to 
-
-It uses t
+This project is the backend for [pisp-demo-ui](https://github.com/mojaloop/contrib-pisp-demo-ui). It uses Firebase Cloud Firestore to store state and communicate with the UI.
 
 **For more information about Mojaloop and PISP with Mojaloop, see:**
 - [mojaloop/pisp](https://github.com/mojaloop/pisp)
@@ -88,26 +85,24 @@ This represents the consent that the user has given to PISP app to be able to ac
 
 When account linking is fully functional, this step will no longer need to be performed since we will get actual consent objects in the collection from the account linking process.
 
-# Starting the server
+## Running Locally
 
-After all of the steps are done. Type `npm run start` in the command line in the project directory.
-
-Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
-
-## Start in Dev mode
-
-You can also start the server in "dev mode", where the server will restart on file changes.
 
 ```bash
+# start the server
+npm run start
+
+# alternatively, run in dev mode to restart on file changes 
 npm run dev
 ```
+
+Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
 
 ## Config
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
-
-# API Examples:
+## API Examples:
 
 ```bash
 curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
