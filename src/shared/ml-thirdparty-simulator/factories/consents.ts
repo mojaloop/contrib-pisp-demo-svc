@@ -27,15 +27,15 @@
 
 import * as faker from 'faker'
 
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents, { TAuthChannel } from '@mojaloop/sdk-standard-components'
+import config from '~/lib/config'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
     requestBody: SDKStandardComponents.PostConsentRequestsRequest
   ): SDKStandardComponents.PutConsentRequestsRequest {
     return {
-      // TODO: make this configurable
-      authChannels: ['OTP'],
+      authChannels: [config.get('simulatorDefaultAuthChannel') as TAuthChannel],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       authUri: 'https://dfspAuth.com',

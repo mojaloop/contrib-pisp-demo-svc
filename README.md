@@ -102,6 +102,14 @@ Go to the PISP demo app and try to send money to a payee. You should see that th
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
+
+| Environment Variable | Options | Default | Description |
+| --- | --- | --- | --- |
+| `LOCAL_SIMULATOR` | `true`, `false` | `false` | If true, uses a local simulator to simulate the Mojaloop switch + DFSP |
+|`SIMULATOR_DEFAULT_AUTH_CHANNEL` | `WEB`, `OTP` | `OTP` | If the Local simulator is enabled, will set the auth channel the dfsp 'chooses to use' to verify their end user |
+
+
+
 ## TTK Steps:
 
 ```bash

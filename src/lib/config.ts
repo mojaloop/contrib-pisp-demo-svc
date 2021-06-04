@@ -116,8 +116,15 @@ const config = convict({
     doc:
       'An ISO 4217 currency code to replace other values with for demo purposes',
     format: '*',
-    default: 'XTS',
+    default: 'TZS',
     env: 'DEMO_CURRENCY',
+  },
+  simulatorDefaultAuthChannel: {
+    doc:
+      'The auth channel for the local simulator to use. Defaults to OTP',
+    format: ['OTP', 'WEB'],
+    default: 'WEB',
+    env: 'SIMULATOR_DEFAULT_AUTH_CHANNEL',
   },
   experimental: {
     delay: {
