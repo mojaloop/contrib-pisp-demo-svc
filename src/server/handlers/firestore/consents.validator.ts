@@ -86,10 +86,11 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
  *                    on Firebase.
  */
 export const isValidSignedChallenge = (consent: Consent): boolean => {
+  console.log('consent is', consent)
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.credential &&
-    consent.keyHandleId &&
+    consent.credential?.payload?.rawId! &&
     consent.scopes &&
     consent.initiatorId &&
     consent.consentRequestId &&
