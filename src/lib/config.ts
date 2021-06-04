@@ -120,14 +120,14 @@ const config = convict({
     env: 'DEMO_CURRENCY',
   },
   simulatorDefaultAuthChannel: {
-    doc:
-      'The auth channel for the local simulator to use. Defaults to OTP',
+    doc: 'The auth channel for the local simulator to use. Defaults to OTP',
     format: ['OTP', 'WEB'],
     default: 'WEB',
     env: 'SIMULATOR_DEFAULT_AUTH_CHANNEL',
   },
   simulatorAuthUri: {
-    doc: 'If the Local Simulator is enabled, and the Auth Channel is `WEB`, this value is the URI the User is redirected to to perform the login',
+    doc:
+      'If the Local Simulator is enabled, and the Auth Channel is `WEB`, this value is the URI the User is redirected to to perform the login',
     format: String,
     default: 'https://dfspauth.com',
     env: 'SIMULATOR_AUTH_URI',
