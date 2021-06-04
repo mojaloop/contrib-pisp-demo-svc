@@ -57,20 +57,31 @@ components:
       enum:
         - VERIFIED
         - PENDING
+    CredentialPayload:
+      title: CredentialPayload
+      type: object
+      properties:
+        id: 
+          type: string
+        rawId:
+          type: array
+        response:
+          type: object
+          properties:
+            attestationObject:
+              type: array
+            clientDataJSON:
+              type: array
     Credential:
       title: Credential
       type: object
       properties:
-        id:
-          type: string
         credentialType:
           $ref: '#/components/schemas/CredentialType'
         status:
           $ref: '#/components/schemas/CredentialStatus'
-        challenge:
-          $ref: '#/components/schemas/CredentialChallenge'
         payload:
-          type: string
+          $ref: '#/components/schemas/CredentialPayload'
       description: Data model for the complex type Credential.
     HealthStatusType:
       title: HealthStatusType
