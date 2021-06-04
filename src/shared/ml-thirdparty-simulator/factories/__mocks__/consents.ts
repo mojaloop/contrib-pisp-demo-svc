@@ -25,6 +25,7 @@
  ******/
 
 import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import config from '~/lib/config'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
@@ -34,7 +35,7 @@ export class ConsentFactory {
       authChannels: ['WEB'],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      authUri: 'https://dfspAuth.com',
+      authUri: config.get('simulatorAuthUri'),
       callbackUri: requestBody.callbackUri,
       authToken: 'y19jtyyd5oofj',
     }

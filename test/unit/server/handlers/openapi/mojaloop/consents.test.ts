@@ -81,7 +81,7 @@ const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest 
     },
   ],
   callbackUri: config.get('mojaloop').pispCallbackUri,
-  authUri: 'https://dfspAuth.com',
+  authUri: 'https://dfspauth.com',
   authToken: 'secret-token',
 }
 

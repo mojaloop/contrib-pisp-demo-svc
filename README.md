@@ -107,6 +107,7 @@ Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blo
 | --- | --- | --- | --- |
 | `LOCAL_SIMULATOR` | `true`, `false` | `false` | If true, uses a local simulator to simulate the Mojaloop switch + DFSP |
 |`SIMULATOR_DEFAULT_AUTH_CHANNEL` | `WEB`, `OTP` | `OTP` | If the Local simulator is enabled, will set the auth channel the dfsp 'chooses to use' to verify their end user |
+|`SIMULATOR_AUTH_URI` | `String` | `https://dfspauth.com` | If the Local Simulator is enabled, and the Auth Channel is `WEB`, this value is the URI the User is redirected to to perform the login |
 
 
 

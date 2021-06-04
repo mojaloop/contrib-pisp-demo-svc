@@ -126,6 +126,12 @@ const config = convict({
     default: 'WEB',
     env: 'SIMULATOR_DEFAULT_AUTH_CHANNEL',
   },
+  simulatorAuthUri: {
+    doc: 'If the Local Simulator is enabled, and the Auth Channel is `WEB`, this value is the URI the User is redirected to to perform the login',
+    format: String,
+    default: 'https://dfspauth.com',
+    env: 'SIMULATOR_AUTH_URI',
+  },
   experimental: {
     delay: {
       doc: 'Delay time to be used in the experimental mode',

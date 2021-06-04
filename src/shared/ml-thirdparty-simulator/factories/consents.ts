@@ -38,7 +38,7 @@ export class ConsentFactory {
       authChannels: [config.get('simulatorDefaultAuthChannel') as TAuthChannel],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      authUri: 'https://dfspAuth.com',
+      authUri: config.get('simulatorAuthUri'),
       callbackUri: requestBody.callbackUri,
       authToken: faker.random.alphaNumeric(13),
     }
