@@ -24,12 +24,13 @@
  --------------
  ******/
 
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): SDKStandardComponents.PutConsentRequestsRequest {
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseOTPAuth
+    | tpAPI.Schemas.ConsentRequestsIDPutResponseWebAuth {
     return {
       authChannels: ['WEB'],
       initiatorId: requestBody.initiatorId,
@@ -42,46 +43,32 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PostConsentsRequest
-  ): SDKStandardComponents.PostConsentsRequest {
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
+      tpAPI.Schemas.ConsentRequestsIDPutResponseWeb
+  ): tpAPI.Schemas.ConsentsPostRequest {
     return {
-      id: '111',
-      requestId: consentRequestId,
-      initiatorId: requestBody.initiatorId,
-      participantId: 'dfsp',
+      consentId: '0000-0000-0000-0001',
+      consentRequestId,
       scopes: requestBody.scopes,
     }
   }
 
-  public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
-    return {
-      initiatorId: 'pispA',
-      participantId: 'dfspB',
-      requestId: '99',
-      scopes: [
-        {
-          accountId: '78910',
-          actions: ['Rand Namibia Dollar', 'virtual'],
-        },
-      ],
-      credential: {
-        id: '997',
-        credentialType: 'FIDO',
-        status: 'PENDING',
-        challenge: {
-          signature: 'fzc2tz3sntrn6',
-          payload: 'hr19lev48v9ky',
-        },
-        payload: 'fzc2tev48v9ky',
-      },
-    }
-  }
 
   public static createPutConsentIdValidationRequest(
-    requestBody: SDKStandardComponents.PutConsentsRequest
-  ): SDKStandardComponents.PutConsentsRequest {
-    requestBody.credential.status = 'VERIFIED'
-    return requestBody
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
+  ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
+    const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
+      requestId: requestBody.requestId,
+      participantId: requestBody.participantId,
+      initiatorId: requestBody.initiatorId,
+      scopes: requestBody.scopes,
+      credential: {
+        ...requestBody.credential,
+        status: 'VERIFIED',
+      }
+    }
+
+    return validatedConsent;
   }
 
   public static createPatchConsentRevokeRequest(): Record<string, string> {

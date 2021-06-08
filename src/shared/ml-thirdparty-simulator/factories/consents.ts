@@ -51,35 +51,10 @@ export class ConsentFactory {
   ): tpAPI.Schemas.ConsentsPostRequest {
     return {
       consentId: faker.random.uuid(),
-      consentRequestId: consentRequestId,
+      consentRequestId,
       scopes: requestBody.scopes,
     }
   }
-
-  // TODO: remove this - we now derive the challenge instead of getting it from the auth-service
-  // public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
-  //   return {
-  //     initiatorId: 'pispA',
-  //     participantId: 'dfspB',
-  //     requestId: faker.random.uuid(),
-  //     scopes: [
-  //       {
-  //         accountId: faker.random.uuid(),
-  //         actions: [faker.random.word(), faker.random.word()],
-  //       },
-  //     ],
-  //     credential: {
-  //       id: faker.random.uuid(),
-  //       credentialType: 'FIDO',
-  //       status: 'PENDING',
-  //       challenge: {
-  //         signature: faker.random.alphaNumeric(13),
-  //         payload: faker.random.alphaNumeric(13),
-  //       },
-  //       payload: faker.random.alphaNumeric(13),
-  //     },
-  //   }
-  // }
 
   public static createPutConsentIdValidationRequest(
     requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
