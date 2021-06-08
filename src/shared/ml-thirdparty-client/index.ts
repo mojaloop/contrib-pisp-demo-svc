@@ -31,6 +31,10 @@ import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
+  thirdparty as tpAPI
+} from '@mojaloop/api-snippets'
+
+import {
   ThirdPartyTransactionRequest,
 } from './models/openapi'
 
@@ -38,7 +42,6 @@ import SDKStandardComponents, {
   Logger,
   ThirdpartyRequests,
   MojaloopRequests,
-  PutThirdpartyRequestsTransactionsAuthorizationsRequest,
   BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
@@ -83,7 +86,8 @@ export interface MojaloopClient {
    * @param destParticipantId   ID of destination - to be used when sending request
    */
   postConsentRequests(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    // requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
     destParticipantId: string
   ): Promise<unknown>
   
@@ -120,7 +124,7 @@ export interface MojaloopClient {
   */
   putAuthorizations(
     id: string,
-    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse,
     destParticipantId: string
   ): Promise<unknown>
 }
@@ -244,7 +248,7 @@ export class Client implements MojaloopClient{
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     // TODO: this will need some updating
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
-      (requestBody as unknown) as SDKStandardComponents.PostThirdPartyRequestTransactionsRequest,
+      (requestBody as unknown) as tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
       destParticipantId
     )
   }
@@ -260,27 +264,31 @@ export class Client implements MojaloopClient{
    */
   public async putAuthorizations(
     id: string,
-    _requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
 
-    const requestBody = {
-      authenticationInfo: {
-        // LD - just a hack because we need to update the TTK
-        authentication: 'OTP',
-        // authenticationValue: {
-        //   pinValue: _requestBody.value,
-        //   counter: "1"
-        // }
-        authenticationValue: _requestBody.value,
-      },
-      responseType: 'ENTERED'
-    }
+    // const requestBody = {
+    //   authenticationInfo: {
+    //     // LD - just a hack because we need to update the TTK
+    //     authentication: 'OTP',
+    //     // authenticationValue: {
+    //     //   pinValue: _requestBody.value,
+    //     //   counter: "1"
+    //     // }
+    //     // TODO: this looks outdated now.
+    //     authenticationValue: _requestBody.authenticationInfo?.authenticationValue
+    //     // authenticationValue: 'TODO: valid authentication value',
+    //   },
+    //   responseType: 'ENTERED'
+    // }
 
     // @ts-ignore
     // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
     // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
-    return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
+    // return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
+    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
+      requestBody, id, destParticipantId)
   }
 
   /**
@@ -299,7 +307,7 @@ export class Client implements MojaloopClient{
    * @param destParticipantId   ID of destination - to be used when sending request
    */
   public async postConsentRequests(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest,
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.postConsentRequests(
@@ -317,7 +325,8 @@ export class Client implements MojaloopClient{
    */
   public async putConsentRequests(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest,
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
+      tpAPI.Schemas.ConsentRequestsIDPutResponseWeb,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.putConsentRequests(
@@ -353,7 +362,7 @@ export class Client implements MojaloopClient{
    */
   public async putConsentId(
     consentId: string,
-    requestBody: ThirdpartyAPISchemas.ConsentsIDPutResponseSigned,
+    requestBody: ThirdpartyAPISchemas.PutConsentsRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.putConsents(

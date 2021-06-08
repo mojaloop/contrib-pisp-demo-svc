@@ -49,8 +49,7 @@ export namespace ThirdpartyAPISchemas {
 
   // export type PutConsentsRequest = operations['UpdateConsent']['requestBody']['content']['application/json']
   export type ConsentsIDPutResponseSigned = components["schemas"]["ConsentsIDPutResponseSigned"]
-  // export type PutConsentsRequest = components["schemas"]["ConsentsIDPutResponseSigned"]
-  //   | components["schemas"]["ConsentsIDPutResponseUnsigned"]
-  //   | components["schemas"]["ConsentsIDPutResponseVerified"];
+  export type PutConsentsRequest = components["schemas"]["ConsentsIDPutResponseSigned"]
+    | components["schemas"]["ConsentsIDPutResponseVerified"];
 
 }
