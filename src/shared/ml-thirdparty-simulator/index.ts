@@ -311,34 +311,6 @@ export class Simulator implements MojaloopClient {
     })
   }
 
-  //TODO: deprecated. Remove this function
-  /**
-   * Performs a request to generate a challenge for FIDO registration in Mojaloop by third-party application,
-   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
-   *
-   * @param consentId     identifier of consent as defined by Mojaloop API.
-   */
-  public async postGenerateChallengeForConsent(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    consentId: string
-  ): Promise<ServerInjectResponse> {
-    // TODO: Refactor once implemented in sdk-standard components
-    const targetUrl = '/consents/' + consentId + '/generateChallenge'
-    const payload = ConsentFactory.createPutConsentIdRequest()
-
-    return this.server.inject({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: this.options.host ?? '',
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  }
-
-
   /**
    * Performs a request to revoke the Consent object and unlink in Mojaloop by third-party application,
    * without the need of sending `POST /consents/{ID}/generateChallenge` request.

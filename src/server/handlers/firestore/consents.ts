@@ -125,22 +125,6 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
   }
 }
 
-async function initiateChallengeGeneration(server: StateServer, consent: Consent) {
-  if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
-    throw new MissingConsentFieldsError(consent)
-  }
-
-  try {
-    // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId!
-    )
-  } catch (error) {
-    logger.error(error)
-  }
-}
-
 async function handleSignedChallenge(server: StateServer, consent: Consent) {
   console.log('handleSignedChallenge')
 
@@ -295,7 +279,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.CONSENT_GRANTED:
-      await initiateChallengeGeneration(server, consent)
+      console.warn('tried to call deprecated method `initiateChallengeGeneration` - please fix me.')
       break
 
     case ConsentStatus.CHALLENGE_GENERATED:

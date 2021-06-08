@@ -41,7 +41,6 @@ jest.mock('~/lib/firebase')
 const mockGetParties = jest.fn()
 const mockPutConsentRequests = jest.fn()
 const mockPostConsentRequests = jest.fn()
-const mockPostGenerateChallengeForConsent = jest.fn()
 const mockPutConsentId = jest.fn()
 const mockPostRevokeConsent = jest.fn()
 jest.mock('~/shared/ml-thirdparty-client', () => {
@@ -50,7 +49,6 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
       getParties: mockGetParties,
       putConsentRequests: mockPutConsentRequests,
       postConsentRequests: mockPostConsentRequests,
-      postGenerateChallengeForConsent: mockPostGenerateChallengeForConsent,
       putConsentId: mockPutConsentId,
       postRevokeConsent: mockPostRevokeConsent,
     }
@@ -254,18 +252,6 @@ defineFeature(feature, (test): void => {
               callbackUri: expect.any(String),
               authToken: consent.authToken!,
             },
-            consent.party!.partyIdInfo.fspId!
-          )
-          break
-        }
-        case 'initiate challenge generation': {
-          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledTimes(1)
-          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledWith(
-            consent
-          )
-          expect(mockPostGenerateChallengeForConsent).toBeCalledTimes(1)
-          expect(mockPostGenerateChallengeForConsent).toBeCalledWith(
-            consent.consentId!,
             consent.party!.partyIdInfo.fspId!
           )
           break

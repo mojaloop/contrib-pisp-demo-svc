@@ -339,23 +339,6 @@ export class Client implements MojaloopClient{
   }
 
   /**
-   * Performs a request to generate a challenge for FIDO registration
-   *
-   * @param _consentId     identifier of consent as defined by Mojaloop API.
-   * @param destParticipantId   ID of destination - to be used when sending request
-   */
-  public async postGenerateChallengeForConsent(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    consentId: string,
-  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: implement in sdk standard components
-    // TODO: this should just be empty!
-    const body = { type: 'FIDO'}
-    // @ts-ignore
-    return this.thirdpartyRequests._post(`consents/${consentId}/generateChallenge`, 'thirdparty', body, undefined)
-  }
-
-  /**
    * Performs a put request with registered consent credential
    *
    * @param consentId     identifier of consent as defined by Mojaloop API.

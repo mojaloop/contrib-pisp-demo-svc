@@ -56,29 +56,30 @@ export class ConsentFactory {
     }
   }
 
-  public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
-    return {
-      initiatorId: 'pispA',
-      participantId: 'dfspB',
-      requestId: faker.random.uuid(),
-      scopes: [
-        {
-          accountId: faker.random.uuid(),
-          actions: [faker.random.word(), faker.random.word()],
-        },
-      ],
-      credential: {
-        id: faker.random.uuid(),
-        credentialType: 'FIDO',
-        status: 'PENDING',
-        challenge: {
-          signature: faker.random.alphaNumeric(13),
-          payload: faker.random.alphaNumeric(13),
-        },
-        payload: faker.random.alphaNumeric(13),
-      },
-    }
-  }
+  // TODO: remove this - we now derive the challenge instead of getting it from the auth-service
+  // public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
+  //   return {
+  //     initiatorId: 'pispA',
+  //     participantId: 'dfspB',
+  //     requestId: faker.random.uuid(),
+  //     scopes: [
+  //       {
+  //         accountId: faker.random.uuid(),
+  //         actions: [faker.random.word(), faker.random.word()],
+  //       },
+  //     ],
+  //     credential: {
+  //       id: faker.random.uuid(),
+  //       credentialType: 'FIDO',
+  //       status: 'PENDING',
+  //       challenge: {
+  //         signature: faker.random.alphaNumeric(13),
+  //         payload: faker.random.alphaNumeric(13),
+  //       },
+  //       payload: faker.random.alphaNumeric(13),
+  //     },
+  //   }
+  // }
 
   public static createPutConsentIdValidationRequest(
     requestBody: SDKStandardComponents.PutConsentsRequest

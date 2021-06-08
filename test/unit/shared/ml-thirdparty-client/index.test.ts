@@ -260,24 +260,6 @@ describe('Mojaloop third-party client', () => {
     )
   })
 
-  it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
-    expect(
-      client.postGenerateChallengeForConsent(consentId)
-    ).rejects.toThrow(new NotImplementedError())
-
-    // TODO: Use this test once implemented
-    // // Arrange
-    // const GenerateChallengeSpy = jest
-    //   .spyOn(client.thirdpartyRequests, 'generateChallenge')
-    //   .mockImplementation()
-
-    // // Act
-    // client.postGenerateChallengeForConsent(consentId)
-
-    // // Assert
-    // expect(GenerateChallengeSpy).toBeCalledWith(consentId)
-  })
-
   it('Should perform a put request for registered consent credential,', (): void => {
     // Arrange
     const putConsentIdSpy = jest

@@ -352,28 +352,6 @@ describe('Mojaloop third-party simulator', () => {
     })
   })
 
-  it('Should inject server with the result of a challenge generation request', async () => {
-    const targetUrl = '/consents/' + consentId + '/generateChallenge'
-
-    // this is a workaround to handle the delay before injecting response to the server
-    Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.postGenerateChallengeForConsent(consentId)
-
-    const payload = ConsentFactory.createPutConsentIdRequest()
-
-    expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: 'mojaloop.' + config.get('hostname'),
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  })
-
   it('Should inject server with a granted consent', async () => {
     const targetUrl = `/mojaloop/consents/${consentId}`
 

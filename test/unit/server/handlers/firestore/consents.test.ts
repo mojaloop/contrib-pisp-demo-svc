@@ -447,13 +447,6 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         ],
       }
 
-       // TODO: LD Tech debt
-      // beforeAll(() => {
-      //   mojaloopClientSpy = jest
-      //     .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
-      //     .mockImplementation()
-      // })
-
       it('Should initiate challenge generation request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentGenerateChallenge)
 
