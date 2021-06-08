@@ -146,7 +146,7 @@ export class Simulator implements MojaloopClient {
   ): Promise<ServerInjectResponse> {
     logger.info("simulator: postConsentRequests")
 
-    const targetUrl = '/mojaloop/consentRequests/' + requestBody.id
+    const targetUrl = '/mojaloop/consentRequests/' + requestBody.consentRequestId
     const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
 
     return this.server.inject({

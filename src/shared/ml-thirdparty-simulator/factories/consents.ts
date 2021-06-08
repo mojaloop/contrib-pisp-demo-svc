@@ -60,9 +60,6 @@ export class ConsentFactory {
     requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
   ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
     const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
-      requestId: requestBody.requestId,
-      participantId: requestBody.participantId,
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       credential: {
         ...requestBody.credential,

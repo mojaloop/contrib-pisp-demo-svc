@@ -39,8 +39,7 @@ export * as openapi from './api_interfaces/openapi'
 export namespace ThirdpartyAPISchemas {
   export type AuthChannel = components["schemas"]["ConsentRequestChannelTypeWeb"] 
     | components["schemas"]["ConsentRequestChannelTypeOTP"]
-  export type Credential = components['schemas']['UnsignedCredential'] 
-    | components['schemas']['SignedCredential']
+  export type Credential = components['schemas']['SignedCredential']
     | components['schemas']['VerifiedCredential']
   export type SignedCredential = components['schemas']['SignedCredential']
   export type Scope = components['schemas']['Scope']

@@ -112,10 +112,11 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
     // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postConsentRequests(
       {
-        initiatorId: consent.initiatorId!,
+        consentRequestId: consent.consentRequestId!,
+        //TODO: find the userId
+        userId: 'user@example.com',
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
-        id: consent.consentRequestId!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
@@ -138,9 +139,6 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
-        requestId: consent.consentRequestId!,
-        initiatorId: consent.initiatorId!,
-        participantId: consent.participantId!,
         scopes: consent.scopes!,
         // TODO: cast here since putConsentId
         credential: consent.credential as ThirdpartyAPISchemas.SignedCredential
