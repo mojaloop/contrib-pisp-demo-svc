@@ -27,17 +27,16 @@
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 export class ConsentFactory {
-  public static createPutConsentRequestIdRequest(
+  public static createPatchConsentRequestIdRequest(
     requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
-  ): tpAPI.Schemas.ConsentRequestsIDPutResponseOTPAuth
-    | tpAPI.Schemas.ConsentRequestsIDPutResponseWebAuth {
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseWeb
+   | tpAPI.Schemas.ConsentRequestsIDPutResponseOTP {
     return {
+      consentRequestId: requestBody.consentRequestId,
       authChannels: ['WEB'],
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
-      authToken: 'y19jtyyd5oofj',
     }
   }
 
@@ -58,9 +57,6 @@ export class ConsentFactory {
     requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
   ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
     const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
-      requestId: requestBody.requestId,
-      participantId: requestBody.participantId,
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       credential: {
         ...requestBody.credential,

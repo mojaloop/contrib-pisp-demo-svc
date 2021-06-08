@@ -30,17 +30,14 @@ import * as faker from 'faker'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
-    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
-  ): tpAPI.Schemas.ConsentRequestsIDPutResponseOTPAuth
-    | tpAPI.Schemas.ConsentRequestsIDPutResponseWebAuth {
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseWeb | tpAPI.Schemas.ConsentRequestsIDPutResponseOTP {
     return {
-      // TODO: make this configurable
+      consentRequestId: requestBody.consentRequestId,
+      // TODO: make configurable
       authChannels: ['OTP'],
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      // authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
-      authToken: faker.random.alphaNumeric(13),
     }
   }
 
