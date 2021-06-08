@@ -65,7 +65,7 @@
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
-    "@mojaloop/api-snippets": "^12.1.2",
+    "@mojaloop/api-snippets": "^12.4.2",
     "@redocly/openapi-cli": "^1.0.0-beta.32",
     "@types/convict": "^5.2.1",
     "@types/faker": "^4.1.12",

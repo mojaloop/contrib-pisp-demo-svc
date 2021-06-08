@@ -31,13 +31,14 @@ import { logger } from '~/shared/logger'
 import {
   AmountType, PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
-import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
 // TODO: get from the consent/account object
 // for now, just hardcode to applebank
@@ -157,7 +158,7 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
 
   // TD - LD eww so much messy casting going on
   // @ts-ignore - todo fix me!
-  const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+  const requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponsequest = {
     challenge: JSON.stringify(transaction.quote),
     // consentId: transaction.consentId!,
     // sourceAccountId: transaction.sourceAccountId!,
