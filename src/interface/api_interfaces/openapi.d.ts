@@ -755,14 +755,10 @@ export interface components {
       name?: components["schemas"]["PartyName"];
       personalInfo?: components["schemas"]["PartyPersonalInfo"];
     };
-    "Account-2": {
-      id?: string;
-      currency?: components["schemas"]["Currency"];
-    };
     /** Data model for the complex type PartiesTypeIDPutResponse */
     PartiesTypeIDPutResponse: {
       party?: components["schemas"]["Party"];
-      accounts?: components["schemas"]["Account-2"][];
+      accounts?: components["schemas"]["Account"][];
     };
   };
   responses: {

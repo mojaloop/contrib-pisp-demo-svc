@@ -2104,14 +2104,6 @@ components:
           $ref: '#/components/schemas/PartyPersonalInfo'
       required:
         - partyIdInfo
-    Account-2:
-      title: Account
-      type: object
-      properties:
-        id:
-          type: string
-        currency:
-          $ref: '#/components/schemas/Currency'
     PartiesTypeIDPutResponse:
       title: PartiesTypeIDPutResponse
       description: Data model for the complex type PartiesTypeIDPutResponse
@@ -2122,4 +2114,4 @@ components:
         accounts:
           type: array
           items:
-            $ref: '#/components/schemas/Account-2'
+            $ref: '#/components/schemas/Account'

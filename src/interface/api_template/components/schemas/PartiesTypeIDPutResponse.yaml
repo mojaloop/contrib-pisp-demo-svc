@@ -7,4 +7,4 @@ properties:
   accounts:
     type: array
     items:
-      $ref: ./Account.yaml
+      $ref: '../../../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/components/schemas/Account.yaml'
