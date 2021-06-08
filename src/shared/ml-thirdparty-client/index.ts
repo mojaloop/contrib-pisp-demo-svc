@@ -45,7 +45,6 @@ import SDKStandardComponents, {
   BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
-import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 
 // MojaloopClient interface, which can be implemented by either a real client, or simulated one.
