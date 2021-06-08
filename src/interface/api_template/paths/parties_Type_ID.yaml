@@ -1,0 +1,39 @@
+parameters:
+  - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Type.yaml'
+  - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/ID.yaml'
+put:
+  tags:
+    - parties
+  summary: '[Mojaloop Callback] Result of the Party information lookup'
+  description: The callback PUT /parties/<Type>/<ID> (or PUT /parties/<Type>/<ID>/<SubId>)
+    is used to inform the client of a successful result of the Party information
+    lookup.
+  operationId: PutPartiesByTypeAndId
+  parameters:
+    - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Content-Type.yaml'
+    - $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/parameters/Content-Length.yaml'
+  requestBody:
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/PartiesTypeIDPutResponse.yaml'
+    required: true
+  responses:
+    200:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/200.yaml'
+    400:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/400.yaml'
+    401:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/401.yaml'
+    403:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/403.yaml'
+    404:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/404.yaml'
+    405:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/405.yaml'
+    406:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/406.yaml'
+    501:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/501.yaml'
+    503:
+      $ref: '../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/responses/503.yaml'

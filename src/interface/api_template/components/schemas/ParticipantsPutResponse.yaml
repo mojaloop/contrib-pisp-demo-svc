@@ -1,0 +1,8 @@
+title: ParticipantsPutResponse
+description: Data model for the complex type ParticipantsPutResponse.
+type: object
+properties:
+  participants:
+    type: array
+    items:
+      $ref: ./Participant.yaml

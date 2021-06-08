@@ -1,0 +1,36 @@
+openapi: 3.0.1
+info:
+  title: PISP Demo Server Open API
+  description: This is part of the PISP demo server that handles communication with
+    Mojaloop's switch and third-party adapter. Note - The API supports a maximum size
+    of 65536 bytes (64 Kilobytes) in the HTTP header.
+  license:
+    name: Apache 2.0
+  version: "1.1"
+servers:
+  - url: /
+paths:
+  /accounts/{ID}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/accounts_ID.yaml'
+  /authorizations:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/authorizations.yaml'
+  /consentRequests/{ID}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consentRequests_ID.yaml'
+  /consents:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents.yaml'
+  /consents/{ID}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents_ID.yaml'
+  /thirdpartyRequests/transactions/{ID}:
+    $ref: paths/thirdpartyRequests_transactions_ID.yaml
+  /thirdpartyRequests/transactions/{ID}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/thirdpartyRequests_transactions_ID_error.yaml'
+  /health:
+     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/health.yaml'
+  /participants:
+     $ref: paths/participants.yaml
+  /participants/error:
+     $ref: paths/participants_error.yaml
+  /parties/{Type}/{ID}:
+     $ref: paths/parties_Type_ID.yaml
+  /parties/{Type}/{ID}/error:
+     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_error.yaml'

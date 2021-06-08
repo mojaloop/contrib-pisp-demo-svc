@@ -38,7 +38,7 @@ import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
 import * as thirdpartyRequests from './thirdpartyRequests'
 
 export const apiHandlers = {
-  getHealth: Health.get,
+  HealthGet: Health.get,
   putAccounts: MojaloopAccounts.put,
   postAuthorizations: MojaloopAuthorizations.post,
   postConsents: MojaloopConsents.post,

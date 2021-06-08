@@ -27,5 +27,5 @@
 import * as Health from '../health'
 
 export const apiHandlers = {
-  getHealth: Health.get,
+  HealthGet: Health.get,
 }
