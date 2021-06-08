@@ -45,6 +45,7 @@ import { NotImplementedError } from '../errors'
 import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 
+// MojaloopClient interface, which can be implemented by either a real client, or simulated one.
 export interface MojaloopClient {
 
   /**
@@ -352,7 +353,7 @@ export class Client implements MojaloopClient{
    */
   public async putConsentId(
     consentId: string,
-    requestBody: SDKStandardComponents.PutConsentsRequest,
+    requestBody: ThirdpartyAPISchemas.ConsentsIDPutResponseSigned,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.putConsents(
