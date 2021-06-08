@@ -21,7 +21,7 @@
     "docker:run": "docker run -p 8080:8080 pisp-demo-server:local",
     "lint": "eslint ./src/**/*.ts *.js",
     "lint:fix": "eslint --fix ./src/**/*.ts *.js",
-    "prebuild": "npm run build:openapi",
+    "prebuild": "npm run build:openapi && npm run build:dto:mojaloop",
     "prestart": "npm run build:openapi",
     "pretest": "npm run build:openapi",
     "release": "standard-version",

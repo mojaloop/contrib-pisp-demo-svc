@@ -1,4 +1,3 @@
-# TODO: we shouldn't even need this... just the thirdparty-api as defined in API Snippets
 openapi: 3.0.1
 info:
   title: PISP Demo Server Open API
