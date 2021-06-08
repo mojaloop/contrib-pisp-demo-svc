@@ -100,7 +100,7 @@ export interface MojaloopClient {
    */
   putConsentId(
     consentId: string,
-    requestBody: ThirdpartyAPISchemas.ConsentsIDPutResponseSigned,
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified,
     destParticipantId: string
   ): Promise<unknown> 
 
@@ -362,7 +362,7 @@ export class Client implements MojaloopClient{
    */
   public async putConsentId(
     consentId: string,
-    requestBody: ThirdpartyAPISchemas.PutConsentsRequest,
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.putConsents(

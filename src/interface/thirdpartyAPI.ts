@@ -30,7 +30,7 @@
 // see API-snippets for example of how to do this: https://github.com/mojaloop/api-snippets/#dto-type-aliasing
 
 
-import { components, operations } from './api_interfaces/openapi'
+import { components } from './api_interfaces/openapi'
 
 // reexport openapi if needed
 export * as openapi from './api_interfaces/openapi'
@@ -42,14 +42,6 @@ export namespace ThirdpartyAPISchemas {
   export type Credential = components['schemas']['UnsignedCredential'] 
     | components['schemas']['SignedCredential']
     | components['schemas']['VerifiedCredential']
-
   export type SignedCredential = components['schemas']['SignedCredential']
-
   export type Scope = components['schemas']['Scope']
-
-  // export type PutConsentsRequest = operations['UpdateConsent']['requestBody']['content']['application/json']
-  export type ConsentsIDPutResponseSigned = components["schemas"]["ConsentsIDPutResponseSigned"]
-  export type PutConsentsRequest = components["schemas"]["ConsentsIDPutResponseSigned"]
-    | components["schemas"]["ConsentsIDPutResponseVerified"];
-
 }
