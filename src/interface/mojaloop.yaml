@@ -165,9 +165,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/ConsentRequestsIDPutResponseWeb'
-                - $ref: '#/components/schemas/ConsentRequestsIDPutResponseWebAuth'
                 - $ref: '#/components/schemas/ConsentRequestsIDPutResponseOTP'
-                - $ref: '#/components/schemas/ConsentRequestsIDPutResponseOTPAuth'
       responses:
         '202':
           $ref: '#/components/responses/202'
@@ -228,8 +226,9 @@ paths:
         - sampled
       operationId: PostConsents
       summary: PostConsents
-      description: |
-        DFSP sends this request to the PISP after granting consent.
+      description: >
+        DFSP sends this request to the PISP after granting consent. DFSP sends
+        this request to an Auth service to validate a signed consent.
       parameters:
         - $ref: '#/components/parameters/Accept'
         - $ref: '#/components/parameters/Content-Length'
@@ -312,29 +311,32 @@ paths:
           $ref: '#/components/responses/503'
     patch:
       description: >
-        The HTTP request `PATCH /consents/{ID}` is used in account unlinking
-
-        by a hub hosted auth service and by DFSPs in non-hub hosted scenarios
-
-        to notify participants of a consent being revoked.
+        The HTTP request `PATCH /consents/{ID}` is used
 
 
-        - Called by a `auth-service` to notify a PISP and DFSP of consent status
-        in hub hosted scenario.
+        - In account linking in the Credential Registration phase. Used by a
+        DFSP
+          to notify a PISP a credential has been verified and registered with an
+          Auth service.
 
-        - Called by a `DFSP` to notify a PISP of consent status in non-hub
-        hosted scenario.
+        - In account unlinking by a hub hosted auth service and by DFSPs
+          in non-hub hosted scenarios to notify participants of a consent being revoked.
+
+          Called by a `auth-service` to notify a PISP and DFSP of consent status in hub hosted scenario.
+          Called by a `DFSP` to notify a PISP of consent status in non-hub hosted scenario.
       tags:
         - consents
         - sampled
-      operationId: PatchConsent
-      summary: PatchConsent
+      operationId: PatchConsentByID
+      summary: PatchConsentByID
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConsentsIDPatchResponse'
+              oneOf:
+                - $ref: '#/components/schemas/ConsentsIDPatchResponseVerified'
+                - $ref: '#/components/schemas/ConsentsIDPatchResponseRevoked'
       parameters:
         - $ref: '#/components/parameters/Content-Length'
       responses:
@@ -362,19 +364,16 @@ paths:
         Service.
 
 
-        - Called by a `auth-service` to request PISP to add the credential
-        details.
+        - Called by a `PISP` to after signing a challenge. Sent to an DFSP for
+        verification.
 
-        - Called by a `PISP` to after signing a challenge. Sent to an
-        `auth-service` for verification.
-
-        - Called by a `auth-service` to notify a DFSP and PISP that a credential
-        has been verified and registered.
+        - Called by a `auth-service` to notify a DFSP that a credential has been
+        verified and registered.
       tags:
         - consents
         - sampled
-      operationId: UpdateConsent
-      summary: UpdateConsent
+      operationId: PutConsentByID
+      summary: PutConsentByID
       requestBody:
         required: true
         content:
@@ -382,7 +381,6 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/ConsentsIDPutResponseSigned'
-                - $ref: '#/components/schemas/ConsentsIDPutResponseUnsigned'
                 - $ref: '#/components/schemas/ConsentsIDPutResponseVerified'
       parameters:
         - $ref: '#/components/parameters/Content-Length'
@@ -1094,8 +1092,27 @@ components:
       properties:
         errorInformation:
           $ref: '#/components/schemas/ErrorInformation'
-    AccountAddress:
-      title: AccountAddress
+    Name:
+      title: Name
+      type: string
+      pattern: '^(?!\s*$)[\w .,''-]{1,128}$'
+      description: >-
+        The API data type Name is a JSON String, restricted by a regular
+        expression to avoid characters which are generally not used in a name.
+
+
+        Regular Expression - The regular expression for restricting the Name
+        type is "^(?!\s*$)[\w .,'-]{1,128}$". The restriction does not allow a
+        string consisting of whitespace only, all Unicode characters are
+        allowed, as well as the period (.) (apostrophe (‘), dash (-), comma (,)
+        and space characters ( ).
+
+
+        **Note:** In some programming languages, Unicode support must be
+        specifically enabled. For example, if Java is used, the flag
+        UNICODE_CHARACTER_CLASS must be enabled to allow Unicode characters.
+    AccountId:
+      title: AccountId
       type: string
       description: >
         A long-lived unique account identifier provided by the DFSP. This MUST
@@ -1280,24 +1297,32 @@ components:
         - ZAR
         - ZMW
         - ZWD
+    Account:
+      title: Account
+      type: object
+      description: Data model for the complex type Account.
+      properties:
+        accountNickname:
+          $ref: '#/components/schemas/Name'
+        id:
+          $ref: '#/components/schemas/AccountId'
+        currency:
+          $ref: '#/components/schemas/Currency'
+      required:
+        - accountNickname
+        - id
+        - currency
     AccountsIDPutResponse:
       title: AccountsIDPutResponse
-      type: array
-      items:
-        type: object
-        description: |
-          The object sent in a `PUT /accounts/{ID}` request.
-        properties:
-          accountNickname:
-            $ref: '#/components/schemas/AccountAddress'
-          id:
-            $ref: '#/components/schemas/AccountAddress'
-          currency:
-            $ref: '#/components/schemas/Currency'
-        required:
-          - accountNickname
-          - id
-          - currency
+      type: object
+      description: 'The object sent in a `PUT /accounts/{ID}` request.'
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+      required:
+        - accounts
     AuthenticationType:
       title: AuthenticationType
       type: string
@@ -1491,7 +1516,7 @@ components:
         }
       properties:
         accountId:
-          $ref: '#/components/schemas/AccountAddress'
+          $ref: '#/components/schemas/AccountId'
         actions:
           type: array
           items:
@@ -1522,11 +1547,8 @@ components:
 
         the user can prove their identity (e.g., by logging in).
       properties:
-        initiatorId:
-          type: string
-          description: >-
-            The id of the PISP who will initiate transactions on a user's
-            behalf.
+        consentRequestId:
+          $ref: '#/components/schemas/CorrelationId'
         scopes:
           type: array
           items:
@@ -1546,59 +1568,11 @@ components:
             The callback uri that the pisp app redirects to for user to complete
             their login.
       required:
-        - initiatorId
+        - consentRequestId
         - scopes
         - authChannels
         - callbackUri
         - authUri
-      additionalProperties: false
-    ConsentRequestsIDPutResponseWebAuth:
-      title: ConsentRequestsIDPutResponseWebAuth
-      type: object
-      description: >
-        The object sent in a `PUT /consentRequests/{ID}` request.
-
-
-        Schema used in the authentication phase of the account linking flow,
-
-        the user is expected to prove their identity to the DFSP by passing a
-        OTP
-
-        or secret to the PISP.
-      properties:
-        initiatorId:
-          type: string
-          description: >-
-            The id of the PISP who will initiate transactions on a user's
-            behalf.
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Scope'
-        authChannels:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConsentRequestChannelTypeWeb'
-        callbackUri:
-          type: string
-          description: >-
-            The callback uri that the user will be redirected to after
-            completing the WEB auth channel.
-        authUri:
-          type: string
-          description: >-
-            The callback uri that the pisp app redirects to for user to complete
-            their login.
-        authToken:
-          type: string
-          description: The Auth token from the OTP or redirect to pisp app.
-      required:
-        - initiatorId
-        - scopes
-        - authChannels
-        - callbackUri
-        - authUri
-        - authToken
       additionalProperties: false
     ConsentRequestChannelTypeOTP:
       title: ConsentRequestChannelTypeOTP
@@ -1617,11 +1591,8 @@ components:
         Schema used in the request consent phase of the account linking OTP/SMS
         flow.
       properties:
-        initiatorId:
-          type: string
-          description: >-
-            The id of the PISP who will initiate transactions on a user's
-            behalf.
+        consentRequestId:
+          $ref: '#/components/schemas/CorrelationId'
         scopes:
           type: array
           items:
@@ -1636,70 +1607,80 @@ components:
             The callback uri that the user will be redirected to after
             completing the WEB auth channel.
       required:
-        - initiatorId
+        - consentRequestId
         - scopes
         - authChannels
         - callbackUri
       additionalProperties: false
-    ConsentRequestsIDPutResponseOTPAuth:
-      title: ConsentRequestsIDPutResponseOTPAuth
-      type: object
-      description: >
-        The object sent in a `PUT /consentRequests/{ID}` request.
-
-
-        Schema used in the authentication phase of the account linking flow,
-
-        the user is expected to prove their identity to the DFSP by passing a
-        OTP
-
-        or secret to the PISP.
-      properties:
-        initiatorId:
-          type: string
-          description: >-
-            The id of the PISP who will initiate transactions on a user's
-            behalf.
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Scope'
-        authChannels:
-          type: array
-          items:
-            $ref: '#/components/schemas/ConsentRequestChannelTypeOTP'
-        callbackUri:
-          type: string
-          description: >-
-            The callback uri that the user will be redirected to after
-            completing the WEB auth channel.
-        authToken:
-          type: string
-          description: The Auth token from the OTP or redirect to pisp app.
-      required:
-        - initiatorId
-        - scopes
-        - authChannels
-        - callbackUri
-        - authToken
-      additionalProperties: false
-    OtpValue:
-      title: OtpValue
-      type: string
-      pattern: '^\d{3,10}$'
-      description: >-
-        The API data type OtpValue is a JSON String of 3 to 10 characters,
-        consisting of digits only. Negative numbers are not allowed. One or more
-        leading zeros are allowed.
     ConsentRequestsIDPatchRequest:
       title: ConsentRequestsIDPatchRequest
       type: object
       description: 'The object sent in a `PATCH /consentRequests/{ID}` request.'
       properties:
         authToken:
-          $ref: '#/components/schemas/OtpValue'
+          type: string
       required:
         - authToken
+    CredentialType:
+      title: CredentialType
+      type: string
+      enum:
+        - FIDO
+      description: |
+        The type of the Credential.
+        - "FIDO" - A FIDO public/private keypair.
+    PublicKeyCredential:
+      title: PublicKeyCredential
+      type: object
+      description: |
+        An object sent in a `PUT /consents/{ID}` request.
+        Based on https://w3c.github.io/webauthn/#iface-pkcredential
+      properties:
+        id:
+          type: string
+          description: TBD
+        response:
+          type: object
+          properties:
+            clientDataJSON:
+              type: string
+              description: TBD
+          required:
+            - clientDataJSON
+      required:
+        - id
+        - response
+    SignedCredential:
+      title: SignedCredential
+      type: object
+      description: >
+        A credential used to allow a user to prove their identity and access
+
+        to an account with a DFSP.
+
+
+        SignedCredential is a special formatting of the credential to allow us
+        to be
+
+        more explicit about the `status` field - it should only ever be PENDING
+        when
+
+        updating a credential.
+      properties:
+        credentialType:
+          $ref: '#/components/schemas/CredentialType'
+        status:
+          type: string
+          enum:
+            - PENDING
+          description: The challenge has signed but not yet verified.
+        payload:
+          $ref: '#/components/schemas/PublicKeyCredential'
+      required:
+        - credentialType
+        - status
+        - payload
+      additionalProperties: false
     ConsentsPostRequest:
       title: ConsentPostRequest
       type: object
@@ -1718,112 +1699,25 @@ components:
           description: |
             The id of the ConsentRequest that was used to initiate the
             creation of this Consent.
+        credential:
+          $ref: '#/components/schemas/SignedCredential'
         scopes:
           type: array
           items:
             $ref: '#/components/schemas/Scope'
       required:
         - consentId
-        - consentRequestId
         - scopes
-    FspId:
-      title: FspId
-      type: string
-      minLength: 1
-      maxLength: 32
-      description: FSP identifier.
-    CredentialType:
-      title: CredentialType
-      type: string
-      enum:
-        - FIDO
-      description: |
-        The type of the Credential.
-        - "FIDO" - A FIDO public/private keypair.
-    CredentialChallengeSigned:
-      title: CredentialChallengeSigned
-      type: object
-      description: |
-        The challenge that has been signed by a PISP.
-      properties:
-        payload:
-          type: string
-          description: >-
-            Base64 encoded binary of the challenge that must be answered by the
-            PISP.
-        signature:
-          type: string
-          description: >-
-            Base64 encoded binary string or result of the payload signed by the
-            PISP using the private key.
-      required:
-        - payload
-        - signature
-      additionalProperties: false
-    SignedCredential:
-      title: SignedCredential
-      type: object
-      description: >
-        A credential used to allow a user to prove their identity and access
-
-        to an account with a DFSP.
-
-
-        SignedCredential is a special formatting of the credential to allow us
-        to be
-
-        more explicit about the `status` field - it should only ever be PENDING
-        when updating
-
-        a credential.
-      properties:
-        id:
-          type: string
-          description: The id of a Credential.
-        type:
-          $ref: '#/components/schemas/CredentialType'
-        status:
-          type: string
-          enum:
-            - PENDING
-          description: The challenge has signed but not yet verified.
-        challenge:
-          $ref: '#/components/schemas/CredentialChallengeSigned'
-        payload:
-          type: string
-          description: Base64 encoded bytes - The public key of the Public/Private keypair.
-      required:
-        - id
-        - type
-        - status
-        - challenge
-        - payload
-      additionalProperties: false
     ConsentsIDPutResponseSigned:
       title: ConsentsIDPutResponseSigned
       type: object
       description: >
         The HTTP request `PUT /consents/{ID}` is used by the PISP to update a
-        Consent
+        Consent with a signed challenge and register a credential.
 
-        with a signed challenge and register a credential.
-
-
-        Called by a `PISP` to after signing a challenge. Sent to an
-        `auth-service` for verification.
+        Called by a `PISP` to after signing a challenge. Sent to a DFSP for
+        verification.
       properties:
-        requestId:
-          allOf:
-            - $ref: '#/components/schemas/CorrelationId'
-          description: |
-            The id of the ConsentRequest that was used to initiate the
-            creation of this Consent.
-        participantId:
-          $ref: '#/components/schemas/FspId'
-        initiatorId:
-          allOf:
-            - $ref: '#/components/schemas/FspId'
-          description: PISP identifier who uses this Consent.
         scopes:
           type: array
           items:
@@ -1831,92 +1725,6 @@ components:
         credential:
           $ref: '#/components/schemas/SignedCredential'
       required:
-        - requestId
-        - participantId
-        - initiatorId
-        - scopes
-        - credential
-    CredentialChallengeUnsigned:
-      title: CredentialChallengeSigned
-      type: object
-      description: |
-        The challenge issued by a DFSP that must be answered by the PISP.
-      properties:
-        payload:
-          type: string
-          description: >-
-            Base64 encoded binary of the challenge that must be answered by the
-            PISP.
-      required:
-        - payload
-      additionalProperties: false
-    UnsignedCredential:
-      title: UnsignedCredential
-      type: object
-      description: >
-        A credential used to allow a user to prove their identity and access
-
-        to an account with a DFSP.
-
-
-        UnsignedCredential is a special formatting of the credential to allow us
-        to be
-
-        more explicit about the `status` field - it should only ever be PENDING
-        when updating
-
-        a credential.
-      properties:
-        type:
-          $ref: '#/components/schemas/CredentialType'
-        status:
-          type: string
-          enum:
-            - PENDING
-          description: The challenge has initialized but not yet answered by the PISP.
-        challenge:
-          $ref: '#/components/schemas/CredentialChallengeUnsigned'
-      required:
-        - type
-        - status
-        - challenge
-      additionalProperties: false
-    ConsentsIDPutResponseUnsigned:
-      title: ConsentsIDPutResponseUnsigned
-      type: object
-      description: >
-        The HTTP request `PUT /consents/{ID}` is used to request a PISP to sign
-        a challenge.
-
-        The `{ID}` in the URI should contain the `{ID}` that was used in the
-        `POST /consents`.
-
-
-        Called by a `auth-service` to request PISP to add the credential
-        details.
-      properties:
-        requestId:
-          allOf:
-            - $ref: '#/components/schemas/CorrelationId'
-          description: |
-            The id of the ConsentRequest that was used to initiate the
-            creation of this Consent.
-        participantId:
-          $ref: '#/components/schemas/FspId'
-        initiatorId:
-          allOf:
-            - $ref: '#/components/schemas/FspId'
-          description: PISP identifier who uses this Consent.
-        scopes:
-          type: array
-          items:
-            $ref: '#/components/schemas/Scope'
-        credential:
-          $ref: '#/components/schemas/UnsignedCredential'
-      required:
-        - requestId
-        - participantId
-        - initiatorId
         - scopes
         - credential
     VerifiedCredential:
@@ -1932,55 +1740,34 @@ components:
         to be
 
         more explicit about the `status` field - it should only ever be VERIFIED
-        when updating
+        when
 
-        a credential.
+        updating a credential.
       properties:
-        id:
-          type: string
-          description: The id of a Credential.
-        type:
+        credentialType:
           $ref: '#/components/schemas/CredentialType'
         status:
           type: string
           enum:
             - VERIFIED
           description: 'The Credential is valid, and ready to be used by the PISP.'
-        challenge:
-          $ref: '#/components/schemas/CredentialChallengeSigned'
         payload:
-          type: string
-          description: Base64 encoded bytes - The public key of the Public/Private keypair.
+          $ref: '#/components/schemas/PublicKeyCredential'
       required:
-        - type
+        - credentialType
         - status
-        - challenge
+        - payload
       additionalProperties: false
     ConsentsIDPutResponseVerified:
       title: ConsentsIDPutResponseVerified
       type: object
       description: >
         The HTTP request `PUT /consents/{ID}` is used by the DFSP or
-        Auth-Service to
+        Auth-Service to update a Consent object once it has been Verified.
 
-        update a Consent object once it has been Verified.
-
-
-        Called by a `auth-service` to notify a DFSP and PISP that a credential
-        has been verified and registered.
+        Called by a `auth-service` to notify a DFSP that a credential has been
+        verified and registered.
       properties:
-        requestId:
-          allOf:
-            - $ref: '#/components/schemas/CorrelationId'
-          description: |
-            The id of the ConsentRequest that was used to initiate the
-            creation of this Consent.
-        participantId:
-          $ref: '#/components/schemas/FspId'
-        initiatorId:
-          allOf:
-            - $ref: '#/components/schemas/FspId'
-          description: PISP identifier who uses this Consent.
         scopes:
           type: array
           items:
@@ -1988,12 +1775,35 @@ components:
         credential:
           $ref: '#/components/schemas/VerifiedCredential'
       required:
-        - requestId
-        - participantId
-        - initiatorId
         - scopes
         - credential
-    ConsentStatusType:
+    ConsentStatusTypeVerified:
+      title: ConsentStatusType
+      type: string
+      enum:
+        - VERIFIED
+      description: |
+        The status of the Consent.
+        - "VERIFIED" - The Consent is valid and verified.
+    ConsentsIDPatchResponseVerified:
+      title: ConsentsIDPatchResponseVerified
+      description: |
+        PATCH /consents/{ID} request object.
+
+        Sent by the DFSP to the PISP when a consent is verified.
+        Used in the "Register Credential" part of the Account linking flow.
+      type: object
+      properties:
+        credential:
+          type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/ConsentStatusTypeVerified'
+          required:
+            - status
+      required:
+        - credential
+    ConsentStatusTypeRevoked:
       title: ConsentStatusType
       type: string
       enum:
@@ -2001,16 +1811,17 @@ components:
       description: |
         The status of the Consent.
         - "REVOKED" - The Consent is no longer valid and has been revoked.
-    ConsentsIDPatchResponse:
-      title: ConsentsIDPatchResponse
+    ConsentsIDPatchResponseRevoked:
+      title: ConsentsIDPatchResponseRevoked
       description: |
         PATCH /consents/{ID} request object.
 
         Sent to both the PISP and DFSP when a consent is revoked.
+        Used in the "Unlinking" part of the Account Unlinking flow.
       type: object
       properties:
         status:
-          $ref: '#/components/schemas/ConsentStatusType'
+          $ref: '#/components/schemas/ConsentStatusTypeRevoked'
         revokedAt:
           $ref: '#/components/schemas/DateTime'
       required:
@@ -2096,6 +1907,12 @@ components:
           $ref: '#/components/schemas/ErrorInformation'
       required:
         - errorInformation
+    FspId:
+      title: FspId
+      type: string
+      minLength: 1
+      maxLength: 32
+      description: FSP identifier.
     Participant:
       title: Participant
       description: Data model for the complex type Participant.
@@ -2287,7 +2104,7 @@ components:
           $ref: '#/components/schemas/PartyPersonalInfo'
       required:
         - partyIdInfo
-    Account:
+    Account-2:
       title: Account
       type: object
       properties:
@@ -2305,4 +2122,4 @@ components:
         accounts:
           type: array
           items:
-            $ref: '#/components/schemas/Account'
+            $ref: '#/components/schemas/Account-2'
