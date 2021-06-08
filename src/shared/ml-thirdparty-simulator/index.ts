@@ -31,12 +31,17 @@ import {
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
+import {
+  thirdparty as tpAPI
+} from '@mojaloop/api-snippets'
+
+
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
-import SDKStandardComponents, { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
+import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
 import { MojaloopClient } from '../ml-thirdparty-client'
 import { logger } from '../logger'
@@ -136,6 +141,62 @@ export class Simulator implements MojaloopClient {
   }
 
   /**
+   * Performs a request for a new consent in Mojaloop by third-party application,
+   * without the need of sending `POST /consentRequest` request.
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   */
+  public async postConsentRequests(
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
+  ): Promise<ServerInjectResponse> {
+    logger.info("simulator: postConsentRequests")
+
+    const targetUrl = '/mojaloop/consentRequests/' + requestBody.id
+    const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
+   * Performs a put request with registered consent credential in Mojaloop by third-party application,
+   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
+   *
+   * @param consentId     identifier of consent as defined by Mojaloop API.
+   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
+   */
+  public async putConsentId(
+    consentId: string,
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified,
+  ): Promise<ServerInjectResponse> {
+    logger.info("simulator: putConsentId")
+
+    const targetUrl = '/mojaloop/consents/' + consentId
+    const payload = ConsentFactory.createPutConsentIdValidationRequest(
+      requestBody
+    )
+
+    return this.server.inject({
+      method: 'PUT',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+  }
+
+  /**
    * Simulates a transaction initiation in Mojaloop by third-party application,
    * without the need of sending `POST /thirdpartyRequests/transactions` request.
    *
@@ -181,7 +242,7 @@ export class Simulator implements MojaloopClient {
    */
   public async putAuthorizations(
     id: string,
-    _request: PutThirdpartyRequestsTransactionsAuthorizationsRequest,
+    _requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse,
     _transactionId: string
   ): Promise<ServerInjectResponse> {
     // const targetUrl = '/mojaloop/transfers/' + faker.random.uuid()
@@ -223,32 +284,6 @@ export class Simulator implements MojaloopClient {
   }
 
   /**
-   * Performs a request for a new consent in Mojaloop by third-party application,
-   * without the need of sending `POST /consentRequest` request.
-   *
-   * @param requestBody         an consent request object as defined by the Mojaloop API.
-   */
-  public async postConsentRequests(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): Promise<ServerInjectResponse> {
-    logger.info("simulator: putConsentRequests")
-
-    const targetUrl = '/mojaloop/consentRequests/' + requestBody.id
-    const payload = ConsentFactory.createPutConsentRequestIdRequest(requestBody)
-
-    return this.server.inject({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: this.options.host ?? '',
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  }
-
-  /**
    * Performs a put request with authenticated consent request in Mojaloop by third-party application,
    * without the need of sending `PUT /consentRequest/{ID}` request.
    *
@@ -257,7 +292,8 @@ export class Simulator implements MojaloopClient {
    */
   public async putConsentRequests(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
+      tpAPI.Schemas.ConsentRequestsIDPutResponseWeb,
   ): Promise<ServerInjectResponse> {
     logger.info("simulator: putConsentRequests")
 
@@ -280,6 +316,7 @@ export class Simulator implements MojaloopClient {
     })
   }
 
+  //TODO: deprecated. Remove this function
   /**
    * Performs a request to generate a challenge for FIDO registration in Mojaloop by third-party application,
    * without the need of sending `POST /consents/{ID}/generateChallenge` request.
@@ -306,35 +343,6 @@ export class Simulator implements MojaloopClient {
     })
   }
 
-  /**
-   * Performs a put request with registered consent credential in Mojaloop by third-party application,
-   * without the need of sending `POST /consents/{ID}/generateChallenge` request.
-   *
-   * @param consentId     identifier of consent as defined by Mojaloop API.
-   * @param requestBody         an object to authenticate consent as defined by the Mojaloop API.
-   */
-  public async putConsentId(
-    consentId: string,
-    requestBody: SDKStandardComponents.PutConsentsRequest
-  ): Promise<ServerInjectResponse> {
-    logger.info("simulator: putConsentId")
-
-    const targetUrl = '/mojaloop/consents/' + consentId
-    const payload = ConsentFactory.createPutConsentIdValidationRequest(
-      requestBody
-    )
-
-    return this.server.inject({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: this.options.host ?? '',
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  }
 
   /**
    * Performs a request to revoke the Consent object and unlink in Mojaloop by third-party application,

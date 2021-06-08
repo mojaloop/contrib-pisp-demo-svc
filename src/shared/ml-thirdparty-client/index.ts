@@ -22,6 +22,10 @@
  - Steven Wijaya <stevenwjy@google.com>
  - Raman Mangla <ramanmangla@google.com>
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
+
+ * Crosslake
+ - Lewis Daly <lewisd@crosslaketech.com>
+ 
  --------------
  ******/
 /* istanbul ignore file */
