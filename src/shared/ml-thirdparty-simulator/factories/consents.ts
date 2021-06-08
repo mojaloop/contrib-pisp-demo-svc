@@ -82,10 +82,20 @@ export class ConsentFactory {
   // }
 
   public static createPutConsentIdValidationRequest(
-    requestBody: SDKStandardComponents.PutConsentsRequest
-  ): SDKStandardComponents.PutConsentsRequest {
-    requestBody.credential.status = 'VERIFIED'
-    return requestBody
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
+  ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
+    const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
+      requestId: requestBody.requestId,
+      participantId: requestBody.participantId,
+      initiatorId: requestBody.initiatorId,
+      scopes: requestBody.scopes,
+      credential: {
+        ...requestBody.credential,
+        status: 'VERIFIED',
+      }
+    }
+
+    return validatedConsent;
   }
 
   public static createPatchConsentRevokeRequest(): Record<string, string> {
