@@ -40,6 +40,7 @@ import * as validator from './consents.validator'
 import config from '~/lib/config'
 import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
 import { DemoAccount } from '~/models/demoAccount'
+import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -157,7 +158,8 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
         initiatorId: consent.initiatorId!,
         participantId: consent.participantId!,
         scopes: consent.scopes!,
-        credential: consent.credential!,
+        // TODO: cast here since putConsentId
+        credential: consent.credential as ThirdpartyAPISchemas.SignedCredential
       },
       consent.party!.partyIdInfo.fspId!
     )

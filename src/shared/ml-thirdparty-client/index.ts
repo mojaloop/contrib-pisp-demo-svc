@@ -42,6 +42,7 @@ import SDKStandardComponents, {
   BaseRequestConfigType,
 } from '@mojaloop/sdk-standard-components'
 import { NotImplementedError } from '../errors'
+import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 
 export interface MojaloopClient {
@@ -94,7 +95,7 @@ export interface MojaloopClient {
    */
   putConsentId(
     consentId: string,
-    requestBody: SDKStandardComponents.PutConsentsRequest,
+    requestBody: ThirdpartyAPISchemas.ConsentsIDPutResponseSigned,
     destParticipantId: string
   ): Promise<unknown> 
 
