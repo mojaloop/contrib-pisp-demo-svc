@@ -1,3 +1,4 @@
+# TODO: we shouldn't even need this... just the thirdparty-api as defined in API Snippets
 openapi: 3.0.1
 info:
   title: PISP Demo Server Open API
@@ -372,47 +373,6 @@ paths:
       tags:
         - consents
       responses:
-        '202':
-          $ref: '#/components/responses/202'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-    patch:
-      description: >
-        The HTTP request `PATCH /consents/{ID}` is used by the PISP and Auth
-        Service.
-
-
-        - Result of patching the specified consent (used in unlinking).
-      tags:
-        - consents
-      operationId: PatchConsentsById
-      summary: PatchConsentsById
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              oneOf:
-                - $ref: '#/components/schemas/ConsentsIDPatchResponse'
-      parameters:
-        - $ref: '#/components/parameters/Content-Length'
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
         '202':
           $ref: '#/components/responses/202'
         '400':
@@ -1986,29 +1946,6 @@ components:
         - initiatorId
         - scopes
         - credential
-    ConsentStatusType:
-      title: ConsentStatusType
-      type: string
-      enum:
-        - REVOKED
-      description: |
-        The status of the Consent.
-        - "REVOKED" - The Consent is no longer valid and has been revoked.
-    ConsentsIDPatchResponse:
-      title: ConsentsIDPatchResponse
-      description: |
-        PATCH /consents/{ID} request object.
-
-        Sent to both the PISP and DFSP when a consent is revoked.
-      type: object
-      properties:
-        status:
-          $ref: '#/components/schemas/ConsentStatusType'
-        revokedAt:
-          $ref: '#/components/schemas/DateTime'
-      required:
-        - status
-        - revokedAt
     TransactionRequestState:
       title: TransactionRequestState
       type: string
