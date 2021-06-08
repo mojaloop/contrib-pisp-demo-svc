@@ -18,6 +18,9 @@
  * Mojaloop Foundation
  - Name Surname <name.surname@mojaloop.io>
 
+ * Crosslake Tech
+ - Lewis Daly <lewisd@crosslaketech.com>
+
  * Google
  - Steven Wijaya <stevenwjy@google.com>
  - Abhimanyu Kapur <abhi.kapur09@gmail.com>
@@ -25,11 +28,7 @@
  ******/
 
 import { Party, Account } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  TCredential,
-  TCredentialScope,
-  TAuthChannel,
-} from '@mojaloop/sdk-standard-components'
+import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 export enum ConsentStatus {
   /**
@@ -132,7 +131,7 @@ export interface Consent {
   /**
    * List of channels available for a user to authenticate themselves with
    */
-  authChannels?: TAuthChannel[]
+  authChannels?: Array<ThirdpartyAPISchemas.AuthChannel>
 
   /**
    * If authentication channel chosed is WEB, then this is the url which a user
@@ -159,12 +158,12 @@ export interface Consent {
    * Array of Scope objects - which inform what actions are allowed for a given
    * user account
    */
-  scopes?: TCredentialScope[]
+  scopes?: Array<ThirdpartyAPISchemas.Scope>
 
   /**
    * Credential object used for authentication of consent
    */
-  credential?: TCredential
+  credential?: ThirdpartyAPISchemas.Credential,
 
   /**
    * If authentication channel chosed is WEB, then this is the uri that the DFSP must
