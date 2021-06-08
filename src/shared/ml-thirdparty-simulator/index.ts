@@ -30,18 +30,13 @@ import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
 import {
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
-
-import {
-  thirdparty as tpAPI
-} from '@mojaloop/api-snippets'
-
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import { ParticipantFactory } from './factories/participant'
 import { PartyFactory } from './factories/party'
 import { AuthorizationFactory } from './factories/authorization'
 import { TransferFactory } from './factories/transfer'
 import { Options } from './options'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentFactory } from './factories/consents'
 import { MojaloopClient } from '../ml-thirdparty-client'
 import { logger } from '../logger'

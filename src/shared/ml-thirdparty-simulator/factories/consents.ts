@@ -25,20 +25,20 @@
  ******/
 /* istanbul ignore file */
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import * as faker from 'faker'
-
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): SDKStandardComponents.PutConsentRequestsRequest {
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseOTPAuth
+    | tpAPI.Schemas.ConsentRequestsIDPutResponseWebAuth {
     return {
       // TODO: make this configurable
       authChannels: ['OTP'],
       initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      authUri: 'https://dfspAuth.com',
+      // authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
       authToken: faker.random.alphaNumeric(13),
     }
@@ -46,13 +46,12 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest
-  ): SDKStandardComponents.PostConsentsRequest {
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
+      tpAPI.Schemas.ConsentRequestsIDPutResponseWeb
+  ): tpAPI.Schemas.ConsentsPostRequest {
     return {
-      id: faker.random.uuid(),
-      requestId: consentRequestId,
-      initiatorId: requestBody.initiatorId,
-      participantId: 'dfsp',
+      consentId: faker.random.uuid(),
+      consentRequestId: consentRequestId,
       scopes: requestBody.scopes,
     }
   }

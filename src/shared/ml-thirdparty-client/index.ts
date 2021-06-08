@@ -25,7 +25,7 @@
 
  * Crosslake
  - Lewis Daly <lewisd@crosslaketech.com>
- 
+
  --------------
  ******/
 /* istanbul ignore file */
@@ -89,7 +89,6 @@ export interface MojaloopClient {
    * @param destParticipantId   ID of destination - to be used when sending request
    */
   postConsentRequests(
-    // requestBody: SDKStandardComponents.PostConsentRequestsRequest,
     requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
     destParticipantId: string
   ): Promise<unknown>
