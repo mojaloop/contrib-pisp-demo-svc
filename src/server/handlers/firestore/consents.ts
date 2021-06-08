@@ -28,6 +28,8 @@
 /* istanbul ignore file */
 
 import * as uuid from 'uuid'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import { logger } from '~/shared/logger'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
@@ -40,7 +42,6 @@ import * as validator from './consents.validator'
 import config from '~/lib/config'
 import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
 import { DemoAccount } from '~/models/demoAccount'
-import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
   // Assign a consentRequestId to the document and set the initial
@@ -141,7 +142,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
       {
         scopes: consent.scopes!,
         // TODO: cast here since putConsentId
-        credential: consent.credential as ThirdpartyAPISchemas.SignedCredential
+        credential: consent.credential as tpAPI.Schemas.SignedCredential
       },
       consent.party!.partyIdInfo.fspId!
     )

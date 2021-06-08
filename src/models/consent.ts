@@ -28,7 +28,8 @@
  ******/
 
 import { Party, Account } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdpartyAPISchemas } from '~/interface/thirdpartyAPI'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 export enum ConsentStatus {
   /**
@@ -131,7 +132,7 @@ export interface Consent {
   /**
    * List of channels available for a user to authenticate themselves with
    */
-  authChannels?: Array<ThirdpartyAPISchemas.AuthChannel>
+  authChannels?: Array<tpAPI.Schemas.ConsentRequestChannelTypeWeb | tpAPI.Schemas.ConsentRequestChannelTypeOTP>
 
   /**
    * If authentication channel chosed is WEB, then this is the url which a user
@@ -158,12 +159,12 @@ export interface Consent {
    * Array of Scope objects - which inform what actions are allowed for a given
    * user account
    */
-  scopes?: Array<ThirdpartyAPISchemas.Scope>
+  scopes?: Array<tpAPI.Schemas.Scope>
 
   /**
    * Credential object used for authentication of consent
    */
-  credential?: ThirdpartyAPISchemas.Credential,
+  credential?: tpAPI.Schemas.SignedCredential | tpAPI.Schemas.VerifiedCredential,
 
   /**
    * If authentication channel chosed is WEB, then this is the uri that the DFSP must
