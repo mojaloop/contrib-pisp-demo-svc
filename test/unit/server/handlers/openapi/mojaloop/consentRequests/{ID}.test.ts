@@ -24,6 +24,7 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 
 import { consentRepository } from '~/repositories/consent'
@@ -34,7 +35,6 @@ import * as ConsentHandlers from '~/server/handlers/openapi/mojaloop/consentRequ
 
 import config from '~/lib/config'
 import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentStatus } from '~/models/consent'
 
 // Mock the factories to consistently return the hardcoded values.
@@ -64,24 +64,24 @@ const mockResponseToolkit: ResponseToolkit = {
     } as unknown) as ResponseObject
   },
 }
-const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-  id: '111',
-  initiatorId: 'pispA',
+const postConsentRequestRequest: tpAPI.Schemas.ConsentRequestsPostRequest  = {
+  consentRequestId: '111',
+  userId: 'user@example.com',
   authChannels: ['WEB', 'OTP'],
   scopes: [
     {
       accountId: 'as2342',
-      actions: ['account.getAccess', 'account.transferMoney'],
+      actions: ['accounts.getBalance', 'accounts.transfer'],
     },
     {
       accountId: 'as22',
-      actions: ['account.getAccess'],
+      actions: ['accounts.getBalance'],
     },
   ],
   callbackUri: config.get('mojaloop').pispCallbackUri,
 }
 
-// TODO - LD Demo
+// TODO - unskip
 describe.skip('/consentRequests/{ID}', () => {
   beforeEach(() => {
     jest.clearAllMocks()
@@ -116,11 +116,10 @@ describe.skip('/consentRequests/{ID}', () => {
         mockResponseToolkit
       )
 
-      const { authChannels, authUri } = requestBody
+      const { authChannels } = requestBody
 
       expect(consentRepositorySpy).toBeCalledWith(context.request.params.ID, {
         authChannels,
-        authUri,
         status: ConsentStatus.AUTHENTICATION_REQUIRED,
       })
 
