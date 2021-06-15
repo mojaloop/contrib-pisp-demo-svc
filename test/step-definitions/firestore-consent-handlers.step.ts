@@ -129,25 +129,25 @@ defineFeature(feature, (test): void => {
             scopes: [
               {
                 accountId: '3423',
-                actions: ['acc.getMoney', 'acc.sendMoney'],
+                actions: ['accounts.getBalance', 'accounts.transfer'],
               },
               {
                 accountId: '232345',
-                actions: ['acc.accessSaving'],
+                actions: ['accounts.getBalance'],
               },
             ],
             authUri: 'auth_uri',
             authChannels: ['OTP', 'WEB'],
             authToken: '123456',
             credential: {
-              id: '9876',
               credentialType: 'FIDO',
               status: 'PENDING',
-              challenge: {
-                payload: 'string_representing_challenge_payload',
-                signature: 'string_representing_challenge_signature',
+              payload: {
+                id: 'some_fido_id',
+                response: {
+                  clientDataJSON: 'some_client_data_json'
+                }
               },
-              payload: 'string_representing_credential_payload',
             },
           }
         }

@@ -38,9 +38,9 @@ import {
   PartyIdType,
   Currency,
 } from '~/shared/ml-thirdparty-client/models/core'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { logger } from '~/shared/logger'
 import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
+
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -492,7 +492,7 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         .mockReturnValue(true)
 
       // Mock the expected transaction request being sent.
-      const consentVerifiedChallenge = {
+      const consentVerifiedChallenge: Consent = {
         id: '111',
         consentId: '2323',
         initiatorId: 'pispa',
@@ -500,11 +500,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],          
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],          
           },
         ],
         party: {
@@ -516,14 +516,14 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         },
         status: ConsentStatus.ACTIVE,
         credential: {
-          id: '9876',
-          credentialType: 'FIDO' as const,
-          status: 'VERIFIED' as const,
-          challenge: {
-            payload: 'string_representing_challenge_payload',
-            signature: 'string_representing_challenge_signature',
+          credentialType: 'FIDO',
+          status: 'PENDING',
+          payload: {
+            id: 'some_fido_id',
+            response: {
+              clientDataJSON: 'some_client_data_json'
+            }
           },
-          payload: 'string_representing_credential_payload',
         },
       }
 
@@ -546,7 +546,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
             scopes: consentVerifiedChallenge.scopes,
             credential: consentVerifiedChallenge.credential,
           },
-          consentVerifiedChallenge.party.partyIdInfo.fspId
+          // It's ok - we defined it above
+          consentVerifiedChallenge.party!.partyIdInfo.fspId
         )
       })
 
@@ -581,7 +582,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
             scopes: consentVerifiedChallenge.scopes,
             credential: consentVerifiedChallenge.credential,
           },
-          consentVerifiedChallenge.party.partyIdInfo.fspId
+          // It's ok - we defined it above
+          consentVerifiedChallenge.party!.partyIdInfo.fspId
         )
         expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })

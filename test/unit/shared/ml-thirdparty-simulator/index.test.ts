@@ -25,11 +25,9 @@
  ******/
 
 import * as faker from 'faker'
-
-import config from '~/lib/config'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
-
+import config from '~/lib/config'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import {
   PartyIdType,
@@ -38,18 +36,15 @@ import {
   AuthenticationType,
   AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
-
 import {
   ThirdPartyTransactionRequest,
   AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
-
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
 import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
 import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
 import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 import { ParticipantFactory } from '~/shared/ml-thirdparty-simulator/factories/__mocks__/participant'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 jest.useFakeTimers()
 

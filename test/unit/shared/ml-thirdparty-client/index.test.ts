@@ -24,8 +24,9 @@
  --------------
  ******/
 
-import Client from '~/shared/ml-thirdparty-client'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
+import Client from '~/shared/ml-thirdparty-client'
 import {
   AmountType,
   AuthenticationResponseType,
@@ -33,12 +34,10 @@ import {
   Currency,
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
-
 import {
   AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import config from '~/lib/config'
 import { NotImplementedError } from '~/shared/errors'
 
@@ -95,48 +94,40 @@ const destParticipantId = 'dfspA'
 
 const consentRequestId = 'ab123'
 
-const scopes = [
+const scopes: Array<tpAPI.Schemas.Scope> = [
   {
     accountId: 'as2342',
-    actions: ['account.getAccess', 'account.transferMoney'],
+    actions: ['accounts.getBalance', 'accounts.transfer'],
   },
   {
     accountId: 'as22',
-    actions: ['account.getAccess'],
+    actions: ['accounts.getBalance'],
   },
 ]
 
-const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-  id: '111',
-  initiatorId: 'pispA',
-  authChannels: ['WEB', 'OTP'],
-  scopes,
-  callbackUri: 'https://pisp.com',
-}
-
-const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  initiatorId: 'pispA',
+const postConsentRequestPayload: tpAPI.Schemas.ConsentRequestsPostRequest = {
+  consentRequestId: '111',
+  userId: 'user@example.com',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: config.get('mojaloop').pispCallbackUri,
-  authUri: 'https://dfspAuth.com',
+}
+
+const patchConsentRequestPayload: tpAPI.Schemas.ConsentRequestsIDPatchRequest = {
   authToken: 'secret-token',
 }
 
-const putConsentRequest: SDKStandardComponents.PutConsentsRequest = {
-  requestId: '88',
-  initiatorId: 'pispA',
-  participantId: 'participant',
+const putConsentPayload: tpAPI.Schemas.ConsentsIDPutResponseSigned = {
   scopes,
   credential: {
-    id: '9876',
     credentialType: 'FIDO',
     status: 'PENDING',
-    challenge: {
-      payload: 'string_representing_challenge_payload',
-      signature: 'string_representing_challenge_signature',
+    payload: {
+      id: 'some_fido_id',
+      response: {
+        clientDataJSON: 'some_client_data_json'
+      }
     },
-    payload: 'string_representing_credential_payload',
   },
 }
 
@@ -230,32 +221,32 @@ describe('Mojaloop third-party client', () => {
       .mockImplementation()
 
     // Act
-    client.postConsentRequests(postConsentRequestRequest, destParticipantId)
+    client.postConsentRequests(postConsentRequestPayload, destParticipantId)
 
     // Assert
     expect(postConsentRequestsSpy).toBeCalledWith(
-      postConsentRequestRequest,
+      postConsentRequestPayload,
       destParticipantId
     )
   })
 
-  it('Should perform a put request for authenticated consent', (): void => {
+  it('Should perform a patch request for authenticated consent', (): void => {
     // Arrange
-    const putConsentRequestsSpy = jest
-      .spyOn(client.thirdpartyRequests, 'putConsentRequests')
+    const patchConsentRequestsSpy = jest
+      .spyOn(client.thirdpartyRequests, 'patchConsentRequests')
       .mockImplementation()
 
     // Act
-    client.putConsentRequests(
+    client.patchConsentRequests(
       consentRequestId,
-      putConsentRequestRequest,
+      patchConsentRequestPayload,
       destParticipantId
     )
 
     // Assert
-    expect(putConsentRequestsSpy).toBeCalledWith(
+    expect(patchConsentRequestsSpy).toBeCalledWith(
       consentRequestId,
-      putConsentRequestRequest,
+      patchConsentRequestPayload,
       destParticipantId
     )
   })
@@ -267,12 +258,12 @@ describe('Mojaloop third-party client', () => {
       .mockImplementation()
 
     // Act
-    client.putConsentId(consentId, putConsentRequest, destParticipantId)
+    client.putConsentId(consentId, putConsentPayload, destParticipantId)
 
     // Assert
     expect(putConsentIdSpy).toBeCalledWith(
       consentId,
-      putConsentRequest,
+      putConsentPayload,
       destParticipantId
     )
   })
