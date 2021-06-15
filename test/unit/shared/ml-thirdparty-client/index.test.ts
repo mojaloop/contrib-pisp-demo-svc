@@ -29,13 +29,10 @@ import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import Client from '~/shared/ml-thirdparty-client'
 import {
   AmountType,
-  AuthenticationResponseType,
-  AuthenticationType,
   Currency,
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
 import {
-  AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 import config from '~/lib/config'
@@ -80,12 +77,12 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
   expiration: new Date(100).toISOString(),
 }
 
-const authorizationData: AuthorizationsPutIdRequest = {
-  authenticationInfo: {
-    authentication: AuthenticationType.U2F,
-    authenticationValue: 'key12345',
-  },
-  responseType: AuthenticationResponseType.ENTERED,
+const authorizationData: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse = {
+  challenge: 'some_challenge_base_64_string',
+  value: 'some_value_base_64_string',
+  consentId: '0000-0000-0000-0001',
+  sourceAccountId: 'dfspa.alice.1234',
+  status: 'VERIFIED'
 }
 
 const consentId = '123'
@@ -177,25 +174,20 @@ describe('Mojaloop third-party client', () => {
   })
 
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
-    expect(
-      // TD - bad types here...
-      // @ts-ignore
-      client.putAuthorizations('111', authorizationData, '222')
-    ).rejects.toThrow(new NotImplementedError())
 
-    // // Arrange
-    // const putAuthorizationSpy = jest
-    //   .spyOn(
-    //     client.thirdpartyRequests,
-    //     'putThirdpartyRequestsTransactionsAuthorizations'
-    //   )
-    //   .mockImplementation()
+    // Arrange
+    const putAuthorizationSpy = jest
+      .spyOn(
+        client.thirdpartyRequests,
+        'putThirdpartyRequestsTransactionsAuthorizations'
+      )
+      .mockImplementation()
 
-    // // Act
-    // client.putAuthorizations('111', authorizationData, '222')
+    // Act
+    client.putAuthorizations('111', authorizationData, '222')
 
-    // // Assert
-    // expect(putAuthorizationSpy).toBeCalledWith('111', authorizationData, '222')
+    // Assert
+    expect(putAuthorizationSpy).toBeCalledWith(authorizationData, '111', '222')
   })
 
   it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {

@@ -42,13 +42,22 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
-      tpAPI.Schemas.ConsentRequestsIDPutResponseWeb
   ): tpAPI.Schemas.ConsentsPostRequest {
+    const scopes: Array<tpAPI.Schemas.Scope> = [
+      {
+        accountId: '0000-0000-0000-0002',
+        actions: ['accounts.getBalance', 'accounts.transfer'],
+      },
+      {
+        accountId: '0000-0000-0000-0003',
+        actions: ['accounts.getBalance'],
+      },
+    ]
+
     return {
       consentId: '0000-0000-0000-0001',
       consentRequestId,
-      scopes: requestBody.scopes,
+      scopes
     }
   }
 

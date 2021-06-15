@@ -44,7 +44,6 @@ export class ConsentFactory {
   public static createPostConsentRequest(
     consentRequestId: string,
   ): tpAPI.Schemas.ConsentsPostRequest {
-
     const scopes: Array<tpAPI.Schemas.Scope> = [
       {
         accountId: faker.random.uuid(),

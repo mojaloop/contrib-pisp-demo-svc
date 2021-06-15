@@ -340,7 +340,7 @@ describe('Mojaloop third-party simulator', () => {
     })
   })
 
-  it('Should inject server with a granted consent', async () => {
+  it('Should inject server with an updated consent', async () => {
     const targetUrl = `/mojaloop/consents/${consentId}`
 
     // this is a workaround to handle the delay before injecting response to the server
