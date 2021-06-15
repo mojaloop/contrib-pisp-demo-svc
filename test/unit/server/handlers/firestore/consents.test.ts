@@ -24,6 +24,8 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+ 
 import config from '~/lib/config'
 
 import createServer from '~/server/create'
@@ -244,11 +246,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],
           },
         ],
         consentRequestId: '12345',
@@ -263,13 +265,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       }
 
       // Mock the expected transaction request being sent.
-      const request: SDKStandardComponents.PutConsentRequestsRequest = {
-        initiatorId: consentAuthentication.initiatorId!,
-        scopes: consentAuthentication.scopes!,
-        authChannels: consentAuthentication.authChannels!,
-        callbackUri: config.get('mojaloop').pispCallbackUri,
+      const request: tpAPI.Schemas.ConsentRequestsIDPatchRequest = {
         authToken: consentAuthentication.authToken!,
-        authUri: consentAuthentication.authUri!,
       }
 
       // TODO: LD Tech debt
@@ -340,11 +337,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],
           },
         ],
         consentRequestId: '12345',
@@ -357,9 +354,9 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       }
 
       // Mock the expected request being sent.
-      const consentRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-        initiatorId: consentConsentRequest.initiatorId!,
-        id: consentConsentRequest.id,
+      const consentRequest: tpAPI.Schemas.ConsentRequestsPostRequest = {
+        consentRequestId: consentConsentRequest.id,
+        userId: 'bob@example.com',
         scopes: consentConsentRequest.scopes!,
         authChannels: consentConsentRequest.authChannels!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
@@ -432,11 +429,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance' ],
           },
         ],
         consentRequestId: '12345',
