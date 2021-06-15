@@ -131,7 +131,7 @@ export interface Consent {
   /**
    * List of channels available for a user to authenticate themselves with
    */
-  
+
   // Note - eslint doesn't like this - clashes between prettier and tslint...
   /* eslint-disable */
   authChannels?: Array<
