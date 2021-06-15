@@ -10,9 +10,6 @@ info:
 servers:
   - url: /
 paths:
-  # TODO:
-  # body contains Account[] {id,currency}
-  # where as api-snippets def contains []{accountNickname, id, currency}
   /accounts/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/accounts_ID.yaml'
   /authorizations:
