@@ -161,6 +161,8 @@ export class Simulator implements MojaloopClient {
     })
   }
 
+
+  // TODO: is this deprecated? I think it's replaced by PATCH /consentRequest/{ID}
   /**
    * Performs a put request with registered consent credential in Mojaloop by third-party application,
    * without the need of sending `POST /consents/{ID}/generateChallenge` request.
@@ -189,6 +191,37 @@ export class Simulator implements MojaloopClient {
       },
       payload,
     })
+  }
+
+  /**
+    * Performs an authorization with `PATCH /consentRequests/{id}`
+    * and generates a mock `POST /consents` callback
+    *
+    * @param consentRequestId
+    * @param requestBody
+    * @param destParticipantId
+    */
+  public async patchConsentRequests(
+    consentRequestId: string,
+    _requestBody: tpAPI.Schemas.ConsentRequestsIDPatchRequest,
+    _destParticipantId: string
+  ): Promise<ServerInjectResponse> {
+    logger.info("simulator: patchConsentId")
+
+    const targetUrl = '/mojaloop/consents'
+    const payload = ConsentFactory.createPostConsentRequest(consentRequestId)
+
+    return this.server.inject({
+      method: 'POST',
+      url: targetUrl,
+      headers: {
+        host: this.options.host ?? '',
+        'Content-Length': JSON.stringify(payload).length.toString(),
+        'Content-Type': 'application/json',
+      },
+      payload,
+    })
+
   }
 
   /**
@@ -278,6 +311,7 @@ export class Simulator implements MojaloopClient {
     })
   }
 
+  // TODO: remove this - it's been replaced by patchConsentRequests
   /**
    * Performs a put request with authenticated consent request in Mojaloop by third-party application,
    * without the need of sending `PUT /consentRequest/{ID}` request.
@@ -287,16 +321,16 @@ export class Simulator implements MojaloopClient {
    */
   public async putConsentRequests(
     consentRequestId: string,
-    requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
+    _requestBody: tpAPI.Schemas.ConsentRequestsIDPutResponseOTP |
       tpAPI.Schemas.ConsentRequestsIDPutResponseWeb,
   ): Promise<ServerInjectResponse> {
+    logger.warn('deprecated putConsentRequests called! - this code will be removed shortly and break things')
     logger.info("simulator: putConsentRequests")
 
     // const targetUrl = '/mojaloop/consentRequests/' + consentRequestId
     const targetUrl = '/mojaloop/consents'
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
-      requestBody
     )
 
     return this.server.inject({

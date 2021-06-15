@@ -27,6 +27,8 @@
 import * as faker from 'faker'
 
 import config from '~/lib/config'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import {
@@ -88,20 +90,20 @@ const id = '111'
 
 const consentRequestId = 'ab123'
 
-const scopes = [
+const scopes: Array<tpAPI.Schemas.Scope> = [
   {
     accountId: 'as2342',
-    actions: ['account.getAccess', 'account.transferMoney'],
+    actions: ['accounts.getBalance', 'accounts.transfer'],
   },
   {
     accountId: 'as22',
-    actions: ['account.getAccess'],
+    actions: ['accounts.getBalance'],
   },
 ]
 
-const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-  id: '111',
-  initiatorId: 'pispA',
+const postConsentRequestRequest: tpAPI.Schemas.ConsentRequestsPostRequest = {
+  consentRequestId: '111',
+  userId: 'user@example.com',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: config.get('mojaloop').pispCallbackUri,

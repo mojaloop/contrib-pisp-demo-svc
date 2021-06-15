@@ -92,6 +92,19 @@ export interface MojaloopClient {
     requestBody: tpAPI.Schemas.ConsentRequestsPostRequest,
     destParticipantId: string
   ): Promise<unknown>
+
+
+  /**
+   * Updates a ConsentRequest with an authToken
+   *
+   * @param requestBody         an consent request object as defined by the Mojaloop API.
+   * @param destParticipantId   ID of destination - to be used when sending request
+   */
+  patchConsentRequests(
+    consentRequestId: string,
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPatchRequest,
+    destParticipantId: string
+  ): Promise<unknown>
   
   /**
    * Performs a put request with registered consent credential
@@ -332,6 +345,18 @@ export class Client implements MojaloopClient{
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.putConsentRequests(
+      consentRequestId,
+      requestBody,
+      destParticipantId
+    )
+  }
+
+  public async patchConsentRequests(
+    consentRequestId: string,
+    requestBody: tpAPI.Schemas.ConsentRequestsIDPatchRequest,
+    destParticipantId: string
+  ): Promise<SDKStandardComponents.GenericRequestResponse | undefined > {
+    return this.thirdpartyRequests.patchConsentRequests(
       consentRequestId,
       requestBody,
       destParticipantId
