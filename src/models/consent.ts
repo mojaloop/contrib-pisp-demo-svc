@@ -30,7 +30,6 @@
 import { Party, Account } from '~/shared/ml-thirdparty-client/models/core'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
-
 export enum ConsentStatus {
   /**
    * Waiting for a callback from Mojaloop to give the payee information.
@@ -132,7 +131,14 @@ export interface Consent {
   /**
    * List of channels available for a user to authenticate themselves with
    */
-  authChannels?: Array<tpAPI.Schemas.ConsentRequestChannelTypeWeb | tpAPI.Schemas.ConsentRequestChannelTypeOTP>
+  
+  // Note - eslint doesn't like this - clashes between prettier and tslint...
+  /* eslint-disable */
+  authChannels?: Array<
+  | tpAPI.Schemas.ConsentRequestChannelTypeWeb
+  | tpAPI.Schemas.ConsentRequestChannelTypeOTP
+  >
+  /* eslint-enable */
 
   /**
    * If authentication channel chosed is WEB, then this is the url which a user
@@ -164,7 +170,7 @@ export interface Consent {
   /**
    * Credential object used for authentication of consent
    */
-  credential?: tpAPI.Schemas.SignedCredential | tpAPI.Schemas.VerifiedCredential,
+  credential?: tpAPI.Schemas.SignedCredential | tpAPI.Schemas.VerifiedCredential
 
   /**
    * If authentication channel chosed is WEB, then this is the uri that the DFSP must
