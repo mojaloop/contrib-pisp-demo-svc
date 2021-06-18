@@ -24,64 +24,56 @@
  --------------
  ******/
 
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 export class ConsentFactory {
-  public static createPutConsentRequestIdRequest(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): SDKStandardComponents.PutConsentRequestsRequest {
+  public static createPatchConsentRequestIdRequest(
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseWeb
+   | tpAPI.Schemas.ConsentRequestsIDPutResponseOTP {
     return {
+      consentRequestId: requestBody.consentRequestId,
       authChannels: ['WEB'],
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
       authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
-      authToken: 'y19jtyyd5oofj',
     }
   }
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PostConsentsRequest
-  ): SDKStandardComponents.PostConsentsRequest {
+  ): tpAPI.Schemas.ConsentsPostRequest {
+    const scopes: Array<tpAPI.Schemas.Scope> = [
+      {
+        accountId: '0000-0000-0000-0002',
+        actions: ['accounts.getBalance', 'accounts.transfer'],
+      },
+      {
+        accountId: '0000-0000-0000-0003',
+        actions: ['accounts.getBalance'],
+      },
+    ]
+
     return {
-      id: '111',
-      requestId: consentRequestId,
-      initiatorId: requestBody.initiatorId,
-      participantId: 'dfsp',
-      scopes: requestBody.scopes,
+      consentId: '0000-0000-0000-0001',
+      consentRequestId,
+      scopes
     }
   }
 
-  public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
-    return {
-      initiatorId: 'pispA',
-      participantId: 'dfspB',
-      requestId: '99',
-      scopes: [
-        {
-          accountId: '78910',
-          actions: ['Rand Namibia Dollar', 'virtual'],
-        },
-      ],
-      credential: {
-        id: '997',
-        credentialType: 'FIDO',
-        status: 'PENDING',
-        challenge: {
-          signature: 'fzc2tz3sntrn6',
-          payload: 'hr19lev48v9ky',
-        },
-        payload: 'fzc2tev48v9ky',
-      },
-    }
-  }
 
   public static createPutConsentIdValidationRequest(
-    requestBody: SDKStandardComponents.PutConsentsRequest
-  ): SDKStandardComponents.PutConsentsRequest {
-    requestBody.credential.status = 'VERIFIED'
-    return requestBody
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
+  ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
+    const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
+      scopes: requestBody.scopes,
+      credential: {
+        ...requestBody.credential,
+        status: 'VERIFIED',
+      }
+    }
+
+    return validatedConsent;
   }
 
   public static createPatchConsentRevokeRequest(): Record<string, string> {

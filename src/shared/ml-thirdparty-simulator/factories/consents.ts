@@ -25,67 +25,55 @@
  ******/
 /* istanbul ignore file */
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import * as faker from 'faker'
-
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
-    requestBody: SDKStandardComponents.PostConsentRequestsRequest
-  ): SDKStandardComponents.PutConsentRequestsRequest {
+    requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
+  ): tpAPI.Schemas.ConsentRequestsIDPutResponseWeb | tpAPI.Schemas.ConsentRequestsIDPutResponseOTP {
     return {
-      // TODO: make this configurable
+      consentRequestId: requestBody.consentRequestId,
+      // TODO: make configurable
       authChannels: ['OTP'],
-      initiatorId: requestBody.initiatorId,
       scopes: requestBody.scopes,
-      authUri: 'https://dfspAuth.com',
       callbackUri: requestBody.callbackUri,
-      authToken: faker.random.alphaNumeric(13),
     }
   }
 
   public static createPostConsentRequest(
     consentRequestId: string,
-    requestBody: SDKStandardComponents.PutConsentRequestsRequest
-  ): SDKStandardComponents.PostConsentsRequest {
-    return {
-      id: faker.random.uuid(),
-      requestId: consentRequestId,
-      initiatorId: requestBody.initiatorId,
-      participantId: 'dfsp',
-      scopes: requestBody.scopes,
-    }
-  }
-
-  public static createPutConsentIdRequest(): SDKStandardComponents.PutConsentsRequest {
-    return {
-      initiatorId: 'pispA',
-      participantId: 'dfspB',
-      requestId: faker.random.uuid(),
-      scopes: [
-        {
-          accountId: faker.random.uuid(),
-          actions: [faker.random.word(), faker.random.word()],
-        },
-      ],
-      credential: {
-        id: faker.random.uuid(),
-        credentialType: 'FIDO',
-        status: 'PENDING',
-        challenge: {
-          signature: faker.random.alphaNumeric(13),
-          payload: faker.random.alphaNumeric(13),
-        },
-        payload: faker.random.alphaNumeric(13),
+  ): tpAPI.Schemas.ConsentsPostRequest {
+    const scopes: Array<tpAPI.Schemas.Scope> = [
+      {
+        accountId: faker.random.uuid(),
+        actions: ['accounts.getBalance', 'accounts.transfer'],
       },
+      {
+        accountId: faker.random.uuid(),
+        actions: ['accounts.getBalance'],
+      },
+    ]
+
+    return {
+      consentId: faker.random.uuid(),
+      consentRequestId,
+      scopes
     }
   }
 
   public static createPutConsentIdValidationRequest(
-    requestBody: SDKStandardComponents.PutConsentsRequest
-  ): SDKStandardComponents.PutConsentsRequest {
-    requestBody.credential.status = 'VERIFIED'
-    return requestBody
+    requestBody: tpAPI.Schemas.ConsentsIDPutResponseSigned | tpAPI.Schemas.ConsentsIDPutResponseVerified
+  ): tpAPI.Schemas.ConsentsIDPutResponseVerified {
+    const validatedConsent: tpAPI.Schemas.ConsentsIDPutResponseVerified = {
+      scopes: requestBody.scopes,
+      credential: {
+        ...requestBody.credential,
+        status: 'VERIFIED',
+      }
+    }
+
+    return validatedConsent;
   }
 
   public static createPatchConsentRevokeRequest(): Record<string, string> {

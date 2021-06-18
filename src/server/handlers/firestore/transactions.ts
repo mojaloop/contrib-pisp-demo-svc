@@ -31,13 +31,14 @@ import { logger } from '~/shared/logger'
 import {
   AmountType, PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
-import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
 // TODO: get from the consent/account object
 // for now, just hardcode to applebank
@@ -152,23 +153,19 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
   // If the update contains all the necessary fields, process document
   // to the next step by sending an authorization to Mojaloop.
 
-  // Convert to a response type that is understood by Mojaloop.
-  // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
-
-  // TD - LD eww so much messy casting going on
-  // @ts-ignore - todo fix me!
-  const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+  //TODO: This type def is incorrect
+  // will be fixed in: mojaloop/project#2274
+  const requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse = {
     challenge: JSON.stringify(transaction.quote),
-    // consentId: transaction.consentId!,
-    // sourceAccountId: transaction.sourceAccountId!,
-    //LD - TODO: this should be pending - but need to fix ok TTK
+    value: transaction.authentication!.value as string,
+    consentId: 'todo - get consentId from somewhere',
+    sourceAccountId: transaction.payer?.partyIdentifier!,
     status: 'VERIFIED',
-    value: transaction.authentication?.value as string,
   }
 
   // The optional values are guaranteed to exist by the validator.
   // eslint-disable @typescript-eslint/no-non-null-assertion
-  server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
+  server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody, transaction.payer!.fspId!)
   // eslint-enable @typescript-eslint/no-non-null-assertion
 }
 

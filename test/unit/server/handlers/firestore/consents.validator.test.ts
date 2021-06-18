@@ -24,25 +24,26 @@
  --------------
  ******/
 
+ import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import * as Validator from '~/server/handlers/firestore/consents.validator'
 import { ConsentStatus } from '~/models/consent'
 import {
   PartyIdType,
   Currency,
 } from '~/shared/ml-thirdparty-client/models/core'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 const id = '111'
 const consentId = 'abc123'
 const userId = 'bob123'
-const scopes = [
+const scopes: Array<tpAPI.Schemas.Scope> = [
   {
     accountId: 'as2342',
-    actions: ['account.getAccess', 'account.transferMoney'],
+    actions: ['accounts.getBalance', 'accounts.transfer'],
   },
   {
     accountId: 'as22',
-    actions: ['account.getAccess'],
+    actions: ['accounts.getBalance'],
   },
 ]
 const party = {
@@ -59,7 +60,7 @@ const partyWithFSPId = {
   },
 }
 const consentRequestId = '12345'
-const authChannels: SDKStandardComponents.TAuthChannel[] = ['WEB']
+const authChannels: Array<('WEB' | 'OTP')> = ['WEB']
 const accounts = [
   { id: 'bob.aaaaa.fspb', currency: Currency.SGD },
   { id: 'bob.bbbbb.fspb', currency: Currency.USD },
@@ -68,15 +69,15 @@ const initiatorId = 'pispa'
 const authUri = 'http//auth.com'
 const authToken = '<secret>'
 const participantId = 'pispb'
-const credential = {
-  id: '9876',
-  credentialType: 'FIDO' as const,
-  status: 'VERIFIED' as const,
-  challenge: {
-    payload: 'string_representing_challenge_payload',
-    signature: 'string_representing_challenge_signature',
+const credential: tpAPI.Schemas.SignedCredential = {
+  credentialType: 'FIDO',
+  status: 'PENDING',
+  payload: {
+    id: 'some_fido_id',
+    response: {
+      clientDataJSON: 'some_client_data_json'
+    }
   },
-  payload: 'string_representing_credential_payload',
 }
 
 describe('Validators for different consents used in requests', () => {

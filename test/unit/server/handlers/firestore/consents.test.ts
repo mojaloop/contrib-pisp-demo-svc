@@ -24,6 +24,8 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+ 
 import config from '~/lib/config'
 
 import createServer from '~/server/create'
@@ -36,9 +38,9 @@ import {
   PartyIdType,
   Currency,
 } from '~/shared/ml-thirdparty-client/models/core'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { logger } from '~/shared/logger'
 import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/errors'
+
 
 // Mock firebase to prevent server from listening to the changes.
 jest.mock('~/lib/firebase')
@@ -244,11 +246,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],
           },
         ],
         consentRequestId: '12345',
@@ -263,13 +265,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       }
 
       // Mock the expected transaction request being sent.
-      const request: SDKStandardComponents.PutConsentRequestsRequest = {
-        initiatorId: consentAuthentication.initiatorId!,
-        scopes: consentAuthentication.scopes!,
-        authChannels: consentAuthentication.authChannels!,
-        callbackUri: config.get('mojaloop').pispCallbackUri,
+      const request: tpAPI.Schemas.ConsentRequestsIDPatchRequest = {
         authToken: consentAuthentication.authToken!,
-        authUri: consentAuthentication.authUri!,
       }
 
       // TODO: LD Tech debt
@@ -340,11 +337,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],
           },
         ],
         consentRequestId: '12345',
@@ -357,9 +354,9 @@ describe.skip('Handlers for consent documents in Firebase', () => {
       }
 
       // Mock the expected request being sent.
-      const consentRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-        initiatorId: consentConsentRequest.initiatorId!,
-        id: consentConsentRequest.id,
+      const consentRequest: tpAPI.Schemas.ConsentRequestsPostRequest = {
+        consentRequestId: consentConsentRequest.id,
+        userId: 'bob@example.com',
         scopes: consentConsentRequest.scopes!,
         authChannels: consentConsentRequest.authChannels!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
@@ -432,11 +429,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance' ],
           },
         ],
         consentRequestId: '12345',
@@ -446,13 +443,6 @@ describe.skip('Handlers for consent documents in Firebase', () => {
           { id: 'bob.bbbbb.fspb', currency: Currency.USD },
         ],
       }
-
-       // TODO: LD Tech debt
-      // beforeAll(() => {
-      //   mojaloopClientSpy = jest
-      //     .spyOn(server.app.mojaloopClient, 'postGenerateChallengeForConsent')
-      //     .mockImplementation()
-      // })
 
       it('Should initiate challenge generation request when all necessary fields are set', async () => {
         await consentsHandler.onUpdate(server, consentGenerateChallenge)
@@ -502,7 +492,7 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         .mockReturnValue(true)
 
       // Mock the expected transaction request being sent.
-      const consentVerifiedChallenge = {
+      const consentVerifiedChallenge: Consent = {
         id: '111',
         consentId: '2323',
         initiatorId: 'pispa',
@@ -510,11 +500,11 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         scopes: [
           {
             accountId: 'as2342',
-            actions: ['account.getAccess', 'account.transferMoney'],
+            actions: ['accounts.getBalance', 'accounts.transfer'],          
           },
           {
             accountId: 'as22',
-            actions: ['account.getAccess'],
+            actions: ['accounts.getBalance'],          
           },
         ],
         party: {
@@ -526,14 +516,14 @@ describe.skip('Handlers for consent documents in Firebase', () => {
         },
         status: ConsentStatus.ACTIVE,
         credential: {
-          id: '9876',
-          credentialType: 'FIDO' as const,
-          status: 'VERIFIED' as const,
-          challenge: {
-            payload: 'string_representing_challenge_payload',
-            signature: 'string_representing_challenge_signature',
+          credentialType: 'FIDO',
+          status: 'PENDING',
+          payload: {
+            id: 'some_fido_id',
+            response: {
+              clientDataJSON: 'some_client_data_json'
+            }
           },
-          payload: 'string_representing_credential_payload',
         },
       }
 
@@ -556,7 +546,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
             scopes: consentVerifiedChallenge.scopes,
             credential: consentVerifiedChallenge.credential,
           },
-          consentVerifiedChallenge.party.partyIdInfo.fspId
+          // It's ok - we defined it above
+          consentVerifiedChallenge.party!.partyIdInfo.fspId
         )
       })
 
@@ -591,7 +582,8 @@ describe.skip('Handlers for consent documents in Firebase', () => {
             scopes: consentVerifiedChallenge.scopes,
             credential: consentVerifiedChallenge.credential,
           },
-          consentVerifiedChallenge.party.partyIdInfo.fspId
+          // It's ok - we defined it above
+          consentVerifiedChallenge.party!.partyIdInfo.fspId
         )
         expect(loggerErrorSpy).toBeCalledWith(new Error('Client not connected'))
       })

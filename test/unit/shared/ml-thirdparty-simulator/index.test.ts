@@ -25,9 +25,9 @@
  ******/
 
 import * as faker from 'faker'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import config from '~/lib/config'
-
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import {
   PartyIdType,
@@ -36,18 +36,15 @@ import {
   AuthenticationType,
   AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
-
 import {
   ThirdPartyTransactionRequest,
   AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
-
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'
 import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
 import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
 import { TransferFactory } from '~/shared/ml-thirdparty-simulator/factories/transfer'
 import { ParticipantFactory } from '~/shared/ml-thirdparty-simulator/factories/__mocks__/participant'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 
 jest.useFakeTimers()
 
@@ -88,49 +85,40 @@ const id = '111'
 
 const consentRequestId = 'ab123'
 
-const scopes = [
+const scopes: Array<tpAPI.Schemas.Scope> = [
   {
     accountId: 'as2342',
-    actions: ['account.getAccess', 'account.transferMoney'],
+    actions: ['accounts.getBalance', 'accounts.transfer'],
   },
   {
     accountId: 'as22',
-    actions: ['account.getAccess'],
+    actions: ['accounts.getBalance'],
   },
 ]
 
-const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-  id: '111',
-  initiatorId: 'pispA',
+const postConsentRequestPayload: tpAPI.Schemas.ConsentRequestsPostRequest = {
+  consentRequestId: '111',
+  userId: 'user@example.com',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: config.get('mojaloop').pispCallbackUri,
 }
 
-const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  // id: '111',
-  initiatorId: 'pispA',
-  authChannels: ['WEB', 'OTP'],
-  scopes,
-  callbackUri: config.get('mojaloop').pispCallbackUri,
-  authUri: 'https://dfspAuth.com',
+const patchConsentRequestPayload: tpAPI.Schemas.ConsentRequestsIDPatchRequest = {
   authToken: 'secret-token',
 }
 
-const putConsentRequest: SDKStandardComponents.PutConsentsRequest = {
-  requestId: '88',
-  initiatorId: 'pispA',
-  participantId: 'participant',
+const putConsentPayload: tpAPI.Schemas.ConsentsIDPutResponseSigned = {
   scopes,
   credential: {
-    id: '9876',
     credentialType: 'FIDO',
     status: 'PENDING',
-    challenge: {
-      payload: 'string_representing_challenge_payload',
-      signature: 'string_representing_challenge_signature',
+    payload: {
+      id: 'some_fido_id',
+      response: {
+        clientDataJSON: 'some_client_data_json'
+      }   
     },
-    payload: 'string_representing_credential_payload',
   },
 }
 
@@ -305,10 +293,10 @@ describe('Mojaloop third-party simulator', () => {
 
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.postConsentRequests(postConsentRequestRequest)
+    await simulator.postConsentRequests(postConsentRequestPayload)
 
     const payload = ConsentFactory.createPutConsentRequestIdRequest(
-      postConsentRequestRequest
+      postConsentRequestPayload
     )
 
     expect(server.inject).toBeCalledTimes(1)
@@ -329,14 +317,14 @@ describe('Mojaloop third-party simulator', () => {
 
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.putConsentRequests(
+    await simulator.patchConsentRequests(
       consentRequestId,
-      putConsentRequestRequest
+      patchConsentRequestPayload,
+      'dfspa'
     )
 
     const payload = ConsentFactory.createPostConsentRequest(
       consentRequestId,
-      putConsentRequestRequest
     )
 
     expect(server.inject).toBeCalledTimes(1)
@@ -352,37 +340,15 @@ describe('Mojaloop third-party simulator', () => {
     })
   })
 
-  it('Should inject server with the result of a challenge generation request', async () => {
-    const targetUrl = '/consents/' + consentId + '/generateChallenge'
-
-    // this is a workaround to handle the delay before injecting response to the server
-    Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.postGenerateChallengeForConsent(consentId)
-
-    const payload = ConsentFactory.createPutConsentIdRequest()
-
-    expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
-      method: 'PUT',
-      url: targetUrl,
-      headers: {
-        host: 'mojaloop.' + config.get('hostname'),
-        'Content-Length': JSON.stringify(payload).length.toString(),
-        'Content-Type': 'application/json',
-      },
-      payload,
-    })
-  })
-
-  it('Should inject server with a granted consent', async () => {
+  it('Should inject server with an updated consent', async () => {
     const targetUrl = `/mojaloop/consents/${consentId}`
 
     // this is a workaround to handle the delay before injecting response to the server
     Promise.resolve().then(() => jest.advanceTimersByTime(100))
-    await simulator.putConsentId(consentId, putConsentRequest)
+    await simulator.putConsentId(consentId, putConsentPayload)
 
     const payload = ConsentFactory.createPutConsentIdValidationRequest(
-      putConsentRequest
+      putConsentPayload
     )
 
     expect(server.inject).toBeCalledTimes(1)

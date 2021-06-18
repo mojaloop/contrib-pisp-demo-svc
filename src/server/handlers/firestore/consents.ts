@@ -28,6 +28,8 @@
 /* istanbul ignore file */
 
 import * as uuid from 'uuid'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import { logger } from '~/shared/logger'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
@@ -111,32 +113,17 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
     // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postConsentRequests(
       {
-        initiatorId: consent.initiatorId!,
+        consentRequestId: consent.consentRequestId!,
+        //TODO: find the userId
+        userId: 'user@example.com',
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
-        id: consent.consentRequestId!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
     )
   } catch (err) {
     logger.error(err)
-  }
-}
-
-async function initiateChallengeGeneration(server: StateServer, consent: Consent) {
-  if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
-    throw new MissingConsentFieldsError(consent)
-  }
-
-  try {
-    // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId!
-    )
-  } catch (error) {
-    logger.error(error)
   }
 }
 
@@ -153,11 +140,9 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
-        requestId: consent.consentRequestId!,
-        initiatorId: consent.initiatorId!,
-        participantId: consent.participantId!,
         scopes: consent.scopes!,
-        credential: consent.credential!,
+        // TODO: cast here since putConsentId
+        credential: consent.credential as tpAPI.Schemas.SignedCredential
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -293,7 +278,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.CONSENT_GRANTED:
-      await initiateChallengeGeneration(server, consent)
+      console.warn('tried to call deprecated method `initiateChallengeGeneration` - please fix me.')
       break
 
     case ConsentStatus.CHALLENGE_GENERATED:

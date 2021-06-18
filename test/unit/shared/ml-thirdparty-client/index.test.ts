@@ -24,21 +24,17 @@
  --------------
  ******/
 
-import Client from '~/shared/ml-thirdparty-client'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
+import Client from '~/shared/ml-thirdparty-client'
 import {
   AmountType,
-  AuthenticationResponseType,
-  AuthenticationType,
   Currency,
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
-
 import {
-  AuthorizationsPutIdRequest,
   ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import config from '~/lib/config'
 import { NotImplementedError } from '~/shared/errors'
 
@@ -81,12 +77,12 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
   expiration: new Date(100).toISOString(),
 }
 
-const authorizationData: AuthorizationsPutIdRequest = {
-  authenticationInfo: {
-    authentication: AuthenticationType.U2F,
-    authenticationValue: 'key12345',
-  },
-  responseType: AuthenticationResponseType.ENTERED,
+const authorizationData: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse = {
+  challenge: 'some_challenge_base_64_string',
+  value: 'some_value_base_64_string',
+  consentId: '0000-0000-0000-0001',
+  sourceAccountId: 'dfspa.alice.1234',
+  status: 'VERIFIED'
 }
 
 const consentId = '123'
@@ -95,48 +91,40 @@ const destParticipantId = 'dfspA'
 
 const consentRequestId = 'ab123'
 
-const scopes = [
+const scopes: Array<tpAPI.Schemas.Scope> = [
   {
     accountId: 'as2342',
-    actions: ['account.getAccess', 'account.transferMoney'],
+    actions: ['accounts.getBalance', 'accounts.transfer'],
   },
   {
     accountId: 'as22',
-    actions: ['account.getAccess'],
+    actions: ['accounts.getBalance'],
   },
 ]
 
-const postConsentRequestRequest: SDKStandardComponents.PostConsentRequestsRequest = {
-  id: '111',
-  initiatorId: 'pispA',
-  authChannels: ['WEB', 'OTP'],
-  scopes,
-  callbackUri: 'https://pisp.com',
-}
-
-const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  initiatorId: 'pispA',
+const postConsentRequestPayload: tpAPI.Schemas.ConsentRequestsPostRequest = {
+  consentRequestId: '111',
+  userId: 'user@example.com',
   authChannels: ['WEB', 'OTP'],
   scopes,
   callbackUri: config.get('mojaloop').pispCallbackUri,
-  authUri: 'https://dfspAuth.com',
+}
+
+const patchConsentRequestPayload: tpAPI.Schemas.ConsentRequestsIDPatchRequest = {
   authToken: 'secret-token',
 }
 
-const putConsentRequest: SDKStandardComponents.PutConsentsRequest = {
-  requestId: '88',
-  initiatorId: 'pispA',
-  participantId: 'participant',
+const putConsentPayload: tpAPI.Schemas.ConsentsIDPutResponseSigned = {
   scopes,
   credential: {
-    id: '9876',
     credentialType: 'FIDO',
     status: 'PENDING',
-    challenge: {
-      payload: 'string_representing_challenge_payload',
-      signature: 'string_representing_challenge_signature',
+    payload: {
+      id: 'some_fido_id',
+      response: {
+        clientDataJSON: 'some_client_data_json'
+      }
     },
-    payload: 'string_representing_credential_payload',
   },
 }
 
@@ -186,25 +174,20 @@ describe('Mojaloop third-party client', () => {
   })
 
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
-    expect(
-      // TD - bad types here...
-      // @ts-ignore
-      client.putAuthorizations('111', authorizationData, '222')
-    ).rejects.toThrow(new NotImplementedError())
 
-    // // Arrange
-    // const putAuthorizationSpy = jest
-    //   .spyOn(
-    //     client.thirdpartyRequests,
-    //     'putThirdpartyRequestsTransactionsAuthorizations'
-    //   )
-    //   .mockImplementation()
+    // Arrange
+    const putAuthorizationSpy = jest
+      .spyOn(
+        client.thirdpartyRequests,
+        'putThirdpartyRequestsTransactionsAuthorizations'
+      )
+      .mockImplementation()
 
-    // // Act
-    // client.putAuthorizations('111', authorizationData, '222')
+    // Act
+    client.putAuthorizations('111', authorizationData, '222')
 
-    // // Assert
-    // expect(putAuthorizationSpy).toBeCalledWith('111', authorizationData, '222')
+    // Assert
+    expect(putAuthorizationSpy).toBeCalledWith(authorizationData, '111', '222')
   })
 
   it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {
@@ -230,52 +213,34 @@ describe('Mojaloop third-party client', () => {
       .mockImplementation()
 
     // Act
-    client.postConsentRequests(postConsentRequestRequest, destParticipantId)
+    client.postConsentRequests(postConsentRequestPayload, destParticipantId)
 
     // Assert
     expect(postConsentRequestsSpy).toBeCalledWith(
-      postConsentRequestRequest,
+      postConsentRequestPayload,
       destParticipantId
     )
   })
 
-  it('Should perform a put request for authenticated consent', (): void => {
+  it('Should perform a patch request for authenticated consent', (): void => {
     // Arrange
-    const putConsentRequestsSpy = jest
-      .spyOn(client.thirdpartyRequests, 'putConsentRequests')
+    const patchConsentRequestsSpy = jest
+      .spyOn(client.thirdpartyRequests, 'patchConsentRequests')
       .mockImplementation()
 
     // Act
-    client.putConsentRequests(
+    client.patchConsentRequests(
       consentRequestId,
-      putConsentRequestRequest,
+      patchConsentRequestPayload,
       destParticipantId
     )
 
     // Assert
-    expect(putConsentRequestsSpy).toBeCalledWith(
+    expect(patchConsentRequestsSpy).toBeCalledWith(
       consentRequestId,
-      putConsentRequestRequest,
+      patchConsentRequestPayload,
       destParticipantId
     )
-  })
-
-  it('Should throw Not Implemented error, attempting to perform a request to generate a challenge for consent,', (): void => {
-    expect(
-      client.postGenerateChallengeForConsent(consentId)
-    ).rejects.toThrow(new NotImplementedError())
-
-    // TODO: Use this test once implemented
-    // // Arrange
-    // const GenerateChallengeSpy = jest
-    //   .spyOn(client.thirdpartyRequests, 'generateChallenge')
-    //   .mockImplementation()
-
-    // // Act
-    // client.postGenerateChallengeForConsent(consentId)
-
-    // // Assert
-    // expect(GenerateChallengeSpy).toBeCalledWith(consentId)
   })
 
   it('Should perform a put request for registered consent credential,', (): void => {
@@ -285,12 +250,12 @@ describe('Mojaloop third-party client', () => {
       .mockImplementation()
 
     // Act
-    client.putConsentId(consentId, putConsentRequest, destParticipantId)
+    client.putConsentId(consentId, putConsentPayload, destParticipantId)
 
     // Assert
     expect(putConsentIdSpy).toBeCalledWith(
       consentId,
-      putConsentRequest,
+      putConsentPayload,
       destParticipantId
     )
   })
