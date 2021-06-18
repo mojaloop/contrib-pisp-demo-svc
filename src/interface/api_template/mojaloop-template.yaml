@@ -12,37 +12,33 @@ servers:
 paths:
   /accounts/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/accounts_ID.yaml'
+  /accounts/{ID}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/accounts_ID_error.yaml'
   /authorizations:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/authorizations.yaml'
   /consentRequests/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consentRequests_ID.yaml'
-  # TODO:
-  # body contains extra fields initiatorId , participantId and credential , I understand initiatorId , participantId not required as per new design but what about credentials
   /consents:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents.yaml'
   /consents/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents_ID.yaml'
-  # TODO:
-  # put: transactionId missing from request
-  # patch: body contains TransfersIDPutResponse?
   /thirdpartyRequests/transactions/{ID}:
-    $ref: paths/thirdpartyRequests_transactions_ID.yaml
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/thirdpartyRequests_transactions_ID.yaml'
   /thirdpartyRequests/transactions/{ID}/error:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/thirdpartyRequests_transactions_ID_error.yaml'
   /health:
      $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/health.yaml'
-  # TODO:
-  #   /participants: endpoint is PUT without {ID}
-  # request body contains participants[] { fspId:FspId, name:string }
-  # is it equivalent to /participants/{Type}/{ID}: participants_Type_ID
-  /participants:
-     $ref: paths/participants.yaml
-  /participants/error:
-     $ref: paths/participants_error.yaml
-  # TODO:
-  # request body contains party (schemas/Party) and accounts(Account[] {id,currency})
-  # where as PartiesTypeIDPutResponse defined in api-snippets contains only party
   /parties/{Type}/{ID}:
-     $ref: paths/parties_Type_ID.yaml
+     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID.yaml'
+  /parties/{Type}/{ID}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID.yaml'
   /parties/{Type}/{ID}/error:
-     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_error.yaml'
+    $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_error.yaml'
+  /parties/{Type}/{ID}/{SubId}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId.yaml'
+  /parties/{Type}/{ID}/{SubId}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId_error.yaml'
+ /services/{ServiceType}:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/services_ServiceType.yaml'
+  /services/{ServiceType}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/services_ServiceType_error.yaml'
