@@ -96,6 +96,54 @@ paths:
           $ref: '#/components/responses/501'
         '503':
           $ref: '#/components/responses/503'
+  '/accounts/{ID}/error':
+    parameters:
+      - $ref: '#/components/parameters/ID'
+      - $ref: '#/components/parameters/Content-Length'
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    put:
+      description: >
+        The HTTP request `PUT /accounts/{ID}/error` is used to return error
+        information
+      operationId: UpdateAccountsByUserIdError
+      summary: UpdateAccountsByUserIdError
+      tags:
+        - accounts
+        - sampled
+      requestBody:
+        description: Details of the error returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorInformationObject'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
   /authorizations:
     post:
       description: >
@@ -437,8 +485,45 @@ paths:
   '/thirdpartyRequests/transactions/{ID}':
     parameters:
       - $ref: '#/components/parameters/ID'
-      - $ref: '#/components/parameters/Content-Type'
-      - $ref: '#/components/parameters/Content-Length'
+      - $ref: '#/components/parameters/Accept'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    get:
+      tags:
+        - thirdpartyRequests
+        - sampled
+      operationId: GetThirdpartyTransactionRequests
+      summary: GetThirdpartyTransactionRequests
+      description: >
+        The HTTP request `GET /thirdpartyRequests/transactions/{ID}` is used to
+        request the 
+
+        retrieval of a third party transaction request.
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
     put:
       tags:
         - thirdpartyRequests
@@ -446,18 +531,25 @@ paths:
       operationId: UpdateThirdPartyTransactionRequests
       summary: UpdateThirdPartyTransactionRequests
       description: >
-        The HTTP request `PUT /thirdpartyRequests/transactions/{ID}` is used to
-        inform the client about
+        The HTTP request `PUT /thirdpartyRequests/transactions/{ID}` is used by
+        the DFSP to inform the client about
 
-        status of a previously requested thirdparty transaction.
+        the status of a previously requested thirdparty transaction request.
+
 
         Switch(Thirdparty API Adapter) -> PISP
+      parameters:
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ThirdpartyRequestsTransactionsIDPutResponse'
+            example:
+              transactionId: 11111111-0000-0000-0000-000000000000
+              transactionRequestState: RECEIVED
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -478,19 +570,32 @@ paths:
         '503':
           $ref: '#/components/responses/503'
     patch:
+      operationId: NotifyThirdpartyTransactionRequests
+      summary: NotifyThirdpartyTransactionRequests
+      description: >
+        The HTTP request `PATCH /thirdpartyRequests/transactions/{ID}` is used
+        to
+
+        notify a thirdparty of the outcome of a transaction request.
+
+
+        Switch(Thirdparty API Adapter) -> PISP
       tags:
-        - transfers
-      summary: '[Mojaloop Callback] Result of transfer'
-      description: Mojaloop callback for third party that initiated a transaction.
-      operationId: PatchThirdpartyRequestsTransactions
+        - thirdpartyRequests
       parameters:
-        - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransfersIDPatchResponse'
+              $ref: >-
+                #/components/schemas/ThirdpartyRequestsTransactionsIDPatchResponse
+            example:
+              transactionId: 11111111-0000-0000-0000-000000000000
+              transactionRequestState: ACCEPTED
+              transactionState: COMMITTED
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -594,101 +699,69 @@ paths:
       description: >-
         The HTTP request GET /health is used to return the current status of the
         API.
-  /participants:
-    put:
-      tags:
-        - participants
-      summary: '[Mojaloop Callback] Result of the registered DFSPs lookup'
-      description: >-
-        The callback PUT /participants is used to inform the client of the
-        result of the query of the registered DFSPs in Mojaloop.
-      operationId: PutParticipants
-      parameters:
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Content-Length'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ParticipantsPutResponse'
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
-  /participants/error:
-    put:
-      tags:
-        - participants
-      summary: '[Mojaloop Callback] Error in retrieving the list of DFSPs in Mojaloop'
-      description: >-
-        If there is an error during FSP information creation in the server, the
-        error callback PUT /participants/error is used.
-      operationId: PutParticipantsError
-      parameters:
-        - $ref: '#/components/parameters/Content-Type'
-        - $ref: '#/components/parameters/Content-Length'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ErrorInformationObject'
-        required: true
-      responses:
-        '200':
-          $ref: '#/components/responses/200'
-        '400':
-          $ref: '#/components/responses/400'
-        '401':
-          $ref: '#/components/responses/401'
-        '403':
-          $ref: '#/components/responses/403'
-        '404':
-          $ref: '#/components/responses/404'
-        '405':
-          $ref: '#/components/responses/405'
-        '406':
-          $ref: '#/components/responses/406'
-        '501':
-          $ref: '#/components/responses/501'
-        '503':
-          $ref: '#/components/responses/503'
   '/parties/{Type}/{ID}':
     parameters:
       - $ref: '#/components/parameters/Type'
       - $ref: '#/components/parameters/ID'
-    put:
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    get:
+      description: >-
+        The HTTP request `GET /parties/{Type}/{ID}` (or `GET
+        /parties/{Type}/{ID}/{SubId}`) is used to look up information regarding
+        the requested Party, defined by `{Type}`, `{ID}` and optionally
+        `{SubId}` (for example, `GET /parties/MSISDN/123456789`, or `GET
+        /parties/BUSINESS/shoecompany/employee1`).
+      summary: Look up party information
       tags:
         - parties
-      summary: '[Mojaloop Callback] Result of the Party information lookup'
-      description: >-
-        The callback PUT /parties/<Type>/<ID> (or PUT
-        /parties/<Type>/<ID>/<SubId>) is used to inform the client of a
-        successful result of the Party information lookup.
-      operationId: PutPartiesByTypeAndId
+      operationId: PartiesByTypeAndID
       parameters:
-        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Accept'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    put:
+      description: >-
+        The callback `PUT /parties/{Type}/{ID}` (or `PUT
+        /parties/{Type}/{ID}/{SubId}`) is used to inform the client of a
+        successful result of the Party information lookup.
+      summary: Return party information
+      tags:
+        - parties
+      operationId: PartiesByTypeAndID2
+      parameters:
         - $ref: '#/components/parameters/Content-Length'
       requestBody:
+        description: Party information returned.
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/PartiesTypeIDPutResponse'
-        required: true
       responses:
         '200':
           $ref: '#/components/responses/200'
@@ -732,6 +805,270 @@ paths:
         - $ref: '#/components/parameters/FSPIOP-Signature'
         - $ref: '#/components/parameters/FSPIOP-URI'
         - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Details of the error returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorInformationObject'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/parties/{Type}/{ID}/{SubId}':
+    parameters:
+      - $ref: '#/components/parameters/Type'
+      - $ref: '#/components/parameters/ID'
+      - $ref: '#/components/parameters/SubId'
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    get:
+      description: >-
+        The HTTP request `GET /parties/{Type}/{ID}` (or `GET
+        /parties/{Type}/{ID}/{SubId}`) is used to look up information regarding
+        the requested Party, defined by `{Type}`, `{ID}` and optionally
+        `{SubId}` (for example, `GET /parties/MSISDN/123456789`, or `GET
+        /parties/BUSINESS/shoecompany/employee1`).
+      summary: Look up party information
+      tags:
+        - parties
+      operationId: PartiesSubIdByTypeAndID
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    put:
+      description: >-
+        The callback `PUT /parties/{Type}/{ID}` (or `PUT
+        /parties/{Type}/{ID}/{SubId}`) is used to inform the client of a
+        successful result of the Party information lookup.
+      summary: Return party information
+      tags:
+        - parties
+      operationId: PartiesSubIdByTypeAndIDPut
+      parameters:
+        - $ref: '#/components/parameters/Content-Length'
+      requestBody:
+        description: Party information returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PartiesTypeIDPutResponse'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/parties/{Type}/{ID}/{SubId}/error':
+    put:
+      description: >-
+        If the server is unable to find Party information of the provided
+        identity, or another processing error occurred, the error callback `PUT
+        /parties/{Type}/{ID}/error` (or `PUT
+        /parties/{Type}/{ID}/{SubId}/error`) is used.
+      summary: Return party information error
+      tags:
+        - parties
+      operationId: PartiesSubIdErrorByTypeAndID
+      parameters:
+        - $ref: '#/components/parameters/Type'
+        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/SubId'
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Date'
+        - $ref: '#/components/parameters/X-Forwarded-For'
+        - $ref: '#/components/parameters/FSPIOP-Source'
+        - $ref: '#/components/parameters/FSPIOP-Destination'
+        - $ref: '#/components/parameters/FSPIOP-Encryption'
+        - $ref: '#/components/parameters/FSPIOP-Signature'
+        - $ref: '#/components/parameters/FSPIOP-URI'
+        - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+      requestBody:
+        description: Details of the error returned.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ErrorInformationObject'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/services/{ServiceType}':
+    parameters:
+      - $ref: '#/components/parameters/ServiceType'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    get:
+      operationId: GetServicesByServiceType
+      summary: GetServicesByServiceType
+      description: >
+        The HTTP request `GET /services/{ServiceType}` is used to retrieve the
+        list of participants
+
+        that support a specified service.
+      parameters:
+        - $ref: '#/components/parameters/Accept'
+      tags:
+        - services
+        - sampled
+      responses:
+        '202':
+          $ref: '#/components/responses/202'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+    put:
+      description: >
+        The HTTP request `PUT /services/{ServiceType}` is used to return list of
+        participants
+
+        that support a specified service.
+      operationId: PutServicesByServiceType
+      summary: PutServicesByServiceType
+      tags:
+        - services
+        - sampled
+      parameters:
+        - $ref: '#/components/parameters/Content-Length'
+        - $ref: '#/components/parameters/Content-Type'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicesServiceTypePutResponse'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '400':
+          $ref: '#/components/responses/400'
+        '401':
+          $ref: '#/components/responses/401'
+        '403':
+          $ref: '#/components/responses/403'
+        '404':
+          $ref: '#/components/responses/404'
+        '405':
+          $ref: '#/components/responses/405'
+        '406':
+          $ref: '#/components/responses/406'
+        '501':
+          $ref: '#/components/responses/501'
+        '503':
+          $ref: '#/components/responses/503'
+  '/services/{ServiceType}/error':
+    parameters:
+      - $ref: '#/components/parameters/ServiceType'
+      - $ref: '#/components/parameters/Content-Length'
+      - $ref: '#/components/parameters/Content-Type'
+      - $ref: '#/components/parameters/Date'
+      - $ref: '#/components/parameters/X-Forwarded-For'
+      - $ref: '#/components/parameters/FSPIOP-Source'
+      - $ref: '#/components/parameters/FSPIOP-Destination'
+      - $ref: '#/components/parameters/FSPIOP-Encryption'
+      - $ref: '#/components/parameters/FSPIOP-Signature'
+      - $ref: '#/components/parameters/FSPIOP-URI'
+      - $ref: '#/components/parameters/FSPIOP-HTTP-Method'
+    put:
+      description: >
+        The HTTP request `PUT /services/{ServiceType}/error` is used to return
+        error information
+      operationId: PutServicesByServiceTypeAndError
+      summary: PutServicesByServiceTypeAndError
+      tags:
+        - services
+        - sampled
       requestBody:
         description: Details of the error returned.
         required: true
@@ -897,6 +1234,22 @@ components:
       schema:
         type: string
       description: 'The type of the party identifier. For example, `MSISDN`, `PERSONAL_ID`.'
+    SubId:
+      name: SubId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: >-
+        A sub-identifier of the party identifier, or a sub-type of the party
+        identifier's type. For example, `PASSPORT`, `DRIVING_LICENSE`.
+    ServiceType:
+      name: ServiceType
+      in: path
+      required: true
+      schema:
+        type: string
+      description: 'The type of the service identifier. For example, `THIRD_PARTY_DFSP`'
   responses:
     '200':
       description: OK
@@ -1323,6 +1676,15 @@ components:
             $ref: '#/components/schemas/Account'
       required:
         - accounts
+    ErrorInformationObject:
+      title: ErrorInformationObject
+      type: object
+      description: Data model for the complex type object that contains ErrorInformation.
+      properties:
+        errorInformation:
+          $ref: '#/components/schemas/ErrorInformation'
+      required:
+        - errorInformation
     AuthenticationType:
       title: AuthenticationType
       type: string
@@ -1856,81 +2218,38 @@ components:
       required:
         - transactionId
         - transactionRequestState
-    IlpFulfilment:
-      title: IlpFulfilment
-      type: string
-      pattern: '^[A-Za-z0-9-_]{43}$'
-      maxLength: 48
-      description: Fulfilment that must be attached to the transfer by the Payee.
-      example: WLctttbu2HvTsa1XWvUoGRcQozHsqeu9Ahl2JW9Bsu8
-    TransferState:
-      title: TransferState
+    TransactionState:
+      title: TransactionState
       type: string
       enum:
         - RECEIVED
-        - RESERVED
-        - COMMITTED
-        - ABORTED
-      description: >-
+        - PENDING
+        - COMPLETED
+        - REJECTED
+      description: |-
         Below are the allowed values for the enumeration.
-
-        - RECEIVED - Next ledger has received the transfer.
-
-        - RESERVED - Next ledger has reserved the transfer.
-
-        - COMMITTED - Next ledger has successfully performed the transfer.
-
-        - ABORTED - Next ledger has aborted the transfer due to a rejection or
-        failure to perform the transfer.
-      example: RESERVED
-    TransfersIDPatchResponse:
-      title: TransfersIDPatchResponse
-      description: Data model for the complex type TransfersIDPatchResponse.
+        - RECEIVED - Payee FSP has received the transaction from the Payer FSP.
+        - PENDING - Payee FSP has validated the transaction.
+        - COMPLETED - Payee FSP has successfully performed the transaction.
+        - REJECTED - Payee FSP has failed to perform the transaction.
+      example: RECEIVED
+    ThirdpartyRequestsTransactionsIDPatchResponse:
+      title: ThirdpartyRequestsTransactionsIDPatchResponse
       type: object
+      description: >-
+        The object sent in the PATCH /thirdpartyRequests/transactions/{ID}
+        callback.
       properties:
         transactionId:
           $ref: '#/components/schemas/CorrelationId'
-        fulfilment:
-          $ref: '#/components/schemas/IlpFulfilment'
-        completedTimestamp:
-          $ref: '#/components/schemas/DateTime'
-        transferState:
-          $ref: '#/components/schemas/TransferState'
-        extensionList:
-          $ref: '#/components/schemas/ExtensionList'
-    ErrorInformationObject:
-      title: ErrorInformationObject
-      type: object
-      description: Data model for the complex type object that contains ErrorInformation.
-      properties:
-        errorInformation:
-          $ref: '#/components/schemas/ErrorInformation'
+        transactionRequestState:
+          $ref: '#/components/schemas/TransactionRequestState'
+        transactionState:
+          $ref: '#/components/schemas/TransactionState'
       required:
-        - errorInformation
-    FspId:
-      title: FspId
-      type: string
-      minLength: 1
-      maxLength: 32
-      description: FSP identifier.
-    Participant:
-      title: Participant
-      description: Data model for the complex type Participant.
-      type: object
-      properties:
-        fspId:
-          $ref: '#/components/schemas/FspId'
-        name:
-          type: string
-    ParticipantsPutResponse:
-      title: ParticipantsPutResponse
-      description: Data model for the complex type ParticipantsPutResponse.
-      type: object
-      properties:
-        participants:
-          type: array
-          items:
-            $ref: '#/components/schemas/Participant'
+        - transactionId
+        - transactionRequestState
+        - transactionState
     PartyIdType:
       title: PartyIdType
       type: string
@@ -2004,6 +2323,12 @@ components:
       description: >-
         Either a sub-identifier of a PartyIdentifier, or a sub-type of the
         PartyIdType, normally a PersonalIdentifierType.
+    FspId:
+      title: FspId
+      type: string
+      minLength: 1
+      maxLength: 32
+      description: FSP identifier.
     PartyIdInfo:
       title: PartyIdInfo
       type: object
@@ -2106,12 +2431,21 @@ components:
         - partyIdInfo
     PartiesTypeIDPutResponse:
       title: PartiesTypeIDPutResponse
-      description: Data model for the complex type PartiesTypeIDPutResponse
       type: object
+      description: 'The object sent in the PUT /parties/{Type}/{ID} callback.'
       properties:
         party:
           $ref: '#/components/schemas/Party'
-        accounts:
+      required:
+        - party
+    ServicesServiceTypePutResponse:
+      title: ServicesServiceTypePutResponse
+      type: object
+      description: 'The object sent in a `PUT /services/{ServiceType}` request.'
+      properties:
+        providers:
           type: array
           items:
-            $ref: '#/components/schemas/Account'
+            $ref: '#/components/schemas/FspId'
+      required:
+        - providers

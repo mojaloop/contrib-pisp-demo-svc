@@ -29,8 +29,6 @@ paths:
   /health:
      $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/health.yaml'
   /parties/{Type}/{ID}:
-     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID.yaml'
-  /parties/{Type}/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID.yaml'
   /parties/{Type}/{ID}/error:
     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_error.yaml'
@@ -38,7 +36,7 @@ paths:
     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId.yaml'
   /parties/{Type}/{ID}/{SubId}/error:
     $ref: '../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/paths/parties_Type_ID_SubId_error.yaml'
- /services/{ServiceType}:
+  /services/{ServiceType}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/services_ServiceType.yaml'
   /services/{ServiceType}/error:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/services_ServiceType_error.yaml'
