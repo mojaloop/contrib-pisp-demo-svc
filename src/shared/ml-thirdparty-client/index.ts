@@ -231,8 +231,8 @@ export class Client implements MojaloopClient{
     this.mojaloopRequests = new MojaloopRequests(fspiopRequestsConfig)
   }
   
-  getAccounts(_idValue: string, _destParticipantId: string): Promise<unknown> {
-    throw new Error('Method not implemented.')
+  getAccounts(userId: string, destParticipantId: string): Promise<unknown> {
+    return this.thirdpartyRequests.getAccounts(userId, destParticipantId)
   }
 
   /**

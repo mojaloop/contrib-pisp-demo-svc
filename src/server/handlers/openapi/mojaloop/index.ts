@@ -40,6 +40,7 @@ import * as thirdpartyRequests from './thirdpartyRequests'
 export const apiHandlers = {
   HealthGet: Health.get,
   UpdateAccountsByUserId: MojaloopAccounts.put,
+  UpdateAccountsByUserIdError: MojaloopAccounts.putError,
   AuthorizationsPostRequest: MojaloopAuthorizations.post,
   PostConsents: MojaloopConsents.post,
   PutConsentByID: MojaloopConsentsById.put,

@@ -192,10 +192,10 @@ The overall Consent object should look like this:
 These curl snippets may be useful when debugging this service.
 
 ```bash
-curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
+curl localhost:8080/mojaloop/health -H "Host: mojaloop.pisp-demo-server.local"
 
 
-curl -X PUT localhost:8080/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+curl -X PUT localhost:8080/mojaloop/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
    -H "Host: mojaloop.pisp-demo-server.local" \
    -H "accept: application/json"  \
    -H "content-type: application/json" \
@@ -218,7 +218,7 @@ curl -X GET localhost:15000/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea 
 
 
 # opaque party lookup response example
-curl -v -X PUT localhost:8080/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+curl -v -X PUT localhost:8080/mojaloop/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
    -H "Host: mojaloop.pisp-demo-server.local" \
    -H "accept: application/json"  \
    -H "Content-Type: application/vnd.interoperability.parties+json;version=1.0" \

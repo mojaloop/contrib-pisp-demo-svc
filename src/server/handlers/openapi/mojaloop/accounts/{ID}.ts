@@ -33,6 +33,7 @@ import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/op
 
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 /**
  * Handles callback from Mojaloop that specifies detailed info about a requested party.
@@ -76,6 +77,31 @@ export const put: Handler = async (
       status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
     }
   )
+
+
+  // Return "200 OK" as defined by the Mojaloop API for successful request.
+  return h.response().code(200)
+}
+
+export const putError: Handler = async (
+  context: Context,
+  _: Request,
+  h: ResponseToolkit
+): Promise<ResponseObject> => {
+  // Retrieve the data that have been validated by the openapi-backend library.
+  const body = context.request.body
+  const partyIdentifier = context.request.params.ID
+
+  // Find all matching documents in Firebase that are waiting for the result of
+  // party lookup with the specified type and identifier. The execution of this
+  // function is expected to run asynchronously, so the server could quickly
+  // give a response to Mojaloop.
+  logger.info("handling inbound PUT /accounts/{ID/error")
+  logger.info(JSON.stringify(body, null, 2))
+  logger.info(`${partyIdentifier}`)
+
+  // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts
+  // available for linking from a pre-determined DFSP
 
 
   // Return "200 OK" as defined by the Mojaloop API for successful request.
