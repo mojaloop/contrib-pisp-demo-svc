@@ -1,8 +1,0 @@
-title: Participant
-description: Data model for the complex type Participant.
-type: object
-properties:
-  fspId:
-    $ref: '../../../../../node_modules/@mojaloop/api-snippets/fspiop/v1_1/openapi3/components/schemas/FspId.yaml'
-  name:
-    type: string
