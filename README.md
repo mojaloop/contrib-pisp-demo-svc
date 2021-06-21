@@ -98,6 +98,28 @@ npm run dev
 
 Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
 
+### Running Locally with docker-local
+```bash
+# in mojaloop/pisp repo:
+cd docker-local
+docker-compose up -d
+npm run wait-4-docker
+
+# Note: check that this pisp is configured properly in `docker-local/ml-bootstrap-config.json5`
+# We need to make sure the callbacks from inside docker can reach the locally running pisp-demo-svc
+npm run reseed:docker-local-new
+
+# in this project:
+export THIRDPARTY_API_URL=http://localhost:12000
+# TODO: we shouldn't need this I think...
+export FSPIOP_API_URL=http://localhost:4002
+export PARTICIPANT_ID=pineapplepay
+export LOCAL_SIMULATOR=false
+
+npm run dev
+
+```
+
 ## Config
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
