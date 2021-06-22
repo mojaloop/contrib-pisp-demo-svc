@@ -27,7 +27,7 @@
  ******/
 /* istanbul ignore file */
 
-import * as uuid from 'uuid'
+// import * as uuid from 'uuid'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import { logger } from '~/shared/logger'
@@ -50,7 +50,9 @@ async function handleNewConsent(_: StateServer, consent: Consent) {
 
   // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(consent.id, {
-    consentRequestId: uuid.v4(),
+    // TODO: how to we configure this easily?
+    // consentRequestId: uuid.v4(),
+    consentRequestId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
     status: ConsentStatus.PENDING_PARTY_LOOKUP,
   })
 }
@@ -73,6 +75,11 @@ async function initiatePartyLookup(server: StateServer, consent: Consent) {
   }
 }
 
+/**
+ * Send a PATCH /consentRequests/{ID} to the DFSP with the authToken 
+ * @param server 
+ * @param consent 
+ */
 async function initiateAuthentication(server: StateServer, consent: Consent) {
   if (!validator.isValidAuthentication(consent)) {
     throw new MissingConsentFieldsError(consent)
@@ -80,18 +87,10 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.putConsentRequests(
+    server.app.mojaloopClient.patchConsentRequests(
       consent.consentRequestId!,
       {
-        initiatorId: consent.initiatorId!,
-        authChannels: consent.authChannels!,
-        scopes: consent.scopes!,
         authToken: consent.authToken!,
-        // TODO: sdk standard components could be more strict here
-        // these fields aren't needed here
-        authUri: consent.authUri!,
-        callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
     )

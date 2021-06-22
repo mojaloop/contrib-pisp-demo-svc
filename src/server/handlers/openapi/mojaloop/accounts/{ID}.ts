@@ -26,11 +26,9 @@
 
 import { Request, ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import config from '~/lib/config'
-
-
-import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
-
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
 import { logger } from '~/shared/logger'
@@ -48,7 +46,7 @@ export const put: Handler = async (
   h: ResponseToolkit
 ): Promise<ResponseObject> => {
   // Retrieve the data that have been validated by the openapi-backend library.
-  const body = context.request.body as PartiesTypeIDPutRequest
+  const body = context.request.body as tpAPI.Schemas.AccountsIDPutResponse
   const partyIdentifier = context.request.params.ID
 
   // Find all matching documents in Firebase that are waiting for the result of
@@ -73,7 +71,7 @@ export const put: Handler = async (
     // Update the given field by their new values
     {
       initiatorId: config.get('participantId'),
-      accounts: body,
+      accounts: body.accounts,
       status: ConsentStatus.PENDING_PARTY_CONFIRMATION,
     }
   )
