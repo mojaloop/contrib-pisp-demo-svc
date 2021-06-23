@@ -27,7 +27,7 @@
  ******/
 /* istanbul ignore file */
 
-// import * as uuid from 'uuid'
+import * as uuid from 'uuid'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import { logger } from '~/shared/logger'
@@ -44,16 +44,23 @@ import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/e
 import { DemoAccount } from '~/models/demoAccount'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
-  // Assign a consentRequestId to the document and set the initial
-  // status. This operation will create an event that triggers the execution
+ // This operation will create an event that triggers the execution
   // of the onUpdate function.
+
+  // If the client has already set the consentRequestId, then use it
+  // instead of a random uuid.
+  // 
+  // that way, we allow the client to dynamically trigger rules on
+  // the dfsp backend.
+  let consentRequestId = uuid.v4();
+  if (consent.consentRequestId) {
+    consentRequestId = consent.consentRequestId
+  }
 
   // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(consent.id, {
-    // TODO: how to we configure this easily for demo purposes?
-    // Maybe if the consentRequestId is already set by the client, we just use that one?
-    // consentRequestId: uuid.v4(),
-    consentRequestId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
+    consentRequestId,
+    // consentRequestId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
     status: ConsentStatus.PENDING_PARTY_LOOKUP,
   })
 }
