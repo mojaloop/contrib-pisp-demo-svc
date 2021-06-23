@@ -26,25 +26,27 @@
 
 import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 export const post: Handler = async (
   context: Context,
   _request: Request,
   h: ResponseToolkit
 ) => {
-  console.log("post consents handler", context.request.body)
-  const { id, initiatorId, participantId, scopes } = context.request.body
+  logger.info("handling POST /consents" + JSON.stringify(context.request.body, null, 2))
+  const body = context.request.body as tpAPI.Schemas.ConsentsPostRequest;
+  const { consentId, scopes, consentRequestId } = body
 
   // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsent({
-    consentRequestId: context.request.body.requestId
+    consentRequestId,
   }, {
     // ConsentId has now been provided by DFSP
-    consentId: id,
-    initiatorId,
-    participantId,
+    consentId,
     scopes,
     status: ConsentStatus.CONSENT_GRANTED,
   })

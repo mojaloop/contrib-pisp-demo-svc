@@ -37,13 +37,20 @@ import * as thirdpartyRequests from './thirdpartyRequests'
 
 export const apiHandlers = {
   HealthGet: Health.get,
+
   UpdateAccountsByUserId: MojaloopAccounts.put,
   UpdateAccountsByUserIdError: MojaloopAccounts.putError,
+
   AuthorizationsPostRequest: MojaloopAuthorizations.post,
+  
+  UpdateConsentRequest: MojaloopConsentRequestsById.put,
+  NotifyErrorConsentRequests: MojaloopConsentRequestsById.putError,
+  
   PostConsents: MojaloopConsents.post,
   PutConsentByID: MojaloopConsentsById.put,
+  NotifyErrorConsents: MojaloopConsentsById.putError,
   PatchConsentByID: MojaloopConsentsById.patch,
-  UpdateConsentRequest: MojaloopConsentRequestsById.put,
+
   PartiesByTypeAndID2: MojaloopPartiesByTypeAndId.put,
   PartiesErrorByTypeAndID: MojaloopPartiesByTypeAndIdError.put,
   UpdateThirdPartyTransactionRequests: thirdpartyRequests.put,

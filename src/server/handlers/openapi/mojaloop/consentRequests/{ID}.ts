@@ -28,6 +28,7 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 export const put: Handler = async (
   context: Context,
@@ -45,3 +46,10 @@ export const put: Handler = async (
   })
   return h.response().code(200)
 }
+
+export const putError: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  logger.error('putConsentRequests error: ' + JSON.stringify(context.request.body, null, 2))
+  // TODO: get error details...
+  return h.response().code(200)
+}
+

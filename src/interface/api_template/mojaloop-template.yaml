@@ -18,10 +18,14 @@ paths:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/authorizations.yaml'
   /consentRequests/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consentRequests_ID.yaml'
+  /consentRequests/{ID}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consentRequests_ID_error.yaml'
   /consents:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents.yaml'
   /consents/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents_ID.yaml'
+  /consents/{ID}/error:
+    $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/consents_ID_error.yaml'
   /thirdpartyRequests/transactions/{ID}:
     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/thirdpartyRequests_transactions_ID.yaml'
   /thirdpartyRequests/transactions/{ID}/error:
