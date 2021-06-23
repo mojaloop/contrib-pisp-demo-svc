@@ -89,11 +89,9 @@ export const isValidSignedChallenge = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.credential &&
-    consent.keyHandleId &&
+    consent.credential.status === 'PENDING' &&
     consent.scopes &&
-    consent.initiatorId &&
-    consent.consentRequestId &&
-    consent.participantId
+    consent.consentRequestId
   )
 }
 

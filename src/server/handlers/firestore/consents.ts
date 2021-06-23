@@ -50,7 +50,8 @@ async function handleNewConsent(_: StateServer, consent: Consent) {
 
   // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(consent.id, {
-    // TODO: how to we configure this easily?
+    // TODO: how to we configure this easily for demo purposes?
+    // Maybe if the consentRequestId is already set by the client, we just use that one?
     // consentRequestId: uuid.v4(),
     consentRequestId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
     status: ConsentStatus.PENDING_PARTY_LOOKUP,
@@ -101,9 +102,9 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
   // TODO: mssing some fields... maybe we need to add them to the initial thingy
-  console.log('initiateConsentRequest')
+  logger.info('initiateConsentRequest')
   if (!validator.isValidConsentRequest(consent)) {
-    console.log('initiateConsentRequest - invalid fields')
+    logger.error('initiateConsentRequest - invalid fields')
     throw new MissingConsentFieldsError(consent)
   }
   // If the update contains all the necessary fields, process document
@@ -126,8 +127,9 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
   }
 }
 
+
 async function handleSignedChallenge(server: StateServer, consent: Consent) {
-  console.log('handleSignedChallenge')
+  logger.info('handleSignedChallenge')
 
   if (!validator.isValidSignedChallenge(consent)) {
     throw new MissingConsentFieldsError(consent)
@@ -135,13 +137,21 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 
   try {
     // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
         scopes: consent.scopes!,
-        // TODO: cast here since putConsentId
         credential: consent.credential as tpAPI.Schemas.SignedCredential
+        // credential: {
+        //   credentialType: 'FIDO',
+        //   status: 'PENDING',
+        //   // payload: {
+        //   //   id
+        //   //   rawId
+        //   //   response
+        //   //   type
+        //   // }  
+        // }
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -151,7 +161,7 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 }
 
 async function onConsentActivated(_server: StateServer, consent: Consent) {
-  console.log('onConsentActivated')
+  logger.info('onConsentActivated')
 
   if (!validator.isValidSignedChallenge(consent)) {
     throw new MissingConsentFieldsError(consent)
@@ -261,7 +271,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.PENDING_PARTY_CONFIRMATION:
-      console.log("no need to handle PENDING_PARTY_CONFIRMATION state - waiting for user input")
+      logger.info("no need to handle PENDING_PARTY_CONFIRMATION state - waiting for user input")
       break
 
     case ConsentStatus.PARTY_CONFIRMED:
@@ -269,7 +279,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.AUTHENTICATION_REQUIRED:
-      console.log("no need to handle AUTHENTICATION_REQUIRED state - waiting for user input")
+      logger.info("no need to handle AUTHENTICATION_REQUIRED state - waiting for user input")
       break
 
     case ConsentStatus.AUTHENTICATION_COMPLETE:
@@ -277,11 +287,12 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.CONSENT_GRANTED:
-      console.warn('tried to call deprecated method `initiateChallengeGeneration` - please fix me.')
+      logger.info("no need to handle CONSENT_GRANTED state - waiting for user input")
+      // await deriveChallengeAndUpdateConsent(server, consent)
       break
 
     case ConsentStatus.CHALLENGE_GENERATED:
-      console.log("no need to handle CHALLENGE_GENERATED state - waiting for user input")
+      logger.info("no need to handle CHALLENGE_GENERATED state - waiting for user input")
       break
 
     case ConsentStatus.CHALLENGE_SIGNED:
