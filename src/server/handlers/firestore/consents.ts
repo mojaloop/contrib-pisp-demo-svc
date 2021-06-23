@@ -156,9 +156,15 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
   logger.info('onConsentActivated')
 
   // TODO: this validator is likely wrong!!!
-  if (!validator.isValidConsentWithSignedCredential(consent)) {
+  if (!validator.isValidConsentWithVerifiedCredential(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
+
+  // Internally, the client needs this as an array buffer
+  // we could do the conversion on the client, but for now
+  // this works fine.
+  const keyHandleIdBuffer = Buffer.from(consent.credential?.payload?.rawId!, 'base64')
+  const keyHandleId = [ ... keyHandleIdBuffer ]
 
   try {
     if (config.get('overwriteExistingAccountsForUser')) {
@@ -178,7 +184,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.keyHandleId!,
+        keyHandleId
       }
       await accountRepository.insert(demoAccount)
     } else {
@@ -193,7 +199,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.keyHandleId!,
+        keyHandleId
       }
       const demoAccount2: DemoAccount = {
         alias: 'Chequing Account',
@@ -204,7 +210,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.keyHandleId!,
+        keyHandleId
       }
       await accountRepository.insert(demoAccount)
       await accountRepository.insert(demoAccount2)
@@ -281,7 +287,6 @@ export const onUpdate: ConsentHandler = async (
 
     case ConsentStatus.CONSENT_GRANTED:
       logger.info("no need to handle CONSENT_GRANTED state - waiting for user input")
-      // await deriveChallengeAndUpdateConsent(server, consent)
       break
 
     case ConsentStatus.CHALLENGE_GENERATED:

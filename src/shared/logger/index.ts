@@ -43,6 +43,7 @@ export interface BaseLogger {
   info: (message: string, ...meta: unknown[]) => unknown
   warn: (message: string, ...meta: unknown[]) => unknown
   error: (messsage: string, ...meta: unknown[]) => unknown
+  debug: (messsage: string, ...meta: unknown[]) => unknown
 }
 
 export class Logger {
@@ -90,6 +91,10 @@ export class Logger {
 
   error(message: string, ...meta: unknown[]) {
     this._logger.error(message, ...meta)
+  }
+
+  debug(message: string, ...meta: unknown[]) {
+    this._logger.debug(message, ...meta)
   }
 }
 
