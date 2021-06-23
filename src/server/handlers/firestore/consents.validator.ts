@@ -24,6 +24,7 @@
  ******/
 
 import { Consent } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 /**
  * Checks whether a consent document has all the necessary fields to perform
@@ -80,20 +81,43 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
 
 /**
  * Checks whether a consent document has all the necessary fields to be
- * processed as a signed consent request.
+ * processed as a signed consent.
  *
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
  */
-export const isValidSignedChallenge = (consent: Consent): boolean => {
+export const isValidConsentWithSignedCredential = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
     consent.credential &&
-    consent.keyHandleId &&
+    consent.credential.status === 'PENDING' &&
+    consent.credential.credentialType === 'FIDO' && 
+    consent.credential.payload.id &&
+    consent.credential.payload.rawId &&
+    consent.credential.payload.type === 'public-key' &&
+    consent.credential.payload.response.attestationObject &&
+    consent.credential.payload.response.clientDataJSON &&
     consent.scopes &&
-    consent.initiatorId &&
-    consent.consentRequestId &&
-    consent.participantId
+    consent.consentRequestId
+  )
+}
+
+/**
+ * Checks whether a consent document has all the necessary fields to be
+ * processed as a verified consent
+ *
+ * @param consent the object representation of a consent that is stored
+ *                    on Firebase.
+ */
+export const isValidConsentWithVerifiedCredential = (consent: Consent): boolean => {
+  logger.debug('isValidConsentWithVerifiedCredential: ' + JSON.stringify(consent, null, 2))
+
+  return !!(
+    consent?.party?.partyIdInfo?.fspId &&
+    consent.credential &&
+    consent.credential.payload &&
+    consent.credential.payload.id &&
+    consent.credential.payload.rawId
   )
 }
 

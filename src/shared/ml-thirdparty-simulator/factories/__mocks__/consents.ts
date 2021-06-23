@@ -42,7 +42,7 @@ export class ConsentFactory {
 
   public static createPostConsentRequest(
     consentRequestId: string,
-  ): tpAPI.Schemas.ConsentsPostRequest {
+  ): tpAPI.Schemas.ConsentsPostRequestPISP {
     const scopes: Array<tpAPI.Schemas.Scope> = [
       {
         accountId: '0000-0000-0000-0002',

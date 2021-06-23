@@ -25,6 +25,7 @@
 
 import OpenApiBackend, { Handler } from 'openapi-backend'
 import { Plugin, Server, Request, ResponseToolkit } from '@hapi/hapi'
+import { logger } from '~/shared/logger'
 
 export interface ExtHandlers {
   /**
@@ -156,16 +157,11 @@ function registerBackend(server: Server, vhostOpts: VirtualHostOptions, sharedOp
 
   api.init()
 
-  // route all traffic going to the specified virtual host to be passed
-  // to the open API backend.
   server.route({
     method: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     path: `${vhostOpts.basePath ? `/${vhostOpts.basePath}` : ''}/{path*}`,
-    // path: `/{path*}`,
-    // vhost: [vhostOpts.subdomain, sharedOpts.baseHost].join('.'),
-    // vhost: sharedOpts.baseHost,
     handler: (request: Request, h: ResponseToolkit) => {
-      console.log("handler is being called", request.path);
+      logger.info(`Handler is being called: ${request.method} ${request.path}`)
       return api.handleRequest(
         {
           method: request.method,

@@ -29,9 +29,9 @@ import { logger, RequestLogged } from '~/shared/logger'
 const mockLogger = {
   info: jest.fn(),
   warn: jest.fn(),
-  error: jest.fn()
+  error: jest.fn(),
+  debug: jest.fn(),
 }
-
 
 logger._logger = mockLogger
 

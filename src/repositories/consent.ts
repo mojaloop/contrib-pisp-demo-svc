@@ -119,16 +119,15 @@ export class FirebaseConsentRepository implements IConsentRepository {
 
       // Find and update all matching documents in Firebase that match the given conditions.
       const response = await firestoreQuery.get()
-      console.log(
-        'consent::updateConsent, found docs for conditions',
-        response.docs,
-        conditions
+      logger.debug(
+        'consent::updateConsent, found docs for conditions' + response.docs,
+        +conditions
       )
 
       if (response.docs.length === 0) {
-        console.log(
+        logger.warn(
           'consent::updateConsent - WARNING: found no docs for conditions',
-          conditions
+          +JSON.stringify(conditions, null, 2)
         )
       }
       // Create a batch to perform all of the updates using a single request.
@@ -137,7 +136,10 @@ export class FirebaseConsentRepository implements IConsentRepository {
       const batch = firebase.firestore().batch()
 
       // Iterate through all matching documents add them to the processing batch.
-      console.log('updating docs with data', data)
+      logger.debug(
+        'consent::updateConsent - updating docs with data' +
+          JSON.stringify(data, null, 2)
+      )
       response.docs.forEach((doc) => {
         batch.update(
           // Put a reference to the document.
