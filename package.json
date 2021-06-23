@@ -112,7 +112,7 @@
     "@hapi/vision": "^6.0.0",
     "@mojaloop/central-services-logger": "^10.6.0",
     "@mojaloop/central-services-shared": "^11.3.2",
-    "@mojaloop/sdk-standard-components": "^15.10.4",
+    "@mojaloop/sdk-standard-components": "^15.11.0",
     "@types/uuid": "^8.0.0",
     "convict": "^6.0.0",
     "dotenv": "^8.2.0",

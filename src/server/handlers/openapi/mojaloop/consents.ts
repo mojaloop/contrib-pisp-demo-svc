@@ -38,7 +38,7 @@ export const post: Handler = async (
   h: ResponseToolkit
 ) => {
   logger.info("handling POST /consents" + JSON.stringify(context.request.body, null, 2))
-  const body = context.request.body as tpAPI.Schemas.ConsentsPostRequest;
+  const body = context.request.body as tpAPI.Schemas.ConsentsPostRequestPISP;
   const { consentId, scopes, consentRequestId } = body
 
   // Not await-ing promise to resolve - code is executed asynchronously

@@ -760,20 +760,33 @@ export interface components {
     };
     /**
      * The type of the Credential.
-     * - "FIDO" - A FIDO public/private keypair.
+     * - "FIDO" - A FIDO public/private keypair
      */
     CredentialType: "FIDO";
     /**
      * An object sent in a `PUT /consents/{ID}` request.
      * Based on https://w3c.github.io/webauthn/#iface-pkcredential
+     * and mostly on: https://webauthn.guide/#registration
+     * AuthenticatorAttestationResponse
+     * https://w3c.github.io/webauthn/#dom-authenticatorattestationresponse-attestationobject
      */
-    PublicKeyCredential: {
-      /** TBD */
+    FIDOPublicKeyCredential: {
+      /**
+       * credential id: identifier of pair of keys, base64 encoded
+       * https://w3c.github.io/webauthn/#ref-for-dom-credential-id
+       */
       id: string;
+      /** raw credential id: identifier of pair of keys, base64 encoded */
+      rawId: string;
+      /** AuthenticatorAttestationResponse */
       response: {
-        /** TBD */
+        /** JSON string with client data */
         clientDataJSON: string;
+        /** CBOR.encoded attestation object */
+        attestationObject: string;
       };
+      /** response type, we need only the type of public-key */
+      type: "public-key";
     };
     /**
      * A credential used to allow a user to prove their identity and access
@@ -787,10 +800,25 @@ export interface components {
       credentialType: components["schemas"]["CredentialType"];
       /** The challenge has signed but not yet verified. */
       status: "PENDING";
-      payload: components["schemas"]["PublicKeyCredential"];
+      payload: components["schemas"]["FIDOPublicKeyCredential"];
     };
-    /** The object sent in a `POST /consents` request. */
-    ConsentsPostRequest: {
+    /**
+     * The object sent in a `POST /consents` request to AUTH-SERVICE by DFSP to store registered consent with PublicKey
+     * and whatever needed to perform authorization validation later
+     */
+    ConsentsPostRequestAUTH: {
+      /**
+       * Common ID between the PISP and FSP for the Consent object
+       * decided by the DFSP who creates the Consent
+       * This field is REQUIRED for POST /consent.
+       * creation of this Consent.
+       */
+      consentId: components["schemas"]["CorrelationId"];
+      scopes: components["schemas"]["Scope"][];
+      credential: components["schemas"]["SignedCredential"];
+    };
+    /** The object sent in a `POST /consents` request to PISP by DFSP to ask for delivering the credential object. */
+    ConsentsPostRequestPISP: {
       /**
        * Common ID between the PISP and FSP for the Consent object
        * decided by the DFSP who creates the Consent
@@ -801,8 +829,7 @@ export interface components {
        * The id of the ConsentRequest that was used to initiate the
        * creation of this Consent.
        */
-      consentRequestId?: components["schemas"]["CorrelationId"];
-      credential?: components["schemas"]["SignedCredential"];
+      consentRequestId: components["schemas"]["CorrelationId"];
       scopes: components["schemas"]["Scope"][];
     };
     /**
@@ -825,7 +852,7 @@ export interface components {
       credentialType: components["schemas"]["CredentialType"];
       /** The Credential is valid, and ready to be used by the PISP. */
       status: "VERIFIED";
-      payload: components["schemas"]["PublicKeyCredential"];
+      payload: components["schemas"]["FIDOPublicKeyCredential"];
     };
     /**
      * The HTTP request `PUT /consents/{ID}` is used by the DFSP or Auth-Service to update a Consent object once it has been Verified.
@@ -1478,7 +1505,9 @@ export interface operations {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["ConsentsPostRequest"];
+        "application/json":
+          | components["schemas"]["ConsentsPostRequestAUTH"]
+          | components["schemas"]["ConsentsPostRequestPISP"];
       };
     };
   };

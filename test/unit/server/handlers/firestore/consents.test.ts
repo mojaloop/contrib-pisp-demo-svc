@@ -520,9 +520,12 @@ describe.skip('Handlers for consent documents in Firebase', () => {
           status: 'PENDING',
           payload: {
             id: 'some_fido_id',
+            rawId: 'some_fido_id',
             response: {
-              clientDataJSON: 'some_client_data_json'
-            }
+              clientDataJSON: 'some_client_data_json',
+              attestationObject: 'some_attestation_object'
+            },
+            type: 'public-key'
           },
         },
       }
