@@ -62,7 +62,7 @@ async function handlePartyLookup(server: StateServer, transaction: Transaction) 
   // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(transaction)) {
-    console.log('error - invalid party lookup for ', transaction)
+    logger.error('error - invalid party lookup for ', transaction)
     return;
   }
 
@@ -81,7 +81,7 @@ async function handlePartyConfirmation(
   server: StateServer,
   transaction: Transaction
 ) {
-  console.log('handlePartyConfirmation')
+  logger.info('handlePartyConfirmation')
 
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
@@ -90,7 +90,7 @@ async function handlePartyConfirmation(
   // about the transaction (i.e., source account ID, consent ID, and
   // transaction amount).
   if (!validator.isValidPayeeConfirmation(transaction)) {
-    console.log('payeeConfirmation is not valid')
+    logger.warn('payeeConfirmation is not valid')
     return
   }
   // If the update contains all the necessary fields, process document
@@ -143,10 +143,10 @@ async function handlePartyConfirmation(
 // }
 
 async function handleAuthorization(server: StateServer, transaction: Transaction) {
-  console.log('handleAuthorization')
+  logger.info('handleAuthorization')
 
   if (!validator.isValidAuthorization(transaction)) {
-    console.log('handleAuthorization is not valid')
+    logger.warn('handleAuthorization is not valid')
     return
   }
 
@@ -173,7 +173,6 @@ export const onCreate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
-  // console.log('onCreateCalled', transaction)
   if (transaction.status) {
     // Skip transaction that has been processed previously.
     // We need this because when the server starts for the first time,
@@ -189,7 +188,7 @@ export const onUpdate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
-  console.log('onUpdateCalled', transaction)
+  logger.info('onUpdateCalled', transaction)
   if (!transaction.status) {
     // Status is expected to be null only when the document is created for the first
     // time by the user.

@@ -53,9 +53,7 @@ export class Logger {
     this._logger = createDefaultLogger()
   }
 
-  // TODO: this is what sdk-standard-components wants...
-  log(things: any): void {
-    console.log(things)
+  log(_things: any): void {
   }
 
   logRequest(context: Context, _: Request, __: ResponseToolkit): void {

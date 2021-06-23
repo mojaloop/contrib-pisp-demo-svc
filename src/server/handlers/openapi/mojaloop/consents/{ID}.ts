@@ -105,7 +105,6 @@ export const patch: Handler = async (
   h: ResponseToolkit
 ) => {
   let consentId = context.request.params.ID 
-  console.log("PATCH STUFF", consentId)
   if (Array.isArray(consentId)) {
     consentId = consentId[0]
   }
