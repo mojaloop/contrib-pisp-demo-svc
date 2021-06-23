@@ -518,7 +518,7 @@ describe('Validators for different consents used in requests', () => {
     // TODO - LD skipped for demo purposes
     it.skip('Should return true if all necessary fields are present', () => {
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           consentId,
           initiatorId,
@@ -533,7 +533,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if party or partyIdInfo or fspId is not present', () => {
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           initiatorId,
           authUri,
@@ -550,7 +550,7 @@ describe('Validators for different consents used in requests', () => {
       ).toBe(false)
 
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           initiatorId,
           userId,
@@ -567,7 +567,7 @@ describe('Validators for different consents used in requests', () => {
       ).toBe(false)
 
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           userId,
           initiatorId,
@@ -589,7 +589,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if credential is not present', () => {
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           initiatorId,
           userId,
@@ -606,7 +606,7 @@ describe('Validators for different consents used in requests', () => {
 
     it('Should return false if initiator ID is not present', () => {
       expect(
-        Validator.isValidSignedChallenge({
+        Validator.isValidConsentWithSignedCredential({
           id,
           userId,
           authUri,

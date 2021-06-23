@@ -59,9 +59,9 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
 const mockIsValidPartyLookup = jest.spyOn(validator, 'isValidPartyLookup')
 const mockIsValidAuthentication = jest.spyOn(validator, 'isValidAuthentication')
 const mockIsValidConsentRequest = jest.spyOn(validator, 'isValidConsentRequest')
-const mockIsValidSignedChallenge = jest.spyOn(
+const mockIsValidConsentWithSignedCredential = jest.spyOn(
   validator,
-  'isValidSignedChallenge'
+  'isValidConsentWithSignedCredential'
 )
 const mockIsValidGenerateChallengeOrRevokeConsent = jest.spyOn(
   validator,
@@ -260,8 +260,8 @@ defineFeature(feature, (test): void => {
           break
         }
         case 'handle signed challenge': {
-          expect(mockIsValidSignedChallenge).toBeCalledTimes(1)
-          expect(mockIsValidSignedChallenge).toBeCalledWith(consent)
+          expect(mockIsValidConsentWithSignedCredential).toBeCalledTimes(1)
+          expect(mockIsValidConsentWithSignedCredential).toBeCalledWith(consent)
           expect(mockPutConsentId).toBeCalledTimes(1)
           expect(mockPutConsentId).toBeCalledWith(
             consent.consentId!,
