@@ -36,14 +36,18 @@ export const put: Handler = async (
   h: ResponseToolkit
 ) => {
   const { authChannels, authUri } = context.request.body
-  // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsent({
-    consentRequestId: context.request.params.ID,
-  }, {
+  const updatedConsent = {
     authChannels,
     authUri,
     status: ConsentStatus.AUTHENTICATION_REQUIRED,
-  })
+  }
+  // For OTP call, we don't get an authUri back
+  if (!updatedConsent.authUri) {
+    delete updatedConsent.authUri;
+  }
+
+  // Not await-ing promise to resolve - code is executed asynchronously
+  consentRepository.updateConsent({consentRequestId: context.request.params.ID}, updatedConsent)
   return h.response().code(200)
 }
 

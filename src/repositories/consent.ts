@@ -121,8 +121,8 @@ export class FirebaseConsentRepository implements IConsentRepository {
       const response = await firestoreQuery.get()
       logger.debug(
         'consent::updateConsent, found docs for conditions'
-        + JSON.stringify(response.docs, null, 2),
-        + JSON.stringify(conditions, null, 2),
+        + response.docs,
+        + conditions,
       )
 
       if (response.docs.length === 0) {
