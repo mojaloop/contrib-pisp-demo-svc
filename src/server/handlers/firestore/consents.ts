@@ -131,7 +131,7 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
 async function handleSignedChallenge(server: StateServer, consent: Consent) {
   logger.info('handleSignedChallenge')
 
-  if (!validator.isValidSignedChallenge(consent)) {
+  if (!validator.isValidConsentWithSignedCredential(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
 
@@ -141,17 +141,9 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
       consent.consentId!,
       {
         scopes: consent.scopes!,
+        // Cast here as we know that the credential at this point will be a signed credential
         credential: consent.credential as tpAPI.Schemas.SignedCredential
-        // credential: {
-        //   credentialType: 'FIDO',
-        //   status: 'PENDING',
-        //   // payload: {
-        //   //   id
-        //   //   rawId
-        //   //   response
-        //   //   type
-        //   // }  
-        // }
+       
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -163,7 +155,8 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 async function onConsentActivated(_server: StateServer, consent: Consent) {
   logger.info('onConsentActivated')
 
-  if (!validator.isValidSignedChallenge(consent)) {
+  // TODO: this validator is likely wrong!!!
+  if (!validator.isValidConsentWithSignedCredential(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
 
