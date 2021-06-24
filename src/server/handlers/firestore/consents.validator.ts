@@ -86,14 +86,6 @@ export const isValidConsentRequest = (consent: Consent): boolean => {
  * @param consent the object representation of a consent that is stored
  *                    on Firebase.
  */
-<<<<<<< HEAD
-export const isValidSignedChallenge = (consent: Consent): boolean => {
-  console.log('consent is', consent)
-  return !!(
-    consent?.party?.partyIdInfo?.fspId &&
-    consent.credential &&
-    consent.credential?.payload?.rawId! &&
-=======
 export const isValidConsentWithSignedCredential = (consent: Consent): boolean => {
   return !!(
     consent?.party?.partyIdInfo?.fspId &&
@@ -105,7 +97,6 @@ export const isValidConsentWithSignedCredential = (consent: Consent): boolean =>
     consent.credential.payload.type === 'public-key' &&
     consent.credential.payload.response.attestationObject &&
     consent.credential.payload.response.clientDataJSON &&
->>>>>>> 5e2bf30a287590843b26188eafdd98a0e0ffe118
     consent.scopes &&
     consent.consentRequestId
   )

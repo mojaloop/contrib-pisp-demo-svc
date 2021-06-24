@@ -171,7 +171,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
   // we could do the conversion on the client, but for now
   // this works fine.
   const keyHandleIdBuffer = Buffer.from(consent.credential?.payload?.rawId!, 'base64')
-  const keyHandleId = [ ... keyHandleIdBuffer ]
+  const keyHandleId = Uint8Array.from(keyHandleIdBuffer)
 
   try {
     if (config.get('overwriteExistingAccountsForUser')) {
