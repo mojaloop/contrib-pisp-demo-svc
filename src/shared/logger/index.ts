@@ -43,6 +43,7 @@ export interface BaseLogger {
   info: (message: string, ...meta: unknown[]) => unknown
   warn: (message: string, ...meta: unknown[]) => unknown
   error: (messsage: string, ...meta: unknown[]) => unknown
+  debug: (messsage: string, ...meta: unknown[]) => unknown
 }
 
 export class Logger {
@@ -52,9 +53,7 @@ export class Logger {
     this._logger = createDefaultLogger()
   }
 
-  // TODO: this is what sdk-standard-components wants...
-  log(things: any): void {
-    console.log(things)
+  log(_things: any): void {
   }
 
   logRequest(context: Context, _: Request, __: ResponseToolkit): void {
@@ -90,6 +89,10 @@ export class Logger {
 
   error(message: string, ...meta: unknown[]) {
     this._logger.error(message, ...meta)
+  }
+
+  debug(message: string, ...meta: unknown[]) {
+    this._logger.debug(message, ...meta)
   }
 }
 

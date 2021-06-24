@@ -98,6 +98,28 @@ npm run dev
 
 Go to the PISP demo app and try to send money to a payee. You should see that the Firestore collection "transactions" has a new document and that the document status is changing as the server performs each step in the transaction sequence.
 
+### Running Locally with docker-local
+```bash
+# in mojaloop/pisp repo:
+cd docker-local
+docker-compose up -d
+npm run wait-4-docker
+
+# Note: check that this pisp is configured properly in `docker-local/ml-bootstrap-config.json5`
+# We need to make sure the callbacks from inside docker can reach the locally running pisp-demo-svc
+npm run reseed:docker-local-new
+
+# in this project:
+export THIRDPARTY_API_URL=http://localhost:12000
+# TODO: we shouldn't need this I think...
+export FSPIOP_API_URL=http://localhost:4002
+export PARTICIPANT_ID=pineapplepay
+export LOCAL_SIMULATOR=false
+
+npm run dev
+
+```
+
 ## Config
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
@@ -210,10 +232,10 @@ npm run dev
 These curl snippets may be useful when debugging this service.
 
 ```bash
-curl localhost:8080/health -H "Host: mojaloop.pisp-demo-server.local"
+curl localhost:8080/mojaloop/health -H "Host: mojaloop.pisp-demo-server.local"
 
 
-curl -X PUT localhost:8080/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+curl -X PUT localhost:8080/mojaloop/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
    -H "Host: mojaloop.pisp-demo-server.local" \
    -H "accept: application/json"  \
    -H "content-type: application/json" \
@@ -236,7 +258,7 @@ curl -X GET localhost:15000/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea 
 
 
 # opaque party lookup response example
-curl -v -X PUT localhost:8080/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
+curl -v -X PUT localhost:8080/mojaloop/parties/OPAQUE/02e28448-3c05-4059-b5f7-d518d0a2d8ea \
    -H "Host: mojaloop.pisp-demo-server.local" \
    -H "accept: application/json"  \
    -H "Content-Type: application/vnd.interoperability.parties+json;version=1.0" \

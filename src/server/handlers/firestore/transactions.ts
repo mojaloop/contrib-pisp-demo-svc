@@ -31,13 +31,14 @@ import { logger } from '~/shared/logger'
 import {
   AmountType, PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 import { TransactionHandler } from '~/server/plugins/internal/firestore'
 import { Transaction, Status } from '~/models/transaction'
 import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
-import { PutThirdpartyRequestsTransactionsAuthorizationsRequest } from '@mojaloop/sdk-standard-components'
 
 // TODO: get from the consent/account object
 // for now, just hardcode to applebank
@@ -61,7 +62,7 @@ async function handlePartyLookup(server: StateServer, transaction: Transaction) 
   // Check whether the transaction document has all the necessary properties
   // to perform a party lookup.
   if (!validator.isValidPartyLookup(transaction)) {
-    console.log('error - invalid party lookup for ', transaction)
+    logger.error('error - invalid party lookup for ', transaction)
     return;
   }
 
@@ -80,7 +81,7 @@ async function handlePartyConfirmation(
   server: StateServer,
   transaction: Transaction
 ) {
-  console.log('handlePartyConfirmation')
+  logger.info('handlePartyConfirmation')
 
   // Upon receiving a callback from Mojaloop that contains information about
   // the payee, the server will update all relevant transaction documents
@@ -89,7 +90,7 @@ async function handlePartyConfirmation(
   // about the transaction (i.e., source account ID, consent ID, and
   // transaction amount).
   if (!validator.isValidPayeeConfirmation(transaction)) {
-    console.log('payeeConfirmation is not valid')
+    logger.warn('payeeConfirmation is not valid')
     return
   }
   // If the update contains all the necessary fields, process document
@@ -142,33 +143,29 @@ async function handlePartyConfirmation(
 // }
 
 async function handleAuthorization(server: StateServer, transaction: Transaction) {
-  console.log('handleAuthorization')
+  logger.info('handleAuthorization')
 
   if (!validator.isValidAuthorization(transaction)) {
-    console.log('handleAuthorization is not valid')
+    logger.warn('handleAuthorization is not valid')
     return
   }
 
   // If the update contains all the necessary fields, process document
   // to the next step by sending an authorization to Mojaloop.
 
-  // Convert to a response type that is understood by Mojaloop.
-  // const mojaloopResponseType = toMojaloopResponseType(transaction.responseType!)
-
-  // TD - LD eww so much messy casting going on
-  // @ts-ignore - todo fix me!
-  const requestBody: PutThirdpartyRequestsTransactionsAuthorizationsRequest = {
+  //TODO: This type def is incorrect
+  // will be fixed in: mojaloop/project#2274
+  const requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse = {
     challenge: JSON.stringify(transaction.quote),
-    // consentId: transaction.consentId!,
-    // sourceAccountId: transaction.sourceAccountId!,
-    //LD - TODO: this should be pending - but need to fix ok TTK
+    value: transaction.authentication!.value as string,
+    consentId: 'todo - get consentId from somewhere',
+    sourceAccountId: transaction.payer?.partyIdentifier!,
     status: 'VERIFIED',
-    value: transaction.authentication?.value as string,
   }
 
   // The optional values are guaranteed to exist by the validator.
   // eslint-disable @typescript-eslint/no-non-null-assertion
-  server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody,destParticipantId)
+  server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody, transaction.payer!.fspId!)
   // eslint-enable @typescript-eslint/no-non-null-assertion
 }
 
@@ -176,7 +173,6 @@ export const onCreate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
-  // console.log('onCreateCalled', transaction)
   if (transaction.status) {
     // Skip transaction that has been processed previously.
     // We need this because when the server starts for the first time,
@@ -192,7 +188,7 @@ export const onUpdate: TransactionHandler = async (
   server: StateServer,
   transaction: Transaction
 ): Promise<void> => {
-  console.log('onUpdateCalled', transaction)
+  logger.info('onUpdateCalled', transaction)
   if (!transaction.status) {
     // Status is expected to be null only when the document is created for the first
     // time by the user.

@@ -58,7 +58,7 @@ const openApiOpts: OpenApiOptions = {
     strict: true,
   },
   app: {
-    definition: Path.resolve(__dirname, '../../../dist/openapi/app.yaml'),
+    definition: Path.resolve(__dirname, '../../../src/interface/app.yaml'),
     basePath: 'app',
     handlers: {
       api: appApiHandlers,
@@ -66,7 +66,7 @@ const openApiOpts: OpenApiOptions = {
     },
   },
   mojaloop: {
-    definition: Path.resolve(__dirname, '../../../dist/openapi/mojaloop.yaml'),
+    definition: Path.resolve(__dirname, '../../../src/interface/mojaloop.yaml'),
     basePath: 'mojaloop',
     handlers: {
       api: mojaloopApiHandlers,

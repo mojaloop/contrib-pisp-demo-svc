@@ -28,6 +28,7 @@ import { Request, ResponseToolkit } from '@hapi/hapi'
 import { Handler, Context } from 'openapi-backend'
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
+import { logger } from '~/shared/logger'
 
 export const put: Handler = async (
   context: Context,
@@ -35,13 +36,24 @@ export const put: Handler = async (
   h: ResponseToolkit
 ) => {
   const { authChannels, authUri } = context.request.body
-  // Not await-ing promise to resolve - code is executed asynchronously
-  consentRepository.updateConsent({
-    consentRequestId: context.request.params.ID,
-  }, {
+  const updatedConsent = {
     authChannels,
     authUri,
     status: ConsentStatus.AUTHENTICATION_REQUIRED,
-  })
+  }
+  // For OTP call, we don't get an authUri back
+  if (!updatedConsent.authUri) {
+    delete updatedConsent.authUri;
+  }
+
+  // Not await-ing promise to resolve - code is executed asynchronously
+  consentRepository.updateConsent({consentRequestId: context.request.params.ID}, updatedConsent)
   return h.response().code(200)
 }
+
+export const putError: Handler = async (context: Context, _: Request, h: ResponseToolkit) => {
+  logger.error('putConsentRequests error: ' + JSON.stringify(context.request.body, null, 2))
+  // TODO: get error details...
+  return h.response().code(200)
+}
+

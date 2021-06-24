@@ -41,7 +41,6 @@ jest.mock('~/lib/firebase')
 const mockGetParties = jest.fn()
 const mockPutConsentRequests = jest.fn()
 const mockPostConsentRequests = jest.fn()
-const mockPostGenerateChallengeForConsent = jest.fn()
 const mockPutConsentId = jest.fn()
 const mockPostRevokeConsent = jest.fn()
 jest.mock('~/shared/ml-thirdparty-client', () => {
@@ -50,7 +49,6 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
       getParties: mockGetParties,
       putConsentRequests: mockPutConsentRequests,
       postConsentRequests: mockPostConsentRequests,
-      postGenerateChallengeForConsent: mockPostGenerateChallengeForConsent,
       putConsentId: mockPutConsentId,
       postRevokeConsent: mockPostRevokeConsent,
     }
@@ -61,9 +59,9 @@ jest.mock('~/shared/ml-thirdparty-client', () => {
 const mockIsValidPartyLookup = jest.spyOn(validator, 'isValidPartyLookup')
 const mockIsValidAuthentication = jest.spyOn(validator, 'isValidAuthentication')
 const mockIsValidConsentRequest = jest.spyOn(validator, 'isValidConsentRequest')
-const mockIsValidSignedChallenge = jest.spyOn(
+const mockIsValidConsentWithSignedCredential = jest.spyOn(
   validator,
-  'isValidSignedChallenge'
+  'isValidConsentWithSignedCredential'
 )
 const mockIsValidGenerateChallengeOrRevokeConsent = jest.spyOn(
   validator,
@@ -131,25 +129,28 @@ defineFeature(feature, (test): void => {
             scopes: [
               {
                 accountId: '3423',
-                actions: ['acc.getMoney', 'acc.sendMoney'],
+                actions: ['accounts.getBalance', 'accounts.transfer'],
               },
               {
                 accountId: '232345',
-                actions: ['acc.accessSaving'],
+                actions: ['accounts.getBalance'],
               },
             ],
             authUri: 'auth_uri',
             authChannels: ['OTP', 'WEB'],
             authToken: '123456',
             credential: {
-              id: '9876',
               credentialType: 'FIDO',
               status: 'PENDING',
-              challenge: {
-                payload: 'string_representing_challenge_payload',
-                signature: 'string_representing_challenge_signature',
+              payload: {
+                id: 'some_fido_id',
+                rawId: 'some_fido_id',
+                response: {
+                  clientDataJSON: 'some_client_data_json',
+                  attestationObject: 'some_attestation_object'
+                },
+                type: 'public-key'
               },
-              payload: 'string_representing_credential_payload',
             },
           }
         }
@@ -258,21 +259,9 @@ defineFeature(feature, (test): void => {
           )
           break
         }
-        case 'initiate challenge generation': {
-          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledTimes(1)
-          expect(mockIsValidGenerateChallengeOrRevokeConsent).toBeCalledWith(
-            consent
-          )
-          expect(mockPostGenerateChallengeForConsent).toBeCalledTimes(1)
-          expect(mockPostGenerateChallengeForConsent).toBeCalledWith(
-            consent.consentId!,
-            consent.party!.partyIdInfo.fspId!
-          )
-          break
-        }
         case 'handle signed challenge': {
-          expect(mockIsValidSignedChallenge).toBeCalledTimes(1)
-          expect(mockIsValidSignedChallenge).toBeCalledWith(consent)
+          expect(mockIsValidConsentWithSignedCredential).toBeCalledTimes(1)
+          expect(mockIsValidConsentWithSignedCredential).toBeCalledWith(consent)
           expect(mockPutConsentId).toBeCalledTimes(1)
           expect(mockPutConsentId).toBeCalledWith(
             consent.consentId!,

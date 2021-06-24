@@ -34,7 +34,6 @@ import * as ConsentHandlers from '~/server/handlers/openapi/mojaloop/consents'
 
 import config from '~/lib/config'
 import { ConsentFactory } from '~/shared/ml-thirdparty-simulator/factories/consents'
-import SDKStandardComponents from '@mojaloop/sdk-standard-components'
 import { ConsentStatus } from '~/models/consent'
 
 // Mock the factories to consistently return the hardcoded values.
@@ -67,23 +66,6 @@ const mockResponseToolkit: ResponseToolkit = {
 
 const consentRequestId = '111'
 
-const putConsentRequestRequest: SDKStandardComponents.PutConsentRequestsRequest = {
-  initiatorId: 'pispA',
-  authChannels: ['WEB', 'OTP'],
-  scopes: [
-    {
-      accountId: 'as2342',
-      actions: ['account.getAccess', 'account.transferMoney'],
-    },
-    {
-      accountId: 'as22',
-      actions: ['account.getAccess'],
-    },
-  ],
-  callbackUri: config.get('mojaloop').pispCallbackUri,
-  authUri: 'https://dfspauth.com',
-  authToken: 'secret-token',
-}
 
 // TODO - LD Demo skip
 describe.skip('/consents', () => {
@@ -95,7 +77,6 @@ describe.skip('/consents', () => {
   describe('POST operation', () => {
     const requestBody = ConsentFactory.createPostConsentRequest(
       consentRequestId,
-      putConsentRequestRequest
     )
 
     const context = ({

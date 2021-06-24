@@ -70,8 +70,30 @@ describe.skip('/consents/{ID}', () => {
     jest.clearAllTimers()
   })
 
-  describe('PUT operation', () => {
-    const requestBody = ConsentFactory.createPutConsentIdRequest()
+  describe('PUT /consents/{ID}', () => {
+    const requestBody = ConsentFactory.createPutConsentIdValidationRequest({
+      scopes: [{
+        accountId: 'as2342',
+        actions: ['accounts.getBalance', 'accounts.transfer'],
+      },
+      {
+            accountId: 'as22',
+            actions: ['accounts.getBalance'],
+      }],
+      credential: {
+        credentialType: 'FIDO',
+        status: 'PENDING',
+        payload: {
+          id: 'some_fido_id',
+          rawId: 'some_fido_id',
+          response: {
+            clientDataJSON: 'some_client_data_json',
+            attestationObject: 'some_attestation_object'
+          },
+          type: 'public-key'
+        },
+      },
+    })
 
     const context = ({
       request: {
@@ -105,7 +127,7 @@ describe.skip('/consents/{ID}', () => {
     })
   })
 
-  describe('PATCH operation', () => {
+  describe('PATCH /consents/{ID}', () => {
     const requestBody = ConsentFactory.createPatchConsentRevokeRequest()
 
     const context = ({

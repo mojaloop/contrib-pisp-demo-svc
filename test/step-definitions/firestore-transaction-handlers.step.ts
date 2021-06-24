@@ -131,8 +131,6 @@ defineFeature(feature, (test): void => {
         } else {
           transaction = {
             transactionRequestId: 'request_id',
-            sourceAccountId: 'a71ec534-ee48-4575-b6a9-ead2955b8069',
-            consentId: 'b11ec534-ff48-4575-b6a9-ead2955b8069',
             authentication: {
               type: AuthenticationType.OTP,
               value: '123456',
@@ -233,8 +231,6 @@ defineFeature(feature, (test): void => {
           expect(mockPostTransactions).toBeCalledTimes(1)
           const expectedArg = {
             transactionRequestId: transaction.transactionRequestId,
-            sourceAccountId: transaction.sourceAccountId,
-            consentId: transaction.consentId,
             payee: transaction.payee,
             payer: expect.anything(),
             amountType: AmountType.RECEIVE,

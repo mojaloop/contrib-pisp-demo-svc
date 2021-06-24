@@ -31,25 +31,29 @@ import * as MojaloopAuthorizations from './authorizations'
 import * as MojaloopConsents from './consents'
 import * as MojaloopConsentsById from './consents/{ID}'
 import * as MojaloopConsentRequestsById from './consentRequests/{ID}'
-import * as MojaloopParticipants from './participants'
-import * as MojaloopParticipantsError from './participants/error'
 import * as MojaloopPartiesByTypeAndId from './parties/{Type}/{ID}'
 import * as MojaloopPartiesByTypeAndIdError from './parties/{Type}/{ID}/error'
 import * as thirdpartyRequests from './thirdpartyRequests'
 
 export const apiHandlers = {
-  getHealth: Health.get,
-  putAccounts: MojaloopAccounts.put,
-  postAuthorizations: MojaloopAuthorizations.post,
-  postConsents: MojaloopConsents.post,
-  putConsentsById: MojaloopConsentsById.put,
-  patchConsentsById: MojaloopConsentsById.patch,
-  putConsentRequestsById: MojaloopConsentRequestsById.put,
-  putParticipants: MojaloopParticipants.put,
-  putParticipantsError: MojaloopParticipantsError.put,
-  putPartiesByTypeAndId: MojaloopPartiesByTypeAndId.put,
-  putPartiesByTypeAndIdError: MojaloopPartiesByTypeAndIdError.put,
-  putThirdpartyRequestTransactions: thirdpartyRequests.put,
-  putThirdpartyRequestTransactionsError: thirdpartyRequests.putError,
-  patchThirdpartyRequestsTransactions: thirdpartyRequests.patch,
+  HealthGet: Health.get,
+
+  UpdateAccountsByUserId: MojaloopAccounts.put,
+  UpdateAccountsByUserIdError: MojaloopAccounts.putError,
+
+  AuthorizationsPostRequest: MojaloopAuthorizations.post,
+  
+  UpdateConsentRequest: MojaloopConsentRequestsById.put,
+  NotifyErrorConsentRequests: MojaloopConsentRequestsById.putError,
+  
+  PostConsents: MojaloopConsents.post,
+  PutConsentByID: MojaloopConsentsById.put,
+  NotifyErrorConsents: MojaloopConsentsById.putError,
+  PatchConsentByID: MojaloopConsentsById.patch,
+
+  PartiesByTypeAndID2: MojaloopPartiesByTypeAndId.put,
+  PartiesErrorByTypeAndID: MojaloopPartiesByTypeAndIdError.put,
+  UpdateThirdPartyTransactionRequests: thirdpartyRequests.put,
+  ThirdpartyTransactionRequestsError: thirdpartyRequests.putError,
+  NotifyThirdpartyTransactionRequests: thirdpartyRequests.patch,
 }

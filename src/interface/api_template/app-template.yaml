@@ -1,0 +1,13 @@
+openapi: 3.0.1
+info:
+  title: PISP Demo Server Open API
+  description: This is part of the PISP demo server that handles communication with a front end mobile app
+    it is _not_ a canonical Mojaloop API, but a custom API for this demo.
+  license:
+    name: Apache 2.0
+  version: "1.1"
+servers:
+  - url: /
+paths:
+  /health:
+     $ref: '../../../node_modules/@mojaloop/api-snippets/thirdparty/openapi3/paths/health.yaml'

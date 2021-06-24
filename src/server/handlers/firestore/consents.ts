@@ -28,6 +28,8 @@
 /* istanbul ignore file */
 
 import * as uuid from 'uuid'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import { logger } from '~/shared/logger'
 
 import { ConsentHandler } from '~/server/plugins/internal/firestore'
@@ -42,13 +44,23 @@ import { MissingConsentFieldsError, InvalidConsentStatusError } from '~/models/e
 import { DemoAccount } from '~/models/demoAccount'
 
 async function handleNewConsent(_: StateServer, consent: Consent) {
-  // Assign a consentRequestId to the document and set the initial
-  // status. This operation will create an event that triggers the execution
+ // This operation will create an event that triggers the execution
   // of the onUpdate function.
+
+  // If the client has already set the consentRequestId, then use it
+  // instead of a random uuid.
+  // 
+  // that way, we allow the client to dynamically trigger rules on
+  // the dfsp backend.
+  let consentRequestId = uuid.v4();
+  if (consent.consentRequestId) {
+    consentRequestId = consent.consentRequestId
+  }
 
   // Not await-ing promise to resolve - code is executed asynchronously
   consentRepository.updateConsentById(consent.id, {
-    consentRequestId: uuid.v4(),
+    consentRequestId,
+    // consentRequestId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
     status: ConsentStatus.PENDING_PARTY_LOOKUP,
   })
 }
@@ -71,6 +83,11 @@ async function initiatePartyLookup(server: StateServer, consent: Consent) {
   }
 }
 
+/**
+ * Send a PATCH /consentRequests/{ID} to the DFSP with the authToken 
+ * @param server 
+ * @param consent 
+ */
 async function initiateAuthentication(server: StateServer, consent: Consent) {
   if (!validator.isValidAuthentication(consent)) {
     throw new MissingConsentFieldsError(consent)
@@ -78,18 +95,10 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
   // Fields are guaranteed to be non-null by the validator.
   try {
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.putConsentRequests(
+    server.app.mojaloopClient.patchConsentRequests(
       consent.consentRequestId!,
       {
-        initiatorId: consent.initiatorId!,
-        authChannels: consent.authChannels!,
-        scopes: consent.scopes!,
         authToken: consent.authToken!,
-        // TODO: sdk standard components could be more strict here
-        // these fields aren't needed here
-        authUri: consent.authUri!,
-        callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -100,9 +109,9 @@ async function initiateAuthentication(server: StateServer, consent: Consent) {
 
 async function initiateConsentRequest(server: StateServer, consent: Consent) {
   // TODO: mssing some fields... maybe we need to add them to the initial thingy
-  console.log('initiateConsentRequest')
+  logger.info('initiateConsentRequest')
   if (!validator.isValidConsentRequest(consent)) {
-    console.log('initiateConsentRequest - invalid fields')
+    logger.error('initiateConsentRequest - invalid fields')
     throw new MissingConsentFieldsError(consent)
   }
   // If the update contains all the necessary fields, process document
@@ -111,10 +120,11 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
     // Fields are guaranteed to be non-null by the validator.
     server.app.mojaloopClient.postConsentRequests(
       {
-        initiatorId: consent.initiatorId!,
+        consentRequestId: consent.consentRequestId!,
+        //TODO: find the userId
+        userId: 'user@example.com',
         scopes: consent.scopes!,
         authChannels: consent.authChannels!,
-        id: consent.consentRequestId!,
         callbackUri: config.get('mojaloop').pispCallbackUri,
       },
       consent.party!.partyIdInfo.fspId!
@@ -124,40 +134,23 @@ async function initiateConsentRequest(server: StateServer, consent: Consent) {
   }
 }
 
-async function initiateChallengeGeneration(server: StateServer, consent: Consent) {
-  if (!validator.isValidGenerateChallengeOrRevokeConsent(consent)) {
-    throw new MissingConsentFieldsError(consent)
-  }
-
-  try {
-    // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
-    server.app.mojaloopClient.postGenerateChallengeForConsent(
-      consent.consentId!
-    )
-  } catch (error) {
-    logger.error(error)
-  }
-}
 
 async function handleSignedChallenge(server: StateServer, consent: Consent) {
-  console.log('handleSignedChallenge')
+  logger.info('handleSignedChallenge')
 
-  if (!validator.isValidSignedChallenge(consent)) {
+  if (!validator.isValidConsentWithSignedCredential(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
 
   try {
     // Fields are guaranteed to be non-null by the validator.
-    //@ts-ignore - TODO Implement
     server.app.mojaloopClient.putConsentId(
       consent.consentId!,
       {
-        requestId: consent.consentRequestId!,
-        initiatorId: consent.initiatorId!,
-        participantId: consent.participantId!,
         scopes: consent.scopes!,
-        credential: consent.credential!,
+        // Cast here as we know that the credential at this point will be a signed credential
+        credential: consent.credential as tpAPI.Schemas.SignedCredential
+       
       },
       consent.party!.partyIdInfo.fspId!
     )
@@ -167,11 +160,18 @@ async function handleSignedChallenge(server: StateServer, consent: Consent) {
 }
 
 async function onConsentActivated(_server: StateServer, consent: Consent) {
-  console.log('onConsentActivated')
+  logger.info('onConsentActivated')
 
-  if (!validator.isValidSignedChallenge(consent)) {
+  // TODO: this validator is likely wrong!!!
+  if (!validator.isValidConsentWithVerifiedCredential(consent)) {
     throw new MissingConsentFieldsError(consent)
   }
+
+  // Internally, the client needs this as an array buffer
+  // we could do the conversion on the client, but for now
+  // this works fine.
+  const keyHandleIdBuffer = Buffer.from(consent.credential?.payload?.rawId!, 'base64')
+  const keyHandleId = [ ... keyHandleIdBuffer ]
 
   try {
     if (config.get('overwriteExistingAccountsForUser')) {
@@ -191,7 +191,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.credential?.payload?.rawId!,
+        keyHandleId
       }
       await accountRepository.insert(demoAccount)
     } else {
@@ -206,7 +206,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.credential?.payload?.rawId!,
+        keyHandleId
       }
       const demoAccount2: DemoAccount = {
         alias: 'Chequing Account',
@@ -217,7 +217,7 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId: consent.credential?.payload?.rawId!,
+        keyHandleId
       }
       await accountRepository.insert(demoAccount)
       await accountRepository.insert(demoAccount2)
@@ -277,7 +277,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.PENDING_PARTY_CONFIRMATION:
-      console.log("no need to handle PENDING_PARTY_CONFIRMATION state - waiting for user input")
+      logger.info("no need to handle PENDING_PARTY_CONFIRMATION state - waiting for user input")
       break
 
     case ConsentStatus.PARTY_CONFIRMED:
@@ -285,7 +285,7 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.AUTHENTICATION_REQUIRED:
-      console.log("no need to handle AUTHENTICATION_REQUIRED state - waiting for user input")
+      logger.info("no need to handle AUTHENTICATION_REQUIRED state - waiting for user input")
       break
 
     case ConsentStatus.AUTHENTICATION_COMPLETE:
@@ -293,11 +293,11 @@ export const onUpdate: ConsentHandler = async (
       break
 
     case ConsentStatus.CONSENT_GRANTED:
-      await initiateChallengeGeneration(server, consent)
+      logger.info("no need to handle CONSENT_GRANTED state - waiting for user input")
       break
 
     case ConsentStatus.CHALLENGE_GENERATED:
-      console.log("no need to handle CHALLENGE_GENERATED state - waiting for user input")
+      logger.info("no need to handle CHALLENGE_GENERATED state - waiting for user input")
       break
 
     case ConsentStatus.CHALLENGE_SIGNED:
