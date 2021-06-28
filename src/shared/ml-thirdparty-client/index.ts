@@ -31,16 +31,11 @@
 /* istanbul ignore file */
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
   thirdparty as tpAPI
 } from '@mojaloop/api-snippets'
-
-import {
-  ThirdPartyTransactionRequest,
-} from './models/openapi'
 
 import SDKStandardComponents, {
   Logger,

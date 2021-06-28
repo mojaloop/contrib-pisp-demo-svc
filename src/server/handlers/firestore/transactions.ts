@@ -101,8 +101,8 @@ async function handlePartyConfirmation(
         transactionRequestId: transaction.transactionRequestId!,
         payee: transaction.payee!,
         payer: {
-          partyIdType: tpAPI.Schemas.PartyIdTypeTPLink,
-            partyIdentifier: transaction.payer!.partyIdentifier,
+          partyIdType: 'THIRD_PARTY_LINK',
+          partyIdentifier: transaction.payer!.partyIdentifier,
         },
         amountType: AmountType.RECEIVE,
         amount: transaction.amount!,

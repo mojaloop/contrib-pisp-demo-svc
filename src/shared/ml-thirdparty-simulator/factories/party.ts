@@ -107,13 +107,15 @@ export class PartyFactory {
    * @param party     information about the party.
    * @param currency  currency of the bank account.
    */
-  private static createAccount(party: tpAPI.Schemas.Party, currency: Currency): Account {
-    const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
-    const randomAlphanumeric = faker.random.alphaNumeric(5)
+  
+  //  TD - we may need this at a later date!
+  // private static createAccount(party: tpAPI.Schemas.Party, currency: Currency): Account {
+  //   const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
+  //   const randomAlphanumeric = faker.random.alphaNumeric(5)
 
-    return {
-      id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
-      currency
-    }
-  }
+  //   return {
+  //     id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
+  //     currency
+  //   }
+  // }
 }

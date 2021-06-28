@@ -69,26 +69,6 @@ const mockResponseToolkit: ResponseToolkit = {
   },
 }
 
-/**
- * Mock data for transaction request.
- */
-const transactionData = {
-  transactionId: '111',
-  transactionRequestId: '222',
-  sourceAccountId: '123',
-  consentId: '333',
-  amountType: AmountType.RECEIVE,
-  amount: {
-    amount: '20',
-    currency: Currency.USD,
-  },
-  transactionType: {
-    scenario: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-  },
-  expiration: '12345',
-}
 
 describe('/authorizations', () => {
   beforeEach(() => {

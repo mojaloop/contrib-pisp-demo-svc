@@ -26,10 +26,6 @@
 /* istanbul ignore file */
 
 import { ServerInjectResponse } from '@hapi/hapi'
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  ThirdPartyTransactionRequest,
-} from '~/shared/ml-thirdparty-client/models/openapi'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import { ParticipantFactory } from './factories/participant'
