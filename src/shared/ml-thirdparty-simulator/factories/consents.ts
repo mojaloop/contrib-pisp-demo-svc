@@ -28,16 +28,35 @@
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import * as faker from 'faker'
 
+import config from '~/lib/config'
+
 export class ConsentFactory {
   public static createPutConsentRequestIdRequest(
     requestBody: tpAPI.Schemas.ConsentRequestsPostRequest
   ): tpAPI.Schemas.ConsentRequestsIDPutResponseWeb | tpAPI.Schemas.ConsentRequestsIDPutResponseOTP {
-    return {
-      consentRequestId: requestBody.consentRequestId,
-      // TODO: make configurable
-      authChannels: ['OTP'],
-      scopes: requestBody.scopes,
-      callbackUri: requestBody.callbackUri,
+    const authChannel = config.get('simulatorDefaultAuthChannel') as tpAPI.Schemas.ConsentRequestChannelType;
+
+    switch(authChannel) {
+      case 'OTP': {
+        return {
+          authChannels: [ authChannel] ,
+          consentRequestId: requestBody.consentRequestId,
+          scopes: requestBody.scopes,
+          callbackUri: requestBody.callbackUri,
+        }
+
+      }
+      case 'WEB': {
+        return {
+          authChannels: [authChannel],
+          authUri: config.get('simulatorAuthUri'),
+          consentRequestId: requestBody.consentRequestId,
+          scopes: requestBody.scopes,
+          callbackUri: requestBody.callbackUri,
+        }
+      }
+      default: 
+        throw new Error(`createPutConsentRequestIdRequest unhandled authChannel config: ${authChannel}`);
     }
   }
 

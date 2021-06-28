@@ -26,7 +26,7 @@ export interface DemoAccount {
   /**
    * The id of the credential associated with this account
    */
-  keyHandleId: Array<number>
+  keyHandleId: Uint8Array
 
   /**
    * internal Id of the DemoAccount

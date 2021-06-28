@@ -124,6 +124,15 @@ npm run dev
 
 Take a look at [src/lib/config](https://github.com/mojaloop/pisp-demo-server/blob/master/src/lib/config.ts) to see all the different aspects of the server that you can configure.
 
+
+| Environment Variable | Options | Default | Description |
+| --- | --- | --- | --- |
+| `LOCAL_SIMULATOR` | `true`, `false` | `false` | If true, uses a local simulator to simulate the Mojaloop switch + DFSP |
+|`SIMULATOR_DEFAULT_AUTH_CHANNEL` | `WEB`, `OTP` | `OTP` | If the Local simulator is enabled, will set the auth channel the dfsp 'chooses to use' to verify their end user |
+|`SIMULATOR_AUTH_URI` | `String` | `https://dfspauth.com` | If the Local Simulator is enabled, and the Auth Channel is `WEB`, this value is the URI the User is redirected to to perform the login |
+
+
+
 ## TTK Steps:
 
 ```bash
@@ -186,7 +195,38 @@ The overall Consent object should look like this:
 }
 ```
 
+## Using the TTK to simulate out of band DFSP Web and OTP Login Page
 
+### Web Flow
+
+Set the following variables:
+```bash
+export LOCAL_SIMULATOR=true
+export SIMULATOR_DEFAULT_AUTH_CHANNEL=WEB
+export CONSENT_REQUEST_ID=3b346cec-47b3-4def-b870-edb255aaf6c3
+export PISP_CALLBACK_URI=http://localhost:5000/flutter-web-auth.html
+export SIMULATOR_AUTH_URI="http://localhost:6060/admin/dfsp/authorize?consentRequestId=$CONSENT_REQUEST_ID&callbackUri=$PISP_CALLBACK_URI"
+
+```
+
+```bash
+# Run the Special TTK
+cd ../pisp/docker-contract
+docker-compose up -d ml-testing-toolkit ml-testing-toolkit-ui
+
+# Configure the TTK Auth Simulator
+cd ..
+./scripts/_configure_web_simulator.sh
+
+
+# run the demo server
+cd ../contrib-pisp-demo-svc
+npm run dev
+
+
+
+
+```
 
 ## API Example Snippets:
 These curl snippets may be useful when debugging this service.

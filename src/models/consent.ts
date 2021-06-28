@@ -177,11 +177,4 @@ export interface Consent {
    * redirect to after completing the login
    */
   callbackUri?: string
-
-  /**
-   * keyHandleId
-   * A locally stored (PISP Server + Client) credentialId/keyHandleId of the
-   * authenticator device. Used to identify the credential on the user's device
-   */
-  keyHandleId?: Array<number>
 }

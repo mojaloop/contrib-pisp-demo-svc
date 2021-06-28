@@ -53,7 +53,7 @@ export enum AmountType {
 export enum Currency {
   SGD = 'SGD',
   USD = 'USD',
-  XTS = 'XTS',
+  TZS = 'TZS',
   XXX = 'XXX'
 }
 

@@ -24,6 +24,7 @@
  --------------
  ******/
 
+import config from '~/lib/config'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 export class ConsentFactory {
@@ -35,7 +36,7 @@ export class ConsentFactory {
       consentRequestId: requestBody.consentRequestId,
       authChannels: ['WEB'],
       scopes: requestBody.scopes,
-      authUri: 'https://dfspAuth.com',
+      authUri: config.get('simulatorAuthUri'),
       callbackUri: requestBody.callbackUri,
     }
   }
