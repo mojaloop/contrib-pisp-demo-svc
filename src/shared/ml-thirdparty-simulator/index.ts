@@ -231,7 +231,7 @@ export class Simulator implements MojaloopClient {
    * @param request a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    request: ThirdPartyTransactionRequest
+    request: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest
   ): Promise<ServerInjectResponse> {
     // TODO: there should be both a PUT /thirdpartyRequests/transactions and
     // POST /authorizations call here.

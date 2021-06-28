@@ -24,10 +24,10 @@
  ******/
 
 import * as faker from 'faker'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import {
   AuthorizationsPostRequest,
-  ThirdPartyTransactionRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 
 import { AuthenticationType } from '~/shared/ml-thirdparty-client/models/core'
@@ -43,7 +43,7 @@ export class AuthorizationFactory {
    * 
    * @param request  The transaction request object as defined by the Mojaloop API.
    */
-  public static createPostAuthorizationsRequest(request: ThirdPartyTransactionRequest): AuthorizationsPostRequest {
+  public static createPostAuthorizationsRequest(request: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest): AuthorizationsPostRequest {
     const payerSendAmountFloat = parseFloat(request.amount.amount)
     const feeFloat = payerSendAmountFloat * 0.01
     const payeeReceiveAmountFloat = payerSendAmountFloat - feeFloat

@@ -23,7 +23,8 @@
  --------------
  ******/
 
-import { AuthenticationType, Money, Quote, AuthenticationInfo, AuthenticationResponseType } from '../core'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+import { AuthenticationType, Quote, AuthenticationInfo, AuthenticationResponseType } from '../core'
 
 export interface AuthorizationsPostRequest {
   /**
@@ -43,7 +44,7 @@ export interface AuthorizationsPostRequest {
   /**
    * This is the transaction amount that will be withdrawn from the Payer’s account.
    */
-  amount: Money
+  amount: tpAPI.Schemas.Money,
 
   /**
    * Common ID (decided by the Payer FSP) between the FSPs for the future transaction 

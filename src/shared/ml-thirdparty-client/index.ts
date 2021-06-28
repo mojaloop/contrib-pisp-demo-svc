@@ -125,7 +125,7 @@ export interface MojaloopClient {
   * @param _requestBody a transaction request object as defined by the Mojaloop API.
   */
   postTransactions(
-    requestBody: ThirdPartyTransactionRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
     destParticipantId: string
   ): Promise<unknown>
 
@@ -258,12 +258,12 @@ export class Client implements MojaloopClient{
    * @param _requestBody a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    requestBody: ThirdPartyTransactionRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: this will need some updating
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
-      (requestBody as unknown) as tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
+      requestBody,
+      // (requestBody as unknown) as tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
       destParticipantId
     )
   }
