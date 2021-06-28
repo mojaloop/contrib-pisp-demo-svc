@@ -23,12 +23,10 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import {
   AuthenticationType,
   AuthenticationValue,
-  Money,
-  Party,
-  PartyIdInfo,
   Quote,
 } from '~/shared/ml-thirdparty-client/models/core'
 
@@ -87,17 +85,17 @@ export interface Transaction {
   /**
    * Information about the payee in the proposed financial transaction.
    */
-  payee?: Party
+  payee?: tpAPI.Schemas.Party
 
   /**
    * Information about the payer in the proposed financial transaction.
    */
-  payer?: PartyIdInfo
+  payer?: tpAPI.Schemas.PartyIdInfoTPLink
 
   /**
    * Requested amount to be transferred from the Payer to Payee.
    */
-  amount?: Money
+  amount?: tpAPI.Schemas.Money
 
   /**
    * The authentication info that may be entered by the payer to authorize a

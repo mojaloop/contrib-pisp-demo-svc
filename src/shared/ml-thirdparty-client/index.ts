@@ -77,7 +77,7 @@ export interface MojaloopClient {
   * @param idSubValue optional sub value for the identifier
   */
   getParties(
-    idType: PartyIdType,
+    idType: tpAPI.Schemas.PartyIdType,
     idValue: string,
     idSubValue?: string
   ): Promise<unknown>
@@ -242,7 +242,7 @@ export class Client implements MojaloopClient{
    * @param _id    the party identifier
    */
   public async getParties(
-    idType: PartyIdType,
+    idType: tpAPI.Schemas.PartyIdType,
     idValue: string,
     idSubValue?: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {

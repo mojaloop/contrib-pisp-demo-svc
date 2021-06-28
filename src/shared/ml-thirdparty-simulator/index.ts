@@ -105,7 +105,7 @@ export class Simulator implements MojaloopClient {
    * @param id    the party identifier.
    */
   public async getParties(
-    type: PartyIdType,
+    type: tpAPI.Schemas.PartyIdType,
     id: string,
     _idSubValue?: string
   ): Promise<unknown> {

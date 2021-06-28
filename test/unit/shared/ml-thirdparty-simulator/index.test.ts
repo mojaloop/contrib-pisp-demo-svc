@@ -30,7 +30,6 @@ import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import config from '~/lib/config'
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import {
-  PartyIdType,
   Currency,
   AmountType,
   AuthenticationType,
@@ -51,29 +50,9 @@ jest.useFakeTimers()
 /**
  * Mock data for party lookup.
  */
-const partyLookupParams = {
-  type: PartyIdType.MSISDN,
+const partyLookupParams: { type: tpAPI.Schemas.PartyIdType, id: string} = {
+  type: 'MSISDN',
   id: '+1-111-111-1111',
-}
-
-/**
- * Mock data for transaction request.
- */
-const transactionRequestData = {
-  transactionRequestId: '222',
-  sourceAccountId: '123',
-  consentId: '333',
-  amountType: AmountType.RECEIVE,
-  amount: {
-    amount: '20',
-    currency: Currency.USD,
-  },
-  transactionType: {
-    scenario: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-  },
-  expiration: '12345',
 }
 
 /*
@@ -184,18 +163,28 @@ describe('Mojaloop third-party simulator', () => {
 
   it('Should inject server with the authorization prompt', async () => {
     const targetUrl = '/mojaloop/authorizations'
-    const payerInfo = PartyFactory.createPutPartiesRequest(
-      PartyIdType.MSISDN,
-      '+1-222-222-2222'
-    )
     const payeeInfo = PartyFactory.createPutPartiesRequest(
-      PartyIdType.MSISDN,
+      'MSISDN',
       '+1-111-111-1111'
     )
-    const request: ThirdPartyTransactionRequest = {
-      payer: payerInfo.party,
+    const request: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest = {
+      payer: {
+        partyIdType: 'THIRD_PARTY_LINK',
+        partyIdentifier: '+1-222-222-2222'
+      },
       payee: payeeInfo.party,
-      ...transactionRequestData,
+      transactionRequestId: '222',
+      amountType: AmountType.RECEIVE,
+      amount: {
+        amount: '20',
+        currency: Currency.USD,
+      },
+      transactionType: {
+        scenario: 'TRANSFER',
+        initiator: 'PAYER',
+        initiatorType: 'CONSUMER',
+      },
+      expiration: '12345',
     }
 
     // this is a workaround to handle the delay before injecting response to the server

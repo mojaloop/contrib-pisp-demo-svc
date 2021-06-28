@@ -26,9 +26,7 @@
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import {
-  AmountType,
   TransactionType,
-  Party,
 } from '../core'
 
 export interface ThirdPartyTransactionRequest {
@@ -42,7 +40,7 @@ export interface ThirdPartyTransactionRequest {
   /**
    * Information about the Payee in the proposed financial transaction.
    */
-  payee: Party
+  payee: tpAPI.Schemas.Party,
 
   /**
    * Information about the Payer in the proposed financial transaction.
@@ -52,7 +50,7 @@ export interface ThirdPartyTransactionRequest {
   /**
    * SEND for sendAmount, RECEIVE for receiveAmount.
    */
-  amountType: AmountType
+  amountType: tpAPI.Schemas.Money,
 
   /**
    * Requested amount to be transferred from the Payer to Payee.

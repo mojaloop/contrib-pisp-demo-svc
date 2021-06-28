@@ -29,7 +29,7 @@
 import * as utils from '~/lib/utils'
 import { logger } from '~/shared/logger'
 import {
-  AmountType, PartyIdType,
+  AmountType,
 } from '~/shared/ml-thirdparty-client/models/core'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
@@ -100,13 +100,9 @@ async function handlePartyConfirmation(
       {
         transactionRequestId: transaction.transactionRequestId!,
         payee: transaction.payee!,
-        // TODO: this should JUST be a partyIdInfo, not a full party
         payer: {
-          partyIdInfo: {
-            //TODO: add support for THIRD_PARTY_LINK
-            partyIdType: PartyIdType.MSISDN,
+          partyIdType: tpAPI.Schemas.PartyIdTypeTPLink,
             partyIdentifier: transaction.payer!.partyIdentifier,
-          }
         },
         amountType: AmountType.RECEIVE,
         amount: transaction.amount!,
@@ -116,11 +112,6 @@ async function handlePartyConfirmation(
           initiatorType: 'CONSUMER',
         },
         expiration: utils.getTomorrowsDate().toISOString(),
-
-        // TODO: these should be removed...
-        sourceAccountId: '1234-1234-1234-1234',
-        consentId: 'b51ec534-ee48-4575-b6a9-ead2955b8069',
-
       },
       destParticipantId
     )
