@@ -122,7 +122,7 @@ const config = convict({
   simulatorDefaultAuthChannel: {
     doc: 'The auth channel for the local simulator to use. Defaults to OTP',
     format: ['OTP', 'WEB'],
-    default: 'WEB',
+    default: 'OTP',
     env: 'SIMULATOR_DEFAULT_AUTH_CHANNEL',
   },
   simulatorAuthUri: {
