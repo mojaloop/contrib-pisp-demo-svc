@@ -36,7 +36,6 @@ import {
   AuthenticationResponseType,
 } from '~/shared/ml-thirdparty-client/models/core'
 import {
-  ThirdPartyTransactionRequest,
   AuthorizationsPutIdRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
 import { PartyFactory } from '~/shared/ml-thirdparty-simulator/factories/party'

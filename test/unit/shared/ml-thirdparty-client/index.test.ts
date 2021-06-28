@@ -32,16 +32,11 @@ import {
   Currency,
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  ThirdPartyTransactionRequest,
-} from '~/shared/ml-thirdparty-client/models/openapi'
 import config from '~/lib/config'
 import { NotImplementedError } from '~/shared/errors'
 
-const transactionRequestData: ThirdPartyTransactionRequest = {
+const transactionRequestData: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest = {
   transactionRequestId: '888',
-  sourceAccountId: '111',
-  consentId: '222',
   payee: {
     partyIdInfo: {
       partyIdType: PartyIdType.MSISDN,
@@ -51,18 +46,8 @@ const transactionRequestData: ThirdPartyTransactionRequest = {
     name: 'Alice Alpaca',
   },
   payer: {
-    partyIdInfo: {
-      partyIdType: PartyIdType.MSISDN,
-      partyIdentifier: '+1-222-222-2222',
-      fspId: 'fspb',
-    },
-    name: 'Bob Beaver',
-    personalInfo: {
-      complexName: {
-        firstName: 'Bob',
-        lastName: 'Beaver',
-      },
-    },
+    partyIdType: 'THIRD_PARTY_LINK',
+    partyIdentifier: '+1-222-222-2222',
   },
   amountType: AmountType.RECEIVE,
   amount: {
