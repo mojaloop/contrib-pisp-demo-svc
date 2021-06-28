@@ -40,10 +40,6 @@ import { transactionRepository } from '~/repositories/transaction'
 
 import * as validator from './transactions.validator'
 
-// TODO: get from the consent/account object
-// for now, just hardcode to applebank
-const destParticipantId = 'applebank'
-
 async function handleNewTransaction(_: StateServer, transaction: Transaction) {
   // Assign a transactionRequestId to the document and set the initial
   // status. This operation will create an event that triggers the execution
@@ -113,7 +109,7 @@ async function handlePartyConfirmation(
         },
         expiration: utils.getTomorrowsDate().toISOString(),
       },
-      destParticipantId
+      transaction.payer?.fspId!
     )
 
     // eslint-enable @typescript-eslint/no-non-null-assertion

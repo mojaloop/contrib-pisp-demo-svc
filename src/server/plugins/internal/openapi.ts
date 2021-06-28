@@ -186,10 +186,7 @@ export const OpenApi: Plugin<Options> = {
   version: '1.0.0',
   register: async (server: Server, opts: Options) => {
     // Register open API backends that serve endpoints to communicate with
-    // the demo app and Mojaloop. Each will use a virtual host in the format
-    // of `{subdomain}.{baseHost}`. For example, if the base host name is
-    // `api.example.com` and the subdomain is `app`, then this plugin will
-    // serve the APIs on `app.api.example.com`.
+    // the demo app and Mojaloop.
     registerBackend(server, opts.app, opts.shared)
     registerBackend(server, opts.mojaloop, opts.shared)
   },

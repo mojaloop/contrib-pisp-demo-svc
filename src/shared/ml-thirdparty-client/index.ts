@@ -258,7 +258,6 @@ export class Client implements MojaloopClient{
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       requestBody,
-      // (requestBody as unknown) as tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
       destParticipantId
     )
   }

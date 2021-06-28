@@ -26,10 +26,15 @@ export interface DemoAccount {
   /**
    * The id of the credential associated with this account
    */
-  keyHandleId: Uint8Array
+  keyHandleId: Array<number>,
 
   /**
    * internal Id of the DemoAccount
    */
   id?: string
+
+  /**
+   * the id of the consent object
+   */
+  consentId: string
 }
