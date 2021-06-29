@@ -34,6 +34,8 @@ export const put: Handler = async (_context: Context, _: Request, h: ResponseToo
   // const body = context.request.body as AuthorizationsPostRequest
 
   console.log("putThirdpartyRequestTransactions inbound")
+  // No need to do anything here - we still need to wait for the authorization
+  
   // Not await-ing promise to resolve - code is executed asynchronously
   // transactionRepository.update(
   //   {

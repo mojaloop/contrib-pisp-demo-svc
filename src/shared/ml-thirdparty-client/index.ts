@@ -256,6 +256,12 @@ export class Client implements MojaloopClient{
     requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
+
+    // TODO - HACK! the PISP needs to translate from their version of a payerId + Type
+    // To one that other services in Mojaloop can understand:
+    //@ts-ignore
+    requestBody.payer.partyIdType = 'MSISDN'
+
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       requestBody,
       destParticipantId
