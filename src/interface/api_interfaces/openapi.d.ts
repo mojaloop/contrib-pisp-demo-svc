@@ -15,6 +15,8 @@ export interface paths {
         ID: components["parameters"]["ID"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -47,12 +49,6 @@ export interface paths {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -98,12 +94,6 @@ export interface paths {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -132,10 +122,66 @@ export interface paths {
   "/consentRequests/{ID}/error": {
     /** DFSP responds to the PISP if something went wrong with validating an OTP or secret. */
     put: operations["NotifyErrorConsentRequests"];
+    parameters: {
+      path: {
+        /** The identifier value. */
+        ID: components["parameters"]["ID"];
+      };
+      header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
+        /** The `Date` header field indicates the date when the request was sent. */
+        Date: components["parameters"]["Date"];
+        /**
+         * The `X-Forwarded-For` header field is an unofficially accepted standard used for informational purposes of the originating client IP address, as a request might pass multiple proxies, firewalls, and so on. Multiple `X-Forwarded-For` values should be expected and supported by implementers of the API.
+         *
+         * **Note:** An alternative to `X-Forwarded-For` is defined in [RFC 7239](https://tools.ietf.org/html/rfc7239). However, to this point RFC 7239 is less-used and supported than `X-Forwarded-For`.
+         */
+        "X-Forwarded-For"?: components["parameters"]["X-Forwarded-For"];
+        /** The `FSPIOP-Source` header field is a non-HTTP standard field used by the API for identifying the sender of the HTTP request. The field should be set by the original sender of the request. Required for routing and signature verification (see header field `FSPIOP-Signature`). */
+        "FSPIOP-Source": components["parameters"]["FSPIOP-Source"];
+        /** The `FSPIOP-Destination` header field is a non-HTTP standard field used by the API for HTTP header based routing of requests and responses to the destination. The field must be set by the original sender of the request if the destination is known (valid for all services except GET /parties) so that any entities between the client and the server do not need to parse the payload for routing purposes. If the destination is not known (valid for service GET /parties), the field should be left empty. */
+        "FSPIOP-Destination"?: components["parameters"]["FSPIOP-Destination"];
+        /** The `FSPIOP-Encryption` header field is a non-HTTP standard field used by the API for applying end-to-end encryption of the request. */
+        "FSPIOP-Encryption"?: components["parameters"]["FSPIOP-Encryption"];
+        /** The `FSPIOP-Signature` header field is a non-HTTP standard field used by the API for applying an end-to-end request signature. */
+        "FSPIOP-Signature"?: components["parameters"]["FSPIOP-Signature"];
+        /** The `FSPIOP-URI` header field is a non-HTTP standard field used by the API for signature verification, should contain the service URI. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
+        /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+      };
+    };
   };
   "/consents": {
     /** DFSP sends this request to the PISP after granting consent. DFSP sends this request to an Auth service to validate a signed consent. */
     post: operations["PostConsents"];
+    parameters: {
+      header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
+        /** The `Date` header field indicates the date when the request was sent. */
+        Date: components["parameters"]["Date"];
+        /**
+         * The `X-Forwarded-For` header field is an unofficially accepted standard used for informational purposes of the originating client IP address, as a request might pass multiple proxies, firewalls, and so on. Multiple `X-Forwarded-For` values should be expected and supported by implementers of the API.
+         *
+         * **Note:** An alternative to `X-Forwarded-For` is defined in [RFC 7239](https://tools.ietf.org/html/rfc7239). However, to this point RFC 7239 is less-used and supported than `X-Forwarded-For`.
+         */
+        "X-Forwarded-For"?: components["parameters"]["X-Forwarded-For"];
+        /** The `FSPIOP-Source` header field is a non-HTTP standard field used by the API for identifying the sender of the HTTP request. The field should be set by the original sender of the request. Required for routing and signature verification (see header field `FSPIOP-Signature`). */
+        "FSPIOP-Source": components["parameters"]["FSPIOP-Source"];
+        /** The `FSPIOP-Destination` header field is a non-HTTP standard field used by the API for HTTP header based routing of requests and responses to the destination. The field must be set by the original sender of the request if the destination is known (valid for all services except GET /parties) so that any entities between the client and the server do not need to parse the payload for routing purposes. If the destination is not known (valid for service GET /parties), the field should be left empty. */
+        "FSPIOP-Destination"?: components["parameters"]["FSPIOP-Destination"];
+        /** The `FSPIOP-Encryption` header field is a non-HTTP standard field used by the API for applying end-to-end encryption of the request. */
+        "FSPIOP-Encryption"?: components["parameters"]["FSPIOP-Encryption"];
+        /** The `FSPIOP-Signature` header field is a non-HTTP standard field used by the API for applying an end-to-end request signature. */
+        "FSPIOP-Signature"?: components["parameters"]["FSPIOP-Signature"];
+        /** The `FSPIOP-URI` header field is a non-HTTP standard field used by the API for signature verification, should contain the service URI. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
+        /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+      };
+    };
   };
   "/consents/{ID}": {
     /** The HTTP request `GET /consents/{ID}` is used to get information regarding a consent object created or requested earlier. The `{ID}` in the URI should contain the `{ID}` that was used in the `POST /consents`. summary: GetConsent */
@@ -201,6 +247,36 @@ export interface paths {
   "/consents/{ID}/error": {
     /** DFSP responds to the PISP if something went wrong with validating or storing consent. */
     put: operations["NotifyErrorConsents"];
+    parameters: {
+      path: {
+        /** The identifier value. */
+        ID: components["parameters"]["ID"];
+      };
+      header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
+        /** The `Date` header field indicates the date when the request was sent. */
+        Date: components["parameters"]["Date"];
+        /**
+         * The `X-Forwarded-For` header field is an unofficially accepted standard used for informational purposes of the originating client IP address, as a request might pass multiple proxies, firewalls, and so on. Multiple `X-Forwarded-For` values should be expected and supported by implementers of the API.
+         *
+         * **Note:** An alternative to `X-Forwarded-For` is defined in [RFC 7239](https://tools.ietf.org/html/rfc7239). However, to this point RFC 7239 is less-used and supported than `X-Forwarded-For`.
+         */
+        "X-Forwarded-For"?: components["parameters"]["X-Forwarded-For"];
+        /** The `FSPIOP-Source` header field is a non-HTTP standard field used by the API for identifying the sender of the HTTP request. The field should be set by the original sender of the request. Required for routing and signature verification (see header field `FSPIOP-Signature`). */
+        "FSPIOP-Source": components["parameters"]["FSPIOP-Source"];
+        /** The `FSPIOP-Destination` header field is a non-HTTP standard field used by the API for HTTP header based routing of requests and responses to the destination. The field must be set by the original sender of the request if the destination is known (valid for all services except GET /parties) so that any entities between the client and the server do not need to parse the payload for routing purposes. If the destination is not known (valid for service GET /parties), the field should be left empty. */
+        "FSPIOP-Destination"?: components["parameters"]["FSPIOP-Destination"];
+        /** The `FSPIOP-Encryption` header field is a non-HTTP standard field used by the API for applying end-to-end encryption of the request. */
+        "FSPIOP-Encryption"?: components["parameters"]["FSPIOP-Encryption"];
+        /** The `FSPIOP-Signature` header field is a non-HTTP standard field used by the API for applying an end-to-end request signature. */
+        "FSPIOP-Signature"?: components["parameters"]["FSPIOP-Signature"];
+        /** The `FSPIOP-URI` header field is a non-HTTP standard field used by the API for signature verification, should contain the service URI. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
+        /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+      };
+    };
   };
   "/thirdpartyRequests/transactions/{ID}": {
     /**
@@ -228,8 +304,8 @@ export interface paths {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
-        Accept: components["parameters"]["Accept"];
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -261,6 +337,36 @@ export interface paths {
      * the thirdparty transaction request.
      */
     put: operations["ThirdpartyTransactionRequestsError"];
+    parameters: {
+      path: {
+        /** The identifier value. */
+        ID: components["parameters"]["ID"];
+      };
+      header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
+        /** The `Date` header field indicates the date when the request was sent. */
+        Date: components["parameters"]["Date"];
+        /**
+         * The `X-Forwarded-For` header field is an unofficially accepted standard used for informational purposes of the originating client IP address, as a request might pass multiple proxies, firewalls, and so on. Multiple `X-Forwarded-For` values should be expected and supported by implementers of the API.
+         *
+         * **Note:** An alternative to `X-Forwarded-For` is defined in [RFC 7239](https://tools.ietf.org/html/rfc7239). However, to this point RFC 7239 is less-used and supported than `X-Forwarded-For`.
+         */
+        "X-Forwarded-For"?: components["parameters"]["X-Forwarded-For"];
+        /** The `FSPIOP-Source` header field is a non-HTTP standard field used by the API for identifying the sender of the HTTP request. The field should be set by the original sender of the request. Required for routing and signature verification (see header field `FSPIOP-Signature`). */
+        "FSPIOP-Source": components["parameters"]["FSPIOP-Source"];
+        /** The `FSPIOP-Destination` header field is a non-HTTP standard field used by the API for HTTP header based routing of requests and responses to the destination. The field must be set by the original sender of the request if the destination is known (valid for all services except GET /parties) so that any entities between the client and the server do not need to parse the payload for routing purposes. If the destination is not known (valid for service GET /parties), the field should be left empty. */
+        "FSPIOP-Destination"?: components["parameters"]["FSPIOP-Destination"];
+        /** The `FSPIOP-Encryption` header field is a non-HTTP standard field used by the API for applying end-to-end encryption of the request. */
+        "FSPIOP-Encryption"?: components["parameters"]["FSPIOP-Encryption"];
+        /** The `FSPIOP-Signature` header field is a non-HTTP standard field used by the API for applying an end-to-end request signature. */
+        "FSPIOP-Signature"?: components["parameters"]["FSPIOP-Signature"];
+        /** The `FSPIOP-URI` header field is a non-HTTP standard field used by the API for signature verification, should contain the service URI. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
+        /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
+        "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+      };
+    };
   };
   "/health": {
     /** The HTTP request GET /health is used to return the current status of the API. */
@@ -369,6 +475,8 @@ export interface paths {
         ServiceType: components["parameters"]["ServiceType"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -401,12 +509,6 @@ export interface paths {
         ServiceType: components["parameters"]["ServiceType"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1058,6 +1160,8 @@ export interface components {
   parameters: {
     /** The identifier value. */
     ID: string;
+    /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+    "Content-Type": string;
     /** The `Date` header field indicates the date when the request was sent. */
     Date: string;
     /**
@@ -1086,8 +1190,6 @@ export interface components {
      * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
      */
     "Content-Length": number;
-    /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
-    "Content-Type": string;
     /** The type of the party identifier. For example, `MSISDN`, `PERSONAL_ID`. */
     Type: string;
     /** A sub-identifier of the party identifier, or a sub-type of the party identifier's type. For example, `PASSPORT`, `DRIVING_LICENSE`. */
@@ -1116,6 +1218,8 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -1160,6 +1264,8 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -1186,8 +1292,6 @@ export interface operations {
          * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
          */
         "Content-Length"?: components["parameters"]["Content-Length"];
-        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
-        "Content-Type": components["parameters"]["Content-Type"];
       };
     };
     responses: {
@@ -1215,12 +1319,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1243,6 +1341,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1296,12 +1400,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1324,6 +1422,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1353,12 +1457,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1381,6 +1479,14 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1408,12 +1514,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1436,6 +1536,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1460,14 +1566,6 @@ export interface operations {
   PostConsents: {
     parameters: {
       header: {
-        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
-        Accept: components["parameters"]["Accept"];
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1490,6 +1588,14 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1654,6 +1760,8 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
       };
     };
     responses: {
@@ -1710,6 +1818,8 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
         /**
          * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
          *
@@ -1745,12 +1855,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -1773,6 +1877,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -1804,8 +1914,8 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
-        Accept: components["parameters"]["Accept"];
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -1826,6 +1936,8 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
       };
     };
     responses: {
@@ -1853,8 +1965,8 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
-        Accept: components["parameters"]["Accept"];
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -1881,8 +1993,6 @@ export interface operations {
          * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
          */
         "Content-Length"?: components["parameters"]["Content-Length"];
-        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
-        "Content-Type": components["parameters"]["Content-Type"];
       };
     };
     responses: {
@@ -1915,8 +2025,8 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
-        Accept: components["parameters"]["Accept"];
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -1937,14 +2047,14 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /** The `Accept` header field indicates the version of the API the client would like the server to use. */
+        Accept: components["parameters"]["Accept"];
         /**
          * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
          *
          * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
          */
         "Content-Length"?: components["parameters"]["Content-Length"];
-        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
-        "Content-Type": components["parameters"]["Content-Type"];
       };
     };
     responses: {
@@ -1977,12 +2087,6 @@ export interface operations {
         ID: components["parameters"]["ID"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -2005,6 +2109,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
@@ -2384,6 +2494,8 @@ export interface operations {
         ServiceType: components["parameters"]["ServiceType"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -2431,6 +2543,8 @@ export interface operations {
         ServiceType: components["parameters"]["ServiceType"];
       };
       header: {
+        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
+        "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
         Date: components["parameters"]["Date"];
         /**
@@ -2457,8 +2571,6 @@ export interface operations {
          * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
          */
         "Content-Length"?: components["parameters"]["Content-Length"];
-        /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
-        "Content-Type": components["parameters"]["Content-Type"];
       };
     };
     responses: {
@@ -2486,12 +2598,6 @@ export interface operations {
         ServiceType: components["parameters"]["ServiceType"];
       };
       header: {
-        /**
-         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
-         *
-         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
-         */
-        "Content-Length"?: components["parameters"]["Content-Length"];
         /** The `Content-Type` header indicates the specific version of the API used to send the payload body. */
         "Content-Type": components["parameters"]["Content-Type"];
         /** The `Date` header field indicates the date when the request was sent. */
@@ -2514,6 +2620,12 @@ export interface operations {
         "FSPIOP-URI"?: components["parameters"]["FSPIOP-URI"];
         /** The `FSPIOP-HTTP-Method` header field is a non-HTTP standard field used by the API for signature verification, should contain the service HTTP method. Required if signature verification is used, for more information, see [the API Signature document](https://github.com/mojaloop/docs/tree/master/Specification%20Document%20Set). */
         "FSPIOP-HTTP-Method"?: components["parameters"]["FSPIOP-HTTP-Method"];
+        /**
+         * The `Content-Length` header field indicates the anticipated size of the payload body. Only sent if there is a body.
+         *
+         * **Note:** The API supports a maximum size of 5242880 bytes (5 Megabytes).
+         */
+        "Content-Length"?: components["parameters"]["Content-Length"];
       };
     };
     responses: {
