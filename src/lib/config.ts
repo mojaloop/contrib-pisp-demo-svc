@@ -83,6 +83,12 @@ const config = convict({
     default: 'localhost:15000',
     env: 'FSPIOP_API_URL',
   },
+  tempTransactionRequestServiceAPIURL: {
+    doc: 'temporary endpoint to communicate with Mojaloop\'s transaction request service.',
+    format: '*',
+    default: 'localhost:4003',
+    env: 'TEMP_TRANSACTION_REQUEST_SERVICE_API_URL',
+  },
   participantId: {
     doc: 'Participant ID of the PISP demo to communicate with Mojaloop',
     format: String,

@@ -132,6 +132,8 @@ async function handlePartyConfirmation(
 async function handleAuthorization(server: StateServer, transaction: Transaction) {
   logger.info('handleAuthorization')
 
+  console.log("transaction is", transaction)
+
   if (!validator.isValidAuthorization(transaction)) {
     logger.warn('handleAuthorization is not valid')
     return
@@ -139,18 +141,21 @@ async function handleAuthorization(server: StateServer, transaction: Transaction
 
   // If the update contains all the necessary fields, process document
   // to the next step by sending an authorization to Mojaloop.
-
+  
   //TODO: This type def is incorrect
   // will be fixed in: mojaloop/project#2274
   const requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsIDAuthorizationsPutResponse = {
     challenge: JSON.stringify(transaction.quote),
     value: transaction.authentication!.value as string,
-    consentId: 'todo - get consentId from somewhere',
+    // TODO: fix types
+    //@ts-ignore
+    consentId: transaction.consentId,
     sourceAccountId: transaction.payer?.partyIdentifier!,
     status: 'VERIFIED',
   }
 
   // The optional values are guaranteed to exist by the validator.
+  
   // eslint-disable @typescript-eslint/no-non-null-assertion
   server.app.mojaloopClient.putAuthorizations(transaction.transactionRequestId!, requestBody, transaction.payer!.fspId!)
   // eslint-enable @typescript-eslint/no-non-null-assertion

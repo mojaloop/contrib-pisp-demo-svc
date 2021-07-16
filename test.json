@@ -1,0 +1,23 @@
+{
+  "challenge": {
+    "payeeFspCommission":{ 
+      "currency":"TZS",
+      "amount":"6"
+    },
+    "condition": "T8AL3MxDcUWnIm1pDaU_RNYDJ9jFN2X6himGcRlbLqs",
+    "ilpPacket": "AYIDFwAAAAAAADAMG2cuZGZzcGIubXNpc2RuLjI1NTI1NTI1NTI1NYIC72V5SjBjbUZ1YzJGamRHbHZia2xrSWpvaU5UWXhNekppTjJZdFptSm1NaTAwWldSbUxUazNPVGd0WW1Oa09ESXpaRFEwTVdaa0lpd2ljWFZ2ZEdWSlpDSTZJakpoT0RZNVkyTm1MVGRsWWpndE5HTXhZUzA0TW1SbExUQTNOekJsTVdZeFpETmxZU0lzSW5CaGVXVmxJanA3SW01aGJXVWlPaUpDYVd4c2VTQkNZV2x5ZFhNaUxDSndaWEp6YjI1aGJFbHVabThpT25zaVpHRjBaVTltUW1seWRHZ2lPaUl4T1Rjd0xUQXhMVEF4SWl3aVkyOXRjR3hsZUU1aGJXVWlPbnNpYldsa1pHeGxUbUZ0WlNJNklrOGlMQ0pzWVhOMFRtRnRaU0k2SWtKaFltbHlkWE5oSWl3aVptbHljM1JPWVcxbElqb2lRbTlpSW4xOUxDSndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrWlc1MGFXWnBaWElpT2lJeU5UVXlOVFV5TlRVeU5UVWlMQ0ptYzNCSlpDSTZJbVJtYzNCaUlpd2ljR0Z5ZEhsSlpGUjVjR1VpT2lKTlUwbFRSRTRpZlgwc0luQmhlV1Z5SWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lUVk5KVTBST0lpd2ljR0Z5ZEhsSlpHVnVkR2xtYVdWeUlqb2lNVEl6TkMweE1qTTBMVEV5TXpRdE1USXpOQ0o5ZlN3aVlXMXZkVzUwSWpwN0ltRnRiM1Z1ZENJNklqRXlNeUlzSW1OMWNuSmxibU41SWpvaVZGcFRJbjBzSW5SeVlXNXpZV04wYVc5dVZIbHdaU0k2ZXlKelkyVnVZWEpwYnlJNklsUlNRVTVUUmtWU0lpd2lhVzVwZEdsaGRHOXlJam9pVUVGWlJWSWlMQ0pwYm1sMGFXRjBiM0pVZVhCbElqb2lRMDlPVTFWTlJWSWlmWDAA",
+    "expiration": "2021-07-16T05:03:13.532Z",
+    "payeeFspFee": {
+      "amount":"6",
+      "currency":"TZS"
+    },
+    "transferAmount": {
+      "currency": "TZS",
+      "amount":"123"
+    }
+  },
+  "value": "unimplemented123",
+  "consentId": "todo - get consentId from somewhere",
+  "sourceAccountId":"1234-1234-1234-1234",
+  "status": "VERIFIED"
+}

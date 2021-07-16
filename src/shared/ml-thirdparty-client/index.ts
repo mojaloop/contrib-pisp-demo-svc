@@ -200,6 +200,15 @@ export class Client implements MojaloopClient{
         }
       }
     }
+  
+    if (this.options.endpoints.tempTransactionRequestService) {
+      // This is really hacky... but since the sdk-standard-components doesn't 
+      // expose the tx-request-service endpoint, we set the `peerEndpoint` to 
+      // the tx-request-service endpoint, and specify all the others we need
+      // which is just the als at this stage.
+      // fspiopRequestsConfig.alsEndpoint = this.options.endpoints.fspiop
+      fspiopRequestsConfig.transactionRequestsEndpoint = this.options.endpoints.tempTransactionRequestService
+    }
 
     const thirdpartyRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
@@ -257,11 +266,6 @@ export class Client implements MojaloopClient{
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
 
-    // TODO - HACK! the PISP needs to translate from their version of a payerId + Type
-    // To one that other services in Mojaloop can understand:
-    //@ts-ignore
-    requestBody.payer.partyIdType = 'MSISDN'
-
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
       requestBody,
       destParticipantId
@@ -298,12 +302,12 @@ export class Client implements MojaloopClient{
     //   responseType: 'ENTERED'
     // }
 
-    // @ts-ignore
-    // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
-    // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
-    // return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
-    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-      requestBody, id, destParticipantId)
+    //@ts-ignore
+    // return this.mojaloopRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
+    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+
+    // TODO: use the new resource: thirdpartyRequests/{id}/authorizations instead of PUT /authorizations
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(requestBody, id, destParticipantId)
   }
 
   /**
