@@ -207,6 +207,7 @@ export SIMULATOR_DEFAULT_AUTH_CHANNEL=WEB
 export CONSENT_REQUEST_ID=3b346cec-47b3-4def-b870-edb255aaf6c3
 export PISP_CALLBACK_URI=http://localhost:5000/flutter-web-auth.html
 export SIMULATOR_AUTH_URI="http://localhost:6060/admin/dfsp/authorize?consentRequestId=$CONSENT_REQUEST_ID&callbackUri=$PISP_CALLBACK_URI"
+export DEMO_CURRENCY=USD
 
 ```
 

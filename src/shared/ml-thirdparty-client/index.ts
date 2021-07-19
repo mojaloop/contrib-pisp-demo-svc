@@ -34,7 +34,8 @@ import { Simulator } from '~/shared/ml-thirdparty-simulator'
 import { Options } from './options'
 
 import {
-  thirdparty as tpAPI
+  thirdparty as tpAPI,
+  v1_1 as fspiopAPI,
 } from '@mojaloop/api-snippets'
 
 import SDKStandardComponents, {
@@ -287,24 +288,21 @@ export class Client implements MojaloopClient{
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
 
-    // const requestBody = {
-    //   authenticationInfo: {
-    //     // LD - just a hack because we need to update the TTK
-    //     authentication: 'OTP',
-    //     // authenticationValue: {
-    //     //   pinValue: _requestBody.value,
-    //     //   counter: "1"
-    //     // }
-    //     // TODO: this looks outdated now.
-    //     authenticationValue: _requestBody.authenticationInfo?.authenticationValue
-    //     // authenticationValue: 'TODO: valid authentication value',
-    //   },
-    //   responseType: 'ENTERED'
-    // }
+    // TD: map back to what the txRequestService wants
+    const outdatedRequestBody: fspiopAPI.Schemas.AuthorizationsIDPutResponse= {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'U2F',
+        // @ts-ignore - some types look bad here...
+        authenticationValue: {
+          pinValue: requestBody.value,
+          counter: "1"
+        }
+      },
+      responseType: 'ENTERED'
+    }
 
-    //@ts-ignore
-    // return this.mojaloopRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
-    return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
+    return this.mojaloopRequests.putAuthorizations(id, outdatedRequestBody, destParticipantId)
 
     // TODO: use the new resource: thirdpartyRequests/{id}/authorizations instead of PUT /authorizations
     // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(requestBody, id, destParticipantId)
