@@ -28,5 +28,5 @@ export function getTomorrowsDate(): Date {
   const tomorrow = new Date(currentDate)
   tomorrow.setDate(tomorrow.getDate() + 1)
 
-  return tomorrow 
+  return tomorrow
 }
