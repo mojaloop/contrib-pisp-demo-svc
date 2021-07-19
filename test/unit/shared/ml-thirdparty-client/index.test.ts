@@ -162,20 +162,34 @@ describe('Mojaloop third-party client', () => {
   })
 
   it('Should throw Not Implemented error, attempting to perform transaction authorization request', (): void => {
+    // TODO: use the new resource: thirdpartyRequests/{id}/authorizations instead of PUT /authorizations
 
     // Arrange
     const putAuthorizationSpy = jest
       .spyOn(
-        client.thirdpartyRequests,
-        'putThirdpartyRequestsTransactionsAuthorizations'
+        client.mojaloopRequests,
+        'putAuthorizations'
       )
       .mockImplementation()
+
+    const outdatedAuthorizationData = {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'U2F',
+        // @ts-ignore - some types look bad here...
+        authenticationValue: {
+          pinValue: authorizationData.value,
+          counter: "1"
+        }
+      },
+      responseType: 'ENTERED'
+    }
 
     // Act
     client.putAuthorizations('111', authorizationData, '222')
 
     // Assert
-    expect(putAuthorizationSpy).toBeCalledWith(authorizationData, '111', '222')
+    expect(putAuthorizationSpy).toBeCalledWith('111', outdatedAuthorizationData, '222')
   })
 
   it('Should throw Not Implemented error, attempting to perform participant lookup', (): void => {
