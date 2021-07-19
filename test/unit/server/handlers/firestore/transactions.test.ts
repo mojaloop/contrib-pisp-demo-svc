@@ -24,10 +24,10 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import * as utils from '~/lib/utils'
 import config from '~/lib/config'
 import { transactionRepository } from '~/repositories/transaction'
-
 import createServer from '~/server/create'
 import * as transactionsHandler from '~/server/handlers/firestore/transactions'
 
@@ -39,7 +39,7 @@ import {
   PartyIdType,
 } from '~/shared/ml-thirdparty-client/models/core'
 import { Status, Transaction, ResponseType } from '~/models/transaction'
-import { ThirdPartyTransactionRequest, AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { AuthorizationsPutIdRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { consentRepository } from '~/repositories/consent'
 import { Consent } from '~/models/consent'
 
@@ -191,13 +191,13 @@ describe('Handlers for transaction documents in Firebase', () => {
       .mockImplementation(() => new Promise((resolve) => resolve(consentData)))
 
     // Mock the expected transaction request being sent.
-    const transactionRequest: ThirdPartyTransactionRequest = {
+    const transactionRequest: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest = {
       transactionRequestId: transactionRequestData.transactionRequestId!,
-      // TODO:  remove these once we have updated the defs
-      sourceAccountId: `abcd-abcd-abcd-abcd`,
-      consentId: `1234-1234-1234-1234`,
       payee: transactionRequestData.payee!,
-      payer: consentData.party!,
+      payer: {
+        partyIdType: 'THIRD_PARTY_LINK',
+        partyIdentifier: consentData.party?.partyIdInfo.partyIdentifier!,
+      },
       amountType: AmountType.RECEIVE,
       amount: transactionRequestData.amount!,
       transactionType: {

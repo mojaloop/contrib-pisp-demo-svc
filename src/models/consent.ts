@@ -106,6 +106,7 @@ export interface Consent {
   /**
    * Information about the party that is associated with the consent.
    */
+  // TODO: tech debt, change to tpAPI.Schemas.Party!
   party?: Party
 
   /**

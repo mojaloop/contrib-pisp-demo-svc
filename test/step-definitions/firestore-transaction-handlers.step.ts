@@ -25,6 +25,8 @@
 
 import path from 'path'
 import { loadFeature, defineFeature, DefineStepFunction } from 'jest-cucumber'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import Config from '~/lib/config'
 import PispDemoServer from '~/server'
 import { onCreate, onUpdate } from '~/server/handlers/firestore/transactions'
@@ -40,8 +42,8 @@ import {
 import { consentRepository } from '~/repositories/consent'
 import { transactionRepository } from '~/repositories/transaction'
 import * as utils from '~/lib/utils'
-import { Party } from '~/shared/ml-thirdparty-client/models/core/parties'
 import { Consent } from '~/models/consent'
+import { Party } from '~/shared/ml-thirdparty-client/models/core'
 import { logger } from '~/shared/logger'
 
 // Mock firebase to prevent opening the connection
@@ -78,7 +80,7 @@ const mockLoggerError = jest.spyOn(logger, 'error')
 mockLoggerError.mockReturnValue()
 
 // Mock consent repo functions
-const party: Party = {
+const party: tpAPI.Schemas.Party = {
   partyIdInfo: {
     partyIdType: PartyIdType.MSISDN,
     partyIdentifier: 'party_id',
@@ -87,7 +89,8 @@ const party: Party = {
 
 const consent: Consent = {
   id: 'b11ec534-ff48-4575-b6a9-ead2955b8069',
-  party: party,
+  // TODO: tech debt, need to update consent model, or ditch it altogether.
+  party: party as Party
 }
 
 const mockGetConsentById = jest.spyOn(consentRepository, 'getConsentById')

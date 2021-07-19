@@ -22,7 +22,7 @@
  - Steven Wijaya <stevenwjy@google.com>
  --------------
  ******/
-
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import { ExtensionList } from './extension'
 
 /**
@@ -73,20 +73,6 @@ export interface GeoCode {
   longitude: string
 }
 
-/**
- * Data model for the complex type Money.
- */
-export interface Money {
-  /**
-   * Amount of money.
-   */
-  amount: string
-
-  /**
-   * Currency of the amount.
-   */
-  currency: Currency
-}
 
 /**
  * Quote of a transaction.
@@ -95,7 +81,7 @@ export interface Quote {
   /**
    * The amount of money that the Payee FSP should receive.
    */
-  transferAmount: Money
+  transferAmount: tpAPI.Schemas.Money
 
   /**
    * The amount of Money that the Payee should receive in the end-to-end transaction.
@@ -104,17 +90,17 @@ export interface Quote {
    *
    * Optional as the Payee FSP might not want to disclose any optional Payee fees.
    */
-  payeeReceiveAmount?: Money
+  payeeReceiveAmount?: tpAPI.Schemas.Money
 
   /**
    * Payee FSP’s part of the transaction fee.
    */
-  payeeFspFee?: Money
+  payeeFspFee?: tpAPI.Schemas.Money
 
   /**
    * Transaction commission from the Payee FSP.
    */
-  payeeFspComission?: Money
+  payeeFspComission?: tpAPI.Schemas.Money
 
   /**
    * Date and time until when the quotation is valid and can be honored when used

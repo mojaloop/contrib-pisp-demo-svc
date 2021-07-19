@@ -171,9 +171,12 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
   // we could do the conversion on the client, but for now
   // this works fine.
   const keyHandleIdBuffer = Buffer.from(consent.credential?.payload?.rawId!, 'base64')
-  const keyHandleId = Uint8Array.from(keyHandleIdBuffer)
+  const keyHandleId = [ ...keyHandleIdBuffer ]
 
   try {
+    // This is a useful setting that makes demos work much more reliably
+    // since users can't accidentally select a key that was registered on
+    // a different device
     if (config.get('overwriteExistingAccountsForUser')) {
       //replace the existing accounts for this user
       await accountRepository.deleteForUser(consent.userId!)
@@ -191,7 +194,8 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId
+        keyHandleId,
+        consentId: consent.consentId!
       }
       await accountRepository.insert(demoAccount)
     } else {
@@ -206,7 +210,8 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId
+        keyHandleId,
+        consentId: consent.consentId!
       }
       const demoAccount2: DemoAccount = {
         alias: 'Chequing Account',
@@ -217,7 +222,8 @@ async function onConsentActivated(_server: StateServer, consent: Consent) {
         },
         sourceAccountId: '1234-1234-1234-1234',
         userId: consent.userId!,
-        keyHandleId
+        keyHandleId,
+        consentId: consent.consentId!
       }
       await accountRepository.insert(demoAccount)
       await accountRepository.insert(demoAccount2)

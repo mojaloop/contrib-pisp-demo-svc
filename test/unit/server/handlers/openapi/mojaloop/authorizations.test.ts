@@ -24,6 +24,7 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 import { ResponseToolkit, ResponseObject } from '@hapi/hapi'
 import { Context } from 'openapi-backend'
 import { Enum } from '@mojaloop/central-services-shared'
@@ -36,7 +37,6 @@ import { Status } from '~/models/transaction'
 import config from '~/lib/config'
 
 import { AmountType, Currency, PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import { ThirdPartyTransactionRequest } from '~/shared/ml-thirdparty-client/models/openapi'
 import { AuthorizationFactory } from '~/shared/ml-thirdparty-simulator/factories/authorization'
 
 // Mock the factories to consistently return the hardcoded values.
@@ -69,26 +69,6 @@ const mockResponseToolkit: ResponseToolkit = {
   },
 }
 
-/**
- * Mock data for transaction request.
- */
-const transactionData = {
-  transactionId: '111',
-  transactionRequestId: '222',
-  sourceAccountId: '123',
-  consentId: '333',
-  amountType: AmountType.RECEIVE,
-  amount: {
-    amount: '20',
-    currency: Currency.USD,
-  },
-  transactionType: {
-    scenario: 'TRANSFER',
-    initiator: 'PAYER',
-    initiatorType: 'CONSUMER',
-  },
-  expiration: '12345',
-}
 
 describe('/authorizations', () => {
   beforeEach(() => {
@@ -97,19 +77,28 @@ describe('/authorizations', () => {
   })
 
   describe('POST operation', () => {
-    const payerInfo = PartyFactory.createPutPartiesRequest(
-      PartyIdType.MSISDN,
-      '+1-222-222-2222'
-    )
     const payeeInfo = PartyFactory.createPutPartiesRequest(
       PartyIdType.MSISDN,
       '+1-111-111-1111'
     )
-    const transactionRequest: ThirdPartyTransactionRequest = {
-      payer: payerInfo.party,
+    const transactionRequest: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest = {
+      payer: {
+        partyIdType: 'THIRD_PARTY_LINK',
+        partyIdentifier: '+1-222-222-2222'
+      },
       payee: payeeInfo.party,
-      ...transactionData,
-    }
+      transactionRequestId: '222',
+      amountType: AmountType.RECEIVE,
+      amount: {
+        amount: '20',
+        currency: Currency.USD,
+      },
+      transactionType: {
+        scenario: 'TRANSFER',
+        initiator: 'PAYER',
+        initiatorType: 'CONSUMER',
+      },
+      expiration: '12345',    }
 
     const requestBody = AuthorizationFactory.createPostAuthorizationsRequest(
       transactionRequest

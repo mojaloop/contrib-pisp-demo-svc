@@ -23,11 +23,10 @@
  --------------
  ******/
 
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 import {
-  AmountType,
-  Money,
   TransactionType,
-  Party,
 } from '../core'
 
 export interface ThirdPartyTransactionRequest {
@@ -41,23 +40,22 @@ export interface ThirdPartyTransactionRequest {
   /**
    * Information about the Payee in the proposed financial transaction.
    */
-  payee: Party
+  payee: tpAPI.Schemas.Party,
 
   /**
    * Information about the Payer in the proposed financial transaction.
    */
-  // TODO: this should just be a PartyIdInfo - we don't need the other stuff here.
-  payer: Party
+  payer: tpAPI.Schemas.PartyIdInfoTPLink
 
   /**
    * SEND for sendAmount, RECEIVE for receiveAmount.
    */
-  amountType: AmountType
+  amountType: tpAPI.Schemas.Money,
 
   /**
    * Requested amount to be transferred from the Payer to Payee.
    */
-  amount: Money
+  amount: tpAPI.Schemas.Money
 
   /**
    * Type of transaction.

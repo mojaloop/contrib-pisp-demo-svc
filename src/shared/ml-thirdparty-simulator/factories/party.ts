@@ -26,8 +26,8 @@
 /* istanbul ignore file */
 
 import * as faker from 'faker'
-import { PartyIdType, Party, Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
-import { PartiesTypeIDPutRequest } from '~/shared/ml-thirdparty-client/models/openapi'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+import { Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { ParticipantFactory } from './participant'
 import { v4 } from 'uuid'
 import config from '~/lib/config'
@@ -59,16 +59,16 @@ export class PartyFactory {
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  public static createPutPartiesRequest(type: PartyIdType, id: string): PartiesTypeIDPutRequest {
+  public static createPutPartiesRequest(type: tpAPI.Schemas.PartyIdType, id: string): tpAPI.Schemas.PartiesTypeIDPutResponse {
     const party = PartyFactory.createParty(type, id)
-    const accounts: Account[] = [ // hardcode two currencies
-      PartyFactory.createAccount(party, Currency.USD),
-      PartyFactory.createAccount(party, Currency.SGD),
-    ]
+    // TODO: this is no longer user - opaque account lookup uses a different resource - /accounts now.
+    // const accounts: Account[] = [ // hardcode two currencies
+    //   PartyFactory.createAccount(party, Currency.USD),
+    //   PartyFactory.createAccount(party, Currency.SGD),
+    // ]
 
     return {
       party,
-      accounts
     }
   }
 
@@ -78,7 +78,7 @@ export class PartyFactory {
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  private static createParty(type: PartyIdType, id: string): Party {
+  private static createParty(type: tpAPI.Schemas.PartyIdType, id: string): tpAPI.Schemas.Party {
     const participants = ParticipantFactory.getParticipants()
 
     const randomFsp = participants[Math.floor(Math.random() * participants.length)]
@@ -107,13 +107,15 @@ export class PartyFactory {
    * @param party     information about the party.
    * @param currency  currency of the bank account.
    */
-  private static createAccount(party: Party, currency: Currency): Account {
-    const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
-    const randomAlphanumeric = faker.random.alphaNumeric(5)
+  
+  //  TD - we may need this at a later date!
+  // private static createAccount(party: tpAPI.Schemas.Party, currency: Currency): Account {
+  //   const nameId = party.personalInfo?.complexName?.firstName?.toLowerCase()
+  //   const randomAlphanumeric = faker.random.alphaNumeric(5)
 
-    return {
-      id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
-      currency
-    }
-  }
+  //   return {
+  //     id: [nameId, randomAlphanumeric, party.partyIdInfo.fspId].join('.'),
+  //     currency
+  //   }
+  // }
 }

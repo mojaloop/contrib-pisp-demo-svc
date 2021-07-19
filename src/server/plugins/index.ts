@@ -86,6 +86,7 @@ export const mojaloopClientOpts: MojaloopClientOpts = {
   endpoints: {
     fspiop: config.get('fspiopAPIURL'),
     thirdparty: config.get('thirdpartyAPIURL'),
+    tempTransactionRequestService: config.get('tempTransactionRequestServiceAPIURL'),
   },
 }
 

@@ -105,14 +105,15 @@ cd docker-local
 docker-compose up -d
 npm run wait-4-docker
 
-# Note: check that this pisp is configured properly in `docker-local/ml-bootstrap-config.json5`
+# Note: check that this pisp is configured properley in `docker-local/ml-bootstrap-config.json5`
 # We need to make sure the callbacks from inside docker can reach the locally running pisp-demo-svc
 npm run reseed:docker-local-new
 
 # in this project:
-export THIRDPARTY_API_URL=http://localhost:12000
-# TODO: we shouldn't need this I think...
-export FSPIOP_API_URL=http://localhost:4002
+export THIRDPARTY_API_URL=localhost:12000
+export FSPIOP_API_URL=localhost:4002
+# TODO: remove this once we have removed the need for a `PUT /authorizations/{id}` call
+export TEMP_TRANSACTION_REQUEST_SERVICE_API_URL=localhost:4003
 export PARTICIPANT_ID=pineapplepay
 export LOCAL_SIMULATOR=false
 
@@ -206,6 +207,7 @@ export SIMULATOR_DEFAULT_AUTH_CHANNEL=WEB
 export CONSENT_REQUEST_ID=3b346cec-47b3-4def-b870-edb255aaf6c3
 export PISP_CALLBACK_URI=http://localhost:5000/flutter-web-auth.html
 export SIMULATOR_AUTH_URI="http://localhost:6060/admin/dfsp/authorize?consentRequestId=$CONSENT_REQUEST_ID&callbackUri=$PISP_CALLBACK_URI"
+export DEMO_CURRENCY=USD
 
 ```
 
@@ -418,6 +420,38 @@ curl -X POST $ELB_URL/thirdparty-api-adapter/thirdpartyRequests/transactions \
     },
     "expiration":"1970-01-01T00:00:00.021Z"
   }'
+
+
+# return a signed authorization
+curl -s $ELB_URL/thirdpartyRequests/transactions/02e28448-3c05-4059-b5f7-d518d0a2d8ea/authorizations \
+  -H "content-type: application/vnd.interoperability.thirdparty+json;version=1.0"\
+  -H "date: Fri, 16 Jul 2021 05:02:30 GMT" \
+  -H "fspiop-source: pineapplepay" \
+  -H "fspiop-destination: dfspa" \
+  -H "content-length: 1519" \
+  -d '{
+  "challenge": {
+    "payeeFspCommission":{ 
+      "currency":"TZS",
+      "amount":"6"
+    },
+    "condition": "T8AL3MxDcUWnIm1pDaU_RNYDJ9jFN2X6himGcRlbLqs",
+    "ilpPacket": "AYIDFwAAAAAAADAMG2cuZGZzcGIubXNpc2RuLjI1NTI1NTI1NTI1NYIC72V5SjBjbUZ1YzJGamRHbHZia2xrSWpvaU5UWXhNekppTjJZdFptSm1NaTAwWldSbUxUazNPVGd0WW1Oa09ESXpaRFEwTVdaa0lpd2ljWFZ2ZEdWSlpDSTZJakpoT0RZNVkyTm1MVGRsWWpndE5HTXhZUzA0TW1SbExUQTNOekJsTVdZeFpETmxZU0lzSW5CaGVXVmxJanA3SW01aGJXVWlPaUpDYVd4c2VTQkNZV2x5ZFhNaUxDSndaWEp6YjI1aGJFbHVabThpT25zaVpHRjBaVTltUW1seWRHZ2lPaUl4T1Rjd0xUQXhMVEF4SWl3aVkyOXRjR3hsZUU1aGJXVWlPbnNpYldsa1pHeGxUbUZ0WlNJNklrOGlMQ0pzWVhOMFRtRnRaU0k2SWtKaFltbHlkWE5oSWl3aVptbHljM1JPWVcxbElqb2lRbTlpSW4xOUxDSndZWEowZVVsa1NXNW1ieUk2ZXlKd1lYSjBlVWxrWlc1MGFXWnBaWElpT2lJeU5UVXlOVFV5TlRVeU5UVWlMQ0ptYzNCSlpDSTZJbVJtYzNCaUlpd2ljR0Z5ZEhsSlpGUjVjR1VpT2lKTlUwbFRSRTRpZlgwc0luQmhlV1Z5SWpwN0luQmhjblI1U1dSSmJtWnZJanA3SW5CaGNuUjVTV1JVZVhCbElqb2lUVk5KVTBST0lpd2ljR0Z5ZEhsSlpHVnVkR2xtYVdWeUlqb2lNVEl6TkMweE1qTTBMVEV5TXpRdE1USXpOQ0o5ZlN3aVlXMXZkVzUwSWpwN0ltRnRiM1Z1ZENJNklqRXlNeUlzSW1OMWNuSmxibU41SWpvaVZGcFRJbjBzSW5SeVlXNXpZV04wYVc5dVZIbHdaU0k2ZXlKelkyVnVZWEpwYnlJNklsUlNRVTVUUmtWU0lpd2lhVzVwZEdsaGRHOXlJam9pVUVGWlJWSWlMQ0pwYm1sMGFXRjBiM0pVZVhCbElqb2lRMDlPVTFWTlJWSWlmWDAA",
+    "expiration": "2021-07-16T05:03:13.532Z",
+    "payeeFspFee": {
+      "amount":"6",
+      "currency":"TZS"
+    },
+    "transferAmount": {
+      "currency": "TZS",
+      "amount":"123"
+    }
+  },
+  "value": "unimplemented123",
+  "consentId": "todo - get consentId from somewhere",
+  "sourceAccountId":"1234-1234-1234-1234",
+  "status": "VERIFIED"
+}'
 
 
 

@@ -31,16 +31,12 @@
 /* istanbul ignore file */
 
 import { Simulator } from '~/shared/ml-thirdparty-simulator'
-import { PartyIdType } from './models/core'
 import { Options } from './options'
 
 import {
-  thirdparty as tpAPI
+  thirdparty as tpAPI,
+  v1_1 as fspiopAPI,
 } from '@mojaloop/api-snippets'
-
-import {
-  ThirdPartyTransactionRequest,
-} from './models/openapi'
 
 import SDKStandardComponents, {
   Logger,
@@ -77,7 +73,7 @@ export interface MojaloopClient {
   * @param idSubValue optional sub value for the identifier
   */
   getParties(
-    idType: PartyIdType,
+    idType: tpAPI.Schemas.PartyIdType,
     idValue: string,
     idSubValue?: string
   ): Promise<unknown>
@@ -125,7 +121,7 @@ export interface MojaloopClient {
   * @param _requestBody a transaction request object as defined by the Mojaloop API.
   */
   postTransactions(
-    requestBody: ThirdPartyTransactionRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
     destParticipantId: string
   ): Promise<unknown>
 
@@ -205,6 +201,15 @@ export class Client implements MojaloopClient{
         }
       }
     }
+  
+    if (this.options.endpoints.tempTransactionRequestService) {
+      // This is really hacky... but since the sdk-standard-components doesn't 
+      // expose the tx-request-service endpoint, we set the `peerEndpoint` to 
+      // the tx-request-service endpoint, and specify all the others we need
+      // which is just the als at this stage.
+      // fspiopRequestsConfig.alsEndpoint = this.options.endpoints.fspiop
+      fspiopRequestsConfig.transactionRequestsEndpoint = this.options.endpoints.tempTransactionRequestService
+    }
 
     const thirdpartyRequestsConfig: BaseRequestConfigType = {
       dfspId: this.options.participantId,
@@ -242,7 +247,7 @@ export class Client implements MojaloopClient{
    * @param _id    the party identifier
    */
   public async getParties(
-    idType: PartyIdType,
+    idType: tpAPI.Schemas.PartyIdType,
     idValue: string,
     idSubValue?: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
@@ -258,12 +263,12 @@ export class Client implements MojaloopClient{
    * @param _requestBody a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    requestBody: ThirdPartyTransactionRequest,
+    requestBody: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
-    // TODO: this will need some updating
+
     return this.thirdpartyRequests.postThirdpartyRequestsTransactions(
-      (requestBody as unknown) as tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest,
+      requestBody,
       destParticipantId
     )
   }
@@ -283,27 +288,24 @@ export class Client implements MojaloopClient{
     destParticipantId: string
   ): Promise<SDKStandardComponents.GenericRequestResponse | undefined> {
 
-    // const requestBody = {
-    //   authenticationInfo: {
-    //     // LD - just a hack because we need to update the TTK
-    //     authentication: 'OTP',
-    //     // authenticationValue: {
-    //     //   pinValue: _requestBody.value,
-    //     //   counter: "1"
-    //     // }
-    //     // TODO: this looks outdated now.
-    //     authenticationValue: _requestBody.authenticationInfo?.authenticationValue
-    //     // authenticationValue: 'TODO: valid authentication value',
-    //   },
-    //   responseType: 'ENTERED'
-    // }
+    // TD: map back to what the txRequestService wants
+    const outdatedRequestBody: fspiopAPI.Schemas.AuthorizationsIDPutResponse= {
+      authenticationInfo: {
+        // LD - just a hack because we need to update the TTK
+        authentication: 'U2F',
+        // @ts-ignore - some types look bad here...
+        authenticationValue: {
+          pinValue: requestBody.value,
+          counter: "1"
+        }
+      },
+      responseType: 'ENTERED'
+    }
 
-    // @ts-ignore
-    // return this.mojaloopRequests.putAuthorizations(id, requestBody, destParticipantId)
-    // TODO: fix this hack - we should be using PUT /thirdpartyRequests/authorizations/{id}
-    // return this.thirdpartyRequests._put(`authorizations/${id}`, 'authorizations', requestBody, destParticipantId)
-    return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(
-      requestBody, id, destParticipantId)
+    return this.mojaloopRequests.putAuthorizations(id, outdatedRequestBody, destParticipantId)
+
+    // TODO: use the new resource: thirdpartyRequests/{id}/authorizations instead of PUT /authorizations
+    // return this.thirdpartyRequests.putThirdpartyRequestsTransactionsAuthorizations(requestBody, id, destParticipantId)
   }
 
   /**

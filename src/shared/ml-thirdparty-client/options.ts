@@ -55,4 +55,5 @@ export interface EndpointOptions {
    */
   fspiop: string,
   thirdparty: string,
+  tempTransactionRequestService?: string
 }

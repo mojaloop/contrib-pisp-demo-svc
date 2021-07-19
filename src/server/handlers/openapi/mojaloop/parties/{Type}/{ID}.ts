@@ -36,6 +36,7 @@ import { transactionRepository } from '~/repositories/transaction'
 import { consentRepository } from '~/repositories/consent'
 import { ConsentStatus } from '~/models/consent'
 import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
+import { logger } from '~/shared/logger'
 
 /**
  * Handles callback from Mojaloop that specifies detailed info about a requested party.
@@ -59,7 +60,7 @@ export const put: Handler = async (
   // function is expected to run asynchronously, so the server could quickly
   // give a response to Mojaloop.
 
-  console.log("handling inbount put parties")
+  logger.debug('handling inbount put parties')
 
   if (partyIdType === PartyIdType.OPAQUE) {
     // Update Consents as  OPAQUE is the type during linking when we're fetching the accounts

@@ -26,10 +26,6 @@
 /* istanbul ignore file */
 
 import { ServerInjectResponse } from '@hapi/hapi'
-import { PartyIdType } from '~/shared/ml-thirdparty-client/models/core'
-import {
-  ThirdPartyTransactionRequest,
-} from '~/shared/ml-thirdparty-client/models/openapi'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
 
 import { ParticipantFactory } from './factories/participant'
@@ -105,7 +101,7 @@ export class Simulator implements MojaloopClient {
    * @param id    the party identifier.
    */
   public async getParties(
-    type: PartyIdType,
+    type: tpAPI.Schemas.PartyIdType,
     id: string,
     _idSubValue?: string
   ): Promise<unknown> {
@@ -231,7 +227,7 @@ export class Simulator implements MojaloopClient {
    * @param request a transaction request object as defined by the Mojaloop API.
    */
   public async postTransactions(
-    request: ThirdPartyTransactionRequest
+    request: tpAPI.Schemas.ThirdpartyRequestsTransactionsPostRequest
   ): Promise<ServerInjectResponse> {
     // TODO: there should be both a PUT /thirdpartyRequests/transactions and
     // POST /authorizations call here.

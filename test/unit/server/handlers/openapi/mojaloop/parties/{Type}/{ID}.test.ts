@@ -44,7 +44,9 @@ jest.mock('~/shared/ml-thirdparty-simulator/factories/party')
 // Mock logger to prevent handlers from logging incoming request
 jest.mock('~/shared/logger', () => ({
   logger: {
-    logRequest: jest.fn().mockImplementation()
+    logRequest: jest.fn().mockImplementation(),
+    error: jest.fn().mockImplementation(),
+    debug: jest.fn().mockImplementation(),
   }
 }))
 
