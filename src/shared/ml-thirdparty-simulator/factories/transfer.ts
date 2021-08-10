@@ -28,8 +28,9 @@ import * as faker from 'faker'
 import {
   AuthorizationsPutIdRequest,
   TransferIDPutRequest,
-  TransferIDPatchRequest,
 } from '~/shared/ml-thirdparty-client/models/openapi'
+import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
+
 
 import { TransferState } from '~/shared/ml-thirdparty-client/models/core'
 
@@ -65,11 +66,11 @@ export class TransferFactory {
    */
   public static createTransactionRequestPatchRequest(
     transactionId: string
-  ): TransferIDPatchRequest {
+  ): tpAPI.Schemas.ThirdpartyRequestsTransactionsIDPatchResponse {
     return {
       transactionId,
-      completedTimestamp: faker.date.recent().toISOString(),
-      transferState: TransferState.COMMITTED,
+      transactionRequestState: 'ACCEPTED',
+      transactionState: 'COMPLETED'
     }
   }
 }

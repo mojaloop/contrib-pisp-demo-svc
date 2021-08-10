@@ -36,6 +36,7 @@ import { Options } from './options'
 import { ConsentFactory } from './factories/consents'
 import { MojaloopClient } from '../ml-thirdparty-client'
 import { logger } from '../logger'
+import config from '~/lib/config'
 
 /**
  * Simulator allows Mojaloop's client to mock out the communication and return
@@ -86,6 +87,9 @@ export class Simulator implements MojaloopClient {
       headers: {
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -124,6 +128,9 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -152,6 +159,9 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -184,6 +194,9 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -214,6 +227,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -249,6 +266,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -283,6 +304,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -302,6 +327,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -336,6 +365,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
@@ -362,6 +395,10 @@ export class Simulator implements MojaloopClient {
         host: this.options.host ?? '',
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Date': (new Date()).toISOString(),
+        'FSPIOP-Source': 'dfspa',
+        'FSPIOP-Destination': config.get('participantId'),
       },
       payload,
     })
