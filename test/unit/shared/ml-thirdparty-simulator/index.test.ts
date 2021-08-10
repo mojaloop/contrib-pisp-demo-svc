@@ -49,7 +49,7 @@ jest.useFakeTimers()
 /**
  * Mock data for party lookup.
  */
-const partyLookupParams: { type: tpAPI.Schemas.PartyIdType, id: string} = {
+const partyLookupParams: { type: tpAPI.Schemas.PartyIdType, id: string } = {
   type: 'MSISDN',
   id: '+1-111-111-1111',
 }
@@ -155,6 +155,10 @@ describe('Mojaloop third-party simulator', () => {
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
+
       },
       payload,
     })
@@ -199,9 +203,14 @@ describe('Mojaloop third-party simulator', () => {
       method: 'POST',
       url: targetUrl,
       headers: {
+        'Accept': 'application/json',
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
+
       },
       payload,
     })
@@ -271,9 +280,13 @@ describe('Mojaloop third-party simulator', () => {
       method: 'PUT',
       url: targetUrl,
       headers: {
+        'Accept': 'application/json',
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
       },
       payload,
     })
@@ -295,9 +308,11 @@ describe('Mojaloop third-party simulator', () => {
       method: 'PUT',
       url: targetUrl,
       headers: {
+        'Accept': 'application/json',
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'Date': expect.any(String)
       },
       payload,
     })
@@ -323,9 +338,13 @@ describe('Mojaloop third-party simulator', () => {
       method: 'POST',
       url: targetUrl,
       headers: {
+        'Accept': 'application/json',
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
       },
       payload,
     })
@@ -343,13 +362,16 @@ describe('Mojaloop third-party simulator', () => {
     )
 
     expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
+    expect(server.inject).toHaveBeenCalledWith({
       method: 'PUT',
       url: targetUrl,
       headers: {
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
       },
       payload,
     })
@@ -365,15 +387,20 @@ describe('Mojaloop third-party simulator', () => {
     const payload = ConsentFactory.createPatchConsentRevokeRequest()
 
     expect(server.inject).toBeCalledTimes(1)
-    expect(server.inject).toBeCalledWith({
+    expect(server.inject).toHaveBeenCalledWith(expect.objectContaining({
       method: 'PATCH',
       url: targetUrl,
       headers: {
+        'Accept': 'application/json',
         host: 'mojaloop.' + config.get('hostname'),
         'Content-Length': JSON.stringify(payload).length.toString(),
         'Content-Type': 'application/json',
+        'FSPIOP-Destination': 'pispa',
+        'FSPIOP-Source': 'dfspa',
+        'Date': expect.any(String)
       },
       payload,
     })
+    )
   })
 })
