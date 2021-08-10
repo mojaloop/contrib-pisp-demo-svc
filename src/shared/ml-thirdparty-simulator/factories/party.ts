@@ -27,7 +27,6 @@
 
 import * as faker from 'faker'
 import { thirdparty as tpAPI } from '@mojaloop/api-snippets'
-import { Account, Currency } from '~/shared/ml-thirdparty-client/models/core'
 import { ParticipantFactory } from './participant'
 import { v4 } from 'uuid'
 import config from '~/lib/config'
@@ -43,13 +42,13 @@ export class PartyFactory {
    * @param type  type of the party identifier.
    * @param id    the party identifier.
    */
-  public static createPutAccountsRequest(_id: string): Array<Account> {
-    const accounts: Account[] = [ // hardcode two currencies
-      { accountNickname: 'Chequing Account', id: v4(), currency: config.get('demoCurrency') as Currency},
-      { accountNickname: 'Transaction Account', id: v4(), currency: config.get('demoCurrency') as Currency}
+  public static createPutAccountsRequest(_id: string): tpAPI.Schemas.AccountsIDPutResponse {
+    const accounts = [ // hardcode two currencies
+      { accountNickname: 'Chequing Account', id: v4(), currency: config.get('demoCurrency') as tpAPI.Schemas.Currency},
+      { accountNickname: 'Transaction Account', id: v4(), currency: config.get('demoCurrency') as tpAPI.Schemas.Currency}
     ]
 
-    return accounts
+    return { accounts }
   }
 
   /**
@@ -61,12 +60,7 @@ export class PartyFactory {
    */
   public static createPutPartiesRequest(type: tpAPI.Schemas.PartyIdType, id: string): tpAPI.Schemas.PartiesTypeIDPutResponse {
     const party = PartyFactory.createParty(type, id)
-    // TODO: this is no longer user - opaque account lookup uses a different resource - /accounts now.
-    // const accounts: Account[] = [ // hardcode two currencies
-    //   PartyFactory.createAccount(party, Currency.USD),
-    //   PartyFactory.createAccount(party, Currency.SGD),
-    // ]
-
+   
     return {
       party,
     }
