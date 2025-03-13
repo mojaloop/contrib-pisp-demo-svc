@@ -1,3 +1,10 @@
+/*****
+License
+--------------
+Copyright © 2020-2025 Mojaloop Foundation
+The Mojaloop files are made available by the Mojaloop Foundation under the Apache License, Version 2.0 (the "License")
+*****/
+
 // DemoAccount is a representation of a linked
 // account, internal to the PISP-Demo-Server
 // A demo account is created for _each_ linked
