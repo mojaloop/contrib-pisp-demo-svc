@@ -111,14 +111,14 @@
     "@hapi/inert": "^6.0.1",
     "@hapi/vision": "^6.0.0",
     "@mojaloop/central-services-logger": "^10.6.0",
-    "@mojaloop/central-services-shared": "^11.3.2",
+    "@mojaloop/central-services-shared": "^11.3.6",
     "@mojaloop/sdk-standard-components": "^15.11.0",
     "@types/uuid": "^8.0.0",
     "convict": "^6.0.0",
     "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "firebase-admin": "^9.2.0",
-    "openapi-backend": "^3.5.1",
+    "openapi-backend": "^3.6.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3"
   }
